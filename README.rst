@@ -99,10 +99,11 @@ Mise à jour du module
         cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/gn_module_dashboard/config/conf_gn_module.toml
 
 
-- Relancer la compilation en mettant à jour la configuration
+- Résintaller les librairies et relancer la compilation en mettant à jour la configuration
 
   ::
-        
+        cd /home/`whoami`/geonature/frontend
+        npm install /home/`whoami`/gn_module_dashboard/frontend
         cd /home/`whoami`/geonature/backend
         source venv/bin/activate
         geonature update_module_configuration DASHBOARD
