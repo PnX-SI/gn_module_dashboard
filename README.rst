@@ -102,6 +102,7 @@ Mise à jour du module
 - Résintaller les librairies et relancer la compilation en mettant à jour la configuration
 
   ::
+        
         cd /home/`whoami`/geonature/frontend
         npm install /home/`whoami`/gn_module_dashboard/frontend
         cd /home/`whoami`/geonature/backend
