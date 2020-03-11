@@ -1,13 +1,15 @@
 import { NgModule } from "@angular/core";
 import { GN2CommonModule } from "@geonature_common/GN2Common.module";
 import { Routes, RouterModule } from "@angular/router";
-import { CommonModule } from '@angular/common';
+import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { ReactiveFormsModule } from "@angular/forms";
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule } from "@angular/material/tabs";
 import { ChartsModule } from "ng2-charts";
-import { NouisliderModule } from 'ng2-nouislider';
+import { NouisliderModule } from "ng2-nouislider";
 import "chartjs-plugin-labels";
+import { ConfigModule } from "@geonature/utils/configModule/core";
+
 // import "chartjs-plugin-piechart-outlabels";
 // Components
 import { DashboardComponent } from "./dashboard/dashboard.component";
@@ -17,7 +19,7 @@ import { DashboardTaxonomyComponent } from "./dashboard/dashboard-taxonomy/dashb
 import { DashboardFrameworksComponent } from "./dashboard/dashboard-frameworks/dashboard-frameworks.component";
 import { DashboardRecontactComponent } from "./dashboard/dashboard-recontact/dashboard-recontact.component";
 // Services
-import { DataService } from "./dashboard/services/data.services"
+import { DataService } from "./dashboard/services/data.services";
 
 // my module routing
 const routes: Routes = [
@@ -29,9 +31,26 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [DashboardComponent, DashboardMapsComponent, DashboardHistogramComponent, DashboardTaxonomyComponent, DashboardFrameworksComponent, DashboardRecontactComponent],
-  imports: [GN2CommonModule, RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule, MatTabsModule, ChartsModule, NouisliderModule],
+  declarations: [
+    DashboardComponent,
+    DashboardMapsComponent,
+    DashboardHistogramComponent,
+    DashboardTaxonomyComponent,
+    DashboardFrameworksComponent,
+    DashboardRecontactComponent
+  ],
+  imports: [
+    GN2CommonModule,
+    RouterModule.forChild(routes),
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatTabsModule,
+    ChartsModule,
+    NouisliderModule,
+    ConfigModule.forChild()
+  ],
   providers: [DataService],
   bootstrap: [DashboardComponent]
 })
-export class GeonatureModule { }
+export class GeonatureModule {}

@@ -3,15 +3,13 @@ import {
   OnInit,
   OnChanges,
   AfterViewInit,
-  Input,
-  ViewEncapsulation
+  Input
 } from "@angular/core";
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { MapService } from "@geonature_common/map/map.service";
-import { AppConfig } from "@geonature_config/app.config";
-import { ModuleConfig } from "../../module.config";
 // Services
 import { DataService } from "../services/data.services";
+import { ConfigService } from "@geonature/utils/configModule/core";
 
 @Component({
   selector: "dashboard-maps",
@@ -27,11 +25,7 @@ export class DashboardMapsComponent
   // Fonction permettant d'afficher les zonages sur la carte (leaflet)
   public showData: Function;
   // Degré de simplication des zonages
-  public simplifyLevel = ModuleConfig.SIMPLIFY_LEVEL;
-  // Bornes pour la représentation en nombre d'observations
-  public gradesObs = ModuleConfig.BORNE_OBS;
-  // Bornes pour la représentation en nombre de taxons
-  public gradesTax = ModuleConfig.BORNE_TAXON;
+  public MODULE_CONFIG: any;
   // Couleurs de bordure des zonages
   public initialBorderColor = "rgb(255, 255, 255)";
   public selectedBorderColor = "rgb(50, 50, 50)";
@@ -174,12 +168,13 @@ export class DashboardMapsComponent
   public spinner = true;
 
   // Récupérer la liste des taxons existants dans la BDD pour permettre la recherche de taxon (pnx-taxonomy)
-  public taxonApiEndPoint = `${AppConfig.API_ENDPOINT}/synthese/taxons_autocomplete`;
+  public taxonApiEndPoint: string;
 
   constructor(
     public dataService: DataService,
     public fb: FormBuilder,
-    public mapService: MapService
+    public mapService: MapService,
+    private _configService: ConfigService
   ) {
     // Déclaration du formulaire général contenant les filtres de la carte
     this.mapForm = fb.group({
@@ -199,37 +194,42 @@ export class DashboardMapsComponent
     // Légende concernant le nombre d'observations
     this.divLegendObs = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendObs.innerHTML += "<b>Nombre d'observations</b><br/>";
-    var nb_classes = this.gradesObs.length;
+    var nb_classes = this.MODULE_CONFIG.BORNE_OBS.length;
     for (var i = 0; i < nb_classes; i++) {
       this.divLegendObs.innerHTML +=
         '<div class="row row-0"> <i style="background:' +
-        this.getColorObs(this.gradesObs[i]) +
+        this.getColorObs(this.MODULE_CONFIG.BORNE_OBS[i]) +
         '"></i>' +
-        this.gradesObs[i] +
-        (this.gradesObs[i + 1]
-          ? "&ndash;" + (this.gradesObs[i + 1] - 1) + "</div>"
+        this.MODULE_CONFIG.BORNE_OBS[i] +
+        (this.MODULE_CONFIG.BORNE_OBS[i + 1]
+          ? "&ndash;" + (this.MODULE_CONFIG.BORNE_OBS[i + 1] - 1) + "</div>"
           : "+ </div>");
     }
     // Légende concernant le nombre de taxons
     this.divLegendTax = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendTax.innerHTML += "<b>Nombre de taxons</b><br/>";
-    var nb_classes = this.gradesTax.length;
+    var nb_classes = this.MODULE_CONFIG.BORNE_TAXON.length;
     for (var i = 0; i < nb_classes; i++) {
       this.divLegendTax.innerHTML +=
         '<div class="row row-0"> <i style="background:' +
-        this.getColorTax(this.gradesTax[i]) +
+        this.getColorTax(this.MODULE_CONFIG.BORNE_TAXON[i]) +
         '"></i>' +
-        this.gradesTax[i] +
-        (this.gradesTax[i + 1]
-          ? "&ndash;" + (this.gradesTax[i + 1] - 1) + "</div>"
+        this.MODULE_CONFIG.BORNE_TAXON[i] +
+        (this.MODULE_CONFIG.BORNE_TAXON[i + 1]
+          ? "&ndash;" + (this.MODULE_CONFIG.BORNE_TAXON[i + 1] - 1) + "</div>"
           : "+ </div>");
     }
   }
 
   ngOnInit() {
+    //define config constants
+    this.MODULE_CONFIG = this._configService.getSettings("DASHBOARD");
+    this.taxonApiEndPoint =
+      this._configService.getSettings("API_ENDPOINT") +
+      "/synthese/taxons_autocomplete";
     // Accès aux données de synthèse
     this.subscription = this.dataService
-      .getDataAreas(this.simplifyLevel, this.currentTypeCode)
+      .getDataAreas(this.MODULE_CONFIG.SIMPLIFY_LEVEL, this.currentTypeCode)
       .subscribe(data => {
         // Initialisation du tableau contenant la géométrie et les données des zonages : par défaut, la carte s'affiche automatiquement en mode "communes"
         this.myAreas = data;
@@ -238,10 +238,12 @@ export class DashboardMapsComponent
     // Initialisation de la fonction "showData" : par défaut, la carte affiche automatiquement le nombre d'observations
     this.showData = this.onEachFeatureNbObs;
     // Récupération des noms de type_area qui seront contenus dans la liste déroulante du formulaire areaTypeControl
-    this.dataService.getAreasTypes(ModuleConfig.AREA_TYPE).subscribe(data => {
-      // Création de la liste déroulante
-      this.tabAreasTypes = data;
-    });
+    this.dataService
+      .getAreasTypes(this._configService.getSettings("DASHBOARD.AREA_TYPE"))
+      .subscribe(data => {
+        // Création de la liste déroulante
+        this.tabAreasTypes = data;
+      });
     // Abonnement à la liste déroulante du formulaire areaTypeControl afin de modifier le type de zonage à chaque changement
     this.areaTypeControl.valueChanges
       .distinctUntilChanged() // le [disableControl] du HTML déclenche l'API sans fin
@@ -252,7 +254,7 @@ export class DashboardMapsComponent
         // Accès aux données de synthèse
         this.dataService
           .getDataAreas(
-            this.simplifyLevel,
+            this.MODULE_CONFIG.SIMPLIFY_LEVEL,
             this.currentTypeCode,
             this.filtersDict
           )
@@ -324,7 +326,7 @@ export class DashboardMapsComponent
       // Accès aux données de synthèse
       this.dataService
         .getDataAreas(
-          this.simplifyLevel,
+          this.MODULE_CONFIG.SIMPLIFY_LEVEL,
           this.currentTypeCode,
           this.mapForm.value
         )
@@ -363,7 +365,11 @@ export class DashboardMapsComponent
     }
     // Accès aux données de synthèse
     this.subscription = this.dataService
-      .getDataAreas(this.simplifyLevel, this.currentTypeCode, this.filtersDict)
+      .getDataAreas(
+        this.MODULE_CONFIG.SIMPLIFY_LEVEL,
+        this.currentTypeCode,
+        this.filtersDict
+      )
       .subscribe(data => {
         // Rafraichissement du tableau contenant la géométrie et les données des zonages
         this.myAreas = data;
@@ -403,9 +409,9 @@ export class DashboardMapsComponent
 
   // Couleurs de la carte relative au nombre d'observations
   getColorObs(obs) {
-    var nb_classes = this.gradesObs.length;
+    var nb_classes = this.MODULE_CONFIG.BORNE_OBS.length;
     for (var i = 1; i < nb_classes; i++) {
-      if (obs < this.gradesObs[i]) {
+      if (obs < this.MODULE_CONFIG.BORNE_OBS[i]) {
         return this.obsColors[nb_classes][i - 1];
       }
     }
@@ -414,9 +420,9 @@ export class DashboardMapsComponent
 
   // Couleurs de la carte relative au nombre de taxons
   getColorTax(tax) {
-    var nb_classes = this.gradesTax.length;
+    var nb_classes = this.MODULE_CONFIG.BORNE_TAXON.length;
     for (var i = 1; i < nb_classes; i++) {
-      if (tax < this.gradesTax[i]) {
+      if (tax < this.MODULE_CONFIG.BORNE_TAXON[i]) {
         return this.taxColors[nb_classes][i - 1];
       }
     }
