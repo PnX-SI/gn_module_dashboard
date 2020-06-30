@@ -63,11 +63,11 @@ Une fonction permet de mettre à jour toutes les vues matérialisées du schéma
         crontab -e
 
 
-Ajouter la ligne suivante en prenant soin de mettre à jour les paramètres de connexion à la base de GeoNature-atlas :
+Ajouter la ligne suivante pour effectuer un raffraichissement journalier à minuit :
 
 ::
 
-    0 * * * * psql -d geonature2db -c "SELECT gn_dashboard.refresh_materialized_view_data();"
+    00 00 * * * psql -d geonature2db -c "SELECT gn_dashboard.refresh_materialized_view_data();"
 
 Pour enregistrer et sortir : ``Ctrl + O``, ENTER puis ``Ctrl + X``
 
