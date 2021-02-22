@@ -158,8 +158,7 @@ export class DashboardMapsComponent
   mapForm: FormGroup;
   @Input() taxonomies: any;
   @Input() yearsMinMax: any;
-  public currentYear: number = new Date().getFullYear();
-  public yearRange = [0, this.currentYear];
+  public yearRange = [0, new Date().getFullYear()];
   public filtersDict: any;
   public filter: any;
   public disabledTaxButton = false;
