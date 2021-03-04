@@ -6,7 +6,7 @@
     </div>
     <hr class="my-4">
 
-    <div class="row row-md">
+    <div *ngIf="displaySynthesePerYear" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideHistogram($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -26,7 +26,7 @@
     <dashboard-histogram [taxonomies]="taxonomies" *ngIf="showHistogram"></dashboard-histogram>
 
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseGeo" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideMap($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -45,7 +45,7 @@
     </div>
     <dashboard-maps [taxonomies]="taxonomies" [yearsMinMax]="yearsMinMax" *ngIf="showMap"></dashboard-maps>
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseTaxoRank" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hidePieChart($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -65,7 +65,7 @@
     <dashboard-taxonomy [taxonomies]="taxonomies" [yearsMinMax]="yearsMinMax" *ngIf="showPieChart">
     </dashboard-taxonomy>
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseCA" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideLineChart($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -84,7 +84,7 @@
     </div>
     <dashboard-frameworks *ngIf="showLineChart"></dashboard-frameworks>
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseTaxoContact" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideSpecies($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
