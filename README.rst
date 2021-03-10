@@ -42,6 +42,7 @@ Un certain nombre de paramètres permettent de customiser le module en modifiant
 - Paramétrage des zonages affichables sur la carte "Synthèse par entité géographique" : ``AREA_TYPE``. Passer un tableau de ``type_code`` (table ``ref_geo.bib_areas_types``). La première valeur de ce tableau sera la valeur utilisée par défaut pour le graphique de synthèse par entité géographique.
 - Paramétrage du nombre de classes sur la carte "Synthèse par entité géographique" : ``BORNE_OBS`` (mode 'nombre d'observations') et ``BORNE_TAXON`` (mode 'nombre de taxons'). Passer un tableau contenant les limites inférieures des bornes que l'on souhaite implémenter. 
 - Paramétrage de l'affichage des graphiques du dashboard : ``DISPLAY_XXXX_GRAPH``. Renseigner 'true' pour afficher le graphique en question et 'false' pour le masquer. 
+- Paramétrage de par défaut du graphique synthèse par entité géographique du dashboard : ``DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH`` Renseigner 'true' si vous souhaitez afficher par défault les observations, 'false' si vous souhaitez les taxons
 
 Vues matérialisées
 ==================
