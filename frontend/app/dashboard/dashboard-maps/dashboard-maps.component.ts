@@ -163,6 +163,7 @@ export class DashboardMapsComponent
   public filter: any;
   public disabledTaxButton = false;
   public tabAreasTypes: Array<any>;
+  public displayNBOBSbydefault = ModuleConfig.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
 
   // Gestion du formulaire contrôlant le type de zonage
   public areaTypeControl = new FormControl(ModuleConfig.AREA_TYPE[0]);
@@ -235,8 +236,14 @@ export class DashboardMapsComponent
         this.myAreas = data;
         this.spinner = false;
       });
-    // Initialisation de la fonction "showData" : par défaut, la carte affiche automatiquement le nombre d'observations
-    this.showData = this.onEachFeatureNbObs;
+    // Initialisation de la fonction "showData" : la carte affichée par défaut dépend du choix de l'utilisateur.trice
+    if(this.displayNBOBSbydefault==true){
+      this.showData = this.onEachFeatureNbObs;
+    }
+    else{
+      this.showData = this.onEachFeatureNbTax;
+    }
+    
     // Récupération des noms de type_area qui seront contenus dans la liste déroulante du formulaire areaTypeControl
     this.dataService.getAreasTypes(ModuleConfig.AREA_TYPE).subscribe(data => {
       // Création de la liste déroulante
@@ -276,9 +283,16 @@ export class DashboardMapsComponent
     this.legend = (this.mapService.L as any).control({
       position: "bottomright"
     });
-    this.legend.onAdd = map => {
-      return this.divLegendObs;
-    };
+    if(this.displayNBOBSbydefault==true){
+      this.legend.onAdd = map => {
+        return this.divLegendObs;
+      };
+    }
+    else{
+      this.legend.onAdd = map => {
+        return this.divLegendTax;
+      };
+    }
     this.legend.addTo(this.mapService.map);
   }
 
