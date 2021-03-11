@@ -39,7 +39,7 @@ Configuration
 Un certain nombre de paramètres permettent de customiser le module en modifiant le fichier ``conf/conf_gn_module.toml`` (vous pouvez vous inspirer du fichier ``conf_gn_module.toml.example`` qui liste l'ensemble des paramètres disponibles et leurs valeurs par défaut) :
 
 - Paramétrage du niveau de simplification des zonages sur la carte "Synthèse par entité géographique" : ``SIMPLIFY_LEVEL``. Passer un nombre entier : plus cet entier est grand et plus la simplification est importante. Ce paramètre est nécessaire pour alléger le temps d'affichage des zonages.
-- Paramétrage des zonages affichables sur la carte "Synthèse par entité géographique" : ``AREA_TYPE``. Passer un tableau de ``type_code`` (table ``ref_geo.bib_areas_types``).
+- Paramétrage des zonages affichables sur la carte "Synthèse par entité géographique" : ``AREA_TYPE``. Passer un tableau de ``type_code`` (table ``ref_geo.bib_areas_types``). La première valeur de ce tableau sera la valeur utilisée par défaut pour le graphique de synthèse par entité géographique.
 - Paramétrage du nombre de classes sur la carte "Synthèse par entité géographique" : ``BORNE_OBS`` (mode 'nombre d'observations') et ``BORNE_TAXON`` (mode 'nombre de taxons'). Passer un tableau contenant les limites inférieures des bornes que l'on souhaite implémenter. 
 - Paramétrage de l'affichage des graphiques du dashboard : ``DISPLAY_XXXX_GRAPH``. Renseigner 'true' pour afficher le graphique en question et 'false' pour le masquer. 
 
