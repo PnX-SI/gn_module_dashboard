@@ -165,8 +165,8 @@ export class DashboardMapsComponent
   public tabAreasTypes: Array<any>;
 
   // Gestion du formulaire contrôlant le type de zonage
-  public areaTypeControl = new FormControl("COM");
-  public currentTypeCode = "COM"; // par défaut, la carte s'affiche automatiquement en mode "communes"
+  public areaTypeControl = new FormControl(ModuleConfig.AREA_TYPE[0]);
+  public currentTypeCode = ModuleConfig.AREA_TYPE[0]; // par défaut, la carte affiche la première géographie AREA_TYPE renseignée 
 
   // Pouvoir stoppper le chargement des données si un changement de filtre est opéré avant la fin du chargement
   public subscription: any;
