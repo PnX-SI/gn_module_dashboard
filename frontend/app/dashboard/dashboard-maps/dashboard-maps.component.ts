@@ -24,6 +24,8 @@ export class DashboardMapsComponent
   implements OnInit, OnChanges, AfterViewInit {
   // Tableau contenant la géométrie et les données des zonages
   public myAreas: Array<any>;
+  public myAreas_length: any;
+
   // Fonction permettant d'afficher les zonages sur la carte (leaflet)
   public showData: Function;
   // Degré de simplication des zonages
@@ -42,48 +44,10 @@ export class DashboardMapsComponent
     4: ["#D4AAB9", "#9E4161", "#64112E", "#260712"],
     5: ["#E9D4DC", "#B36B84", "#89173F", "#4B0D23", "#19050C"],
     6: ["#E9D4DC", "#C995A7", "#9E4161", "#711334", "#3F0B1D", "#0D0306"],
-    7: [
-      "#E9D4DC",
-      "#C995A7",
-      "#A95673",
-      "#89173F",
-      "#64112E",
-      "#3F0B1D",
-      "#19050C"
-    ],
-    8: [
-      "#F4E9ED",
-      "#DEBFCA",
-      "#BE8096",
-      "#9E4161",
-      "#7D153A",
-      "#580F29",
-      "#320917",
-      "#0D0306"
-    ],
-    9: [
-      "#F4E9ED",
-      "#DEBFCA",
-      "#BE8096",
-      "#9E4161",
-      "#89173F",
-      "#64112E",
-      "#3F0B1D",
-      "#260712",
-      "#0D0306"
-    ],
-    10: [
-      "#F4E9ED",
-      "#DEBFCA",
-      "#BE8096",
-      "#9E4161",
-      "#89173F",
-      "#711334",
-      "#580F29",
-      "#3F0B1D",
-      "#260712",
-      "#0D0306"
-    ]
+    7: ["#E9D4DC", "#C995A7", "#A95673", "#89173F", "#64112E", "#3F0B1D", "#19050C"],
+    8: ["#F4E9ED", "#DEBFCA", "#BE8096", "#9E4161", "#7D153A", "#580F29", "#320917", "#0D0306"],
+    9: ["#F4E9ED", "#DEBFCA", "#BE8096", "#9E4161", "#89173F", "#64112E", "#3F0B1D", "#260712", "#0D0306"],
+    10: ["#F4E9ED", "#DEBFCA", "#BE8096", "#9E4161", "#89173F", "#711334", "#580F29", "#3F0B1D", "#260712", "#0D0306"]
   };
   // Couleurs de remplissage des zonages pour la représentation en nombre de taxons
   public taxColors: { [nbClasses: string]: any } = {
@@ -92,48 +56,10 @@ export class DashboardMapsComponent
     4: ["#B1CCCC", "#4F8C8C", "#1E5454", "#0C2020"],
     5: ["#D8E5E5", "#76A5A5", "#297373", "#173F3F", "#081515"],
     6: ["#D8E5E5", "#9DBFBF", "#4F8C8C", "#225F5F", "#133535", "#040B0B"],
-    7: [
-      "#D8E5E5",
-      "#9DBFBF",
-      "#639999",
-      "#297373",
-      "#1E5454",
-      "#133535",
-      "#081515"
-    ],
-    8: [
-      "#EBF2F2",
-      "#C4D8D8",
-      "#8AB2B2",
-      "#4F8C8C",
-      "#266969",
-      "#1B4A4A",
-      "#0F2A2A",
-      "#040B0B"
-    ],
-    9: [
-      "#EBF2F2",
-      "#C4D8D8",
-      "#8AB2B2",
-      "#4F8C8C",
-      "#297373",
-      "#1E5454",
-      "#133535",
-      "#0C2020",
-      "#040B0B"
-    ],
-    10: [
-      "#EBF2F2",
-      "#C4D8D8",
-      "#8AB2B2",
-      "#4F8C8C",
-      "#297373",
-      "#225F5F",
-      "#1B4A4A",
-      "#133535",
-      "#0C2020",
-      "#040B0B"
-    ]
+    7: ["#D8E5E5", "#9DBFBF", "#639999", "#297373", "#1E5454", "#133535","#081515"],
+    8: ["#EBF2F2", "#C4D8D8", "#8AB2B2", "#4F8C8C", "#266969", "#1B4A4A", "#0F2A2A", "#040B0B"],
+    9: ["#EBF2F2", "#C4D8D8", "#8AB2B2", "#4F8C8C", "#297373", "#1E5454", "#133535", "#0C2020", "#040B0B"],
+    10: ["#EBF2F2", "#C4D8D8", "#8AB2B2", "#4F8C8C", "#297373", "#225F5F", "#1B4A4A", "#133535", "#0C2020", "#040B0B"]
   };
   // Encart pour la légende de la carte
   public legend: any;
@@ -153,7 +79,6 @@ export class DashboardMapsComponent
   public currentNbTax: any;
   // Stocker le cd_ref du taxon qui a été sélectionné en dernier
   public currentCdRef: any;
-
   // Gestion du formulaire général
   mapForm: FormGroup;
   @Input() taxonomies: any;
@@ -177,6 +102,18 @@ export class DashboardMapsComponent
   // Récupérer la liste des taxons existants dans la BDD pour permettre la recherche de taxon (pnx-taxonomy)
   public taxonApiEndPoint = `${AppConfig.API_ENDPOINT}/synthese/taxons_autocomplete`;
 
+  public NB_CLASS_OBS = ModuleConfig.NB_CLASS_OBS;
+  public NB_CLASS_TAX = ModuleConfig.NB_CLASS_TAX;
+
+  public NB_OBS_ON_INIT = 50000 // rentré à la main, le but est que ce soit la variable qui évolue avec le getData 
+// faut que j'apprenne à avoir le nombre de données dans n'importe quelle situation sans $etre dans le data ou quoi que ça me renvoit une valeur. 
+  public NB_OBS_ON_INIT2 : any;
+  public gradesObs2:number[] = new Array(this.NB_CLASS_OBS); 
+  public gradesTax2:number[] = new Array(this.NB_CLASS_TAX); 
+  public max_taxa: any;
+  public max_obs: any;
+
+  
   constructor(
     public dataService: DataService,
     public fb: FormBuilder,
@@ -196,8 +133,6 @@ export class DashboardMapsComponent
       taxon: fb.control(null)
     });
 
-    //// Initialisation des variables formant la légende
-    // Légende concernant le nombre d'observations
     this.divLegendObs = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendObs.innerHTML += "<b>Nombre d'observations</b><br/>";
     var nb_classes = this.gradesObs.length;
@@ -210,40 +145,111 @@ export class DashboardMapsComponent
         (this.gradesObs[i + 1]
           ? "&ndash;" + (this.gradesObs[i + 1] - 1) + "</div>"
           : "+ </div>");
-    }
+    };
+
+ 
+
+
+ 
+  };
+
+  createlegend_TAX(nb_classes, nb_taxa_area){
+    console.log(nb_classes);
+    console.log(nb_taxa_area);
     // Légende concernant le nombre de taxons
     this.divLegendTax = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendTax.innerHTML += "<b>Nombre de taxons</b><br/>";
-    var nb_classes = this.gradesTax.length;
+    for (var i = 0; i < nb_classes; i++){
+      console.log(Math.trunc((i/nb_classes)*nb_taxa_area))
+      this.gradesTax2[i] = Math.trunc((i/nb_classes)*nb_taxa_area)
+    }
     for (var i = 0; i < nb_classes; i++) {
       this.divLegendTax.innerHTML +=
         '<div class="row row-0"> <i style="background:' +
-        this.getColorTax(this.gradesTax[i]) +
+        this.getColorTax(this.gradesTax2[i]) +
         '"></i>' +
-        this.gradesTax[i] +
-        (this.gradesTax[i + 1]
-          ? "&ndash;" + (this.gradesTax[i + 1] - 1) + "</div>"
+        this.gradesTax2[i] +
+        (this.gradesTax2[i + 1]
+          ? "&ndash;" + (this.gradesTax2[i + 1] - 1) + "</div>"
           : "+ </div>");
+    };
+  }
+
+  createlegend_OBS(nb_classes, nb_obs_area){
+    console.log(nb_classes);
+    console.log('test');
+    console.log(nb_obs_area);
+    // Légende concernant le nombre de taxons
+    this.divLegendObs = this.mapService.L.DomUtil.create("div", "divLegend");
+    this.divLegendObs.innerHTML += "<b>Nombre d'observations</b><br/>";
+    for (var i = 0; i < nb_classes; i++){
+      console.log(Math.trunc((i/nb_classes)*nb_obs_area))
+      this.gradesObs2[i] = Math.trunc((i/nb_classes)*nb_obs_area)
     }
+    for (var i = 0; i < nb_classes; i++) {
+      this.divLegendObs.innerHTML +=
+        '<div class="row row-0"> <i style="background:' +
+        this.getColorObs(this.gradesObs2[i]) +
+        '"></i>' +
+        this.gradesObs2[i] +
+        (this.gradesObs2[i + 1]
+          ? "&ndash;" + (this.gradesObs2[i + 1] - 1) + "</div>"
+          : "+ </div>");
+    };
+  }
+
+
+  add_legend(){
+    this.legend = (this.mapService.L as any).control({
+      position: "bottomright"
+    });
+    if(this.displayNBOBSbydefault==true){
+      this.legend.onAdd = map => {
+        return this.divLegendObs;
+      };
+    }
+    else{
+      this.legend.onAdd = map => {
+        return this.divLegendTax;
+      };
+    }
+    this.legend.addTo(this.mapService.map);
   }
 
   ngOnInit() {
+    console.log(this.divLegendTax)
     // Accès aux données de synthèse
     this.subscription = this.dataService
-      .getDataAreas(this.simplifyLevel, this.currentTypeCode)
-      .subscribe(data => {
-        // Initialisation du tableau contenant la géométrie et les données des zonages : par défaut, la carte s'affiche automatiquement en mode "communes"
-        this.myAreas = data;
-        this.spinner = false;
-      });
+    .getDataAreas(this.simplifyLevel, this.currentTypeCode)
+    .subscribe(data => {
+      // Initialisation du tableau contenant la géométrie et les données des zonages : par défaut, la carte s'affiche automatiquement en mode "communes"
+      this.myAreas = data;   
+      this.max_taxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
+      this.max_obs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
+      
+      //createlegend_TAX(my.Areas)
+      this.createlegend_TAX(this.NB_CLASS_TAX, this.max_taxa);
+      this.createlegend_OBS(this.NB_CLASS_OBS, this.max_obs);
+
+      this.spinner = false;
+
+      // Implémentation de la légende 
+      this.add_legend()
+
+    });
+
     // Initialisation de la fonction "showData" : la carte affichée par défaut dépend du choix de l'utilisateur.trice
+    // Dans ces if que je dois mettre la fonction légende, que je récupère du afterview init. 
     if(this.displayNBOBSbydefault==true){
       this.showData = this.onEachFeatureNbObs;
+      this.currentMap = 1;
     }
     else{
       this.showData = this.onEachFeatureNbTax;
+      this.currentMap = 2;
     }
-    
+
+
     // Récupération des noms de type_area qui seront contenus dans la liste déroulante du formulaire areaTypeControl
     this.dataService.getAreasTypes(ModuleConfig.AREA_TYPE).subscribe(data => {
       // Création de la liste déroulante
@@ -271,29 +277,14 @@ export class DashboardMapsComponent
       });
   }
 
+  ngAfterViewInit() {
+  }
+
   ngOnChanges(change) {
     // Récupération des années min et max présentes dans la synthèse de GeoNature
     if (change.yearsMinMax && change.yearsMinMax.currentValue != undefined) {
       this.yearRange = change.yearsMinMax.currentValue;
     }
-  }
-
-  ngAfterViewInit() {
-    // Implémentation de la légende : par défaut, la carte affiche automatiquement le nombre d'observations
-    this.legend = (this.mapService.L as any).control({
-      position: "bottomright"
-    });
-    if(this.displayNBOBSbydefault==true){
-      this.legend.onAdd = map => {
-        return this.divLegendObs;
-      };
-    }
-    else{
-      this.legend.onAdd = map => {
-        return this.divLegendTax;
-      };
-    }
-    this.legend.addTo(this.mapService.map);
   }
 
   // Afficher les données, configurations (couleurs) et légende relatives au nombre de taxons (switcher)
@@ -342,14 +333,17 @@ export class DashboardMapsComponent
           this.currentTypeCode,
           this.mapForm.value
         )
-        .subscribe(data => {
+        .subscribe(data => {          
           // Rafraichissement du tableau contenant la géométrie et les données des zonages
           this.myAreas = data;
+
         });
     }
   }
+
   getCurrentParameters(event) {
     this.subscription.unsubscribe();
+    
     this.spinner = true;
     this.disabledTaxButton = false;
     // Copie des éléments du formulaire pour pouvoir y ajouter cd_ref s'il s'agit d'un filtre par taxon
@@ -379,10 +373,21 @@ export class DashboardMapsComponent
     this.subscription = this.dataService
       .getDataAreas(this.simplifyLevel, this.currentTypeCode, this.filtersDict)
       .subscribe(data => {
-        // Rafraichissement du tableau contenant la géométrie et les données des zonages
-        this.myAreas = data;
+        this.myAreas = data;   
+        this.max_taxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
+        this.max_obs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
+        
+        //createlegend_TAX(my.Areas)
+        this.createlegend_TAX(this.NB_CLASS_TAX, this.max_taxa);
+        this.createlegend_OBS(this.NB_CLASS_OBS, this.max_obs);
+
         this.spinner = false;
+        this.legend.remove()
+
+        // Implémentation de la légende 
+        this.add_legend()
       });
+
   }
 
   // Configuration de la carte relative au nombre d'observations
@@ -417,9 +422,9 @@ export class DashboardMapsComponent
 
   // Couleurs de la carte relative au nombre d'observations
   getColorObs(obs) {
-    var nb_classes = this.gradesObs.length;
+    var nb_classes = this.gradesObs2.length;
     for (var i = 1; i < nb_classes; i++) {
-      if (obs < this.gradesObs[i]) {
+      if (obs < this.gradesObs2[i]) {
         return this.obsColors[nb_classes][i - 1];
       }
     }
@@ -428,9 +433,9 @@ export class DashboardMapsComponent
 
   // Couleurs de la carte relative au nombre de taxons
   getColorTax(tax) {
-    var nb_classes = this.gradesTax.length;
+    var nb_classes = this.gradesTax2.length;
     for (var i = 1; i < nb_classes; i++) {
-      if (tax < this.gradesTax[i]) {
+      if (tax < this.gradesTax2[i]) {
         return this.taxColors[nb_classes][i - 1];
       }
     }
@@ -474,5 +479,15 @@ export class DashboardMapsComponent
   // Zoomer sur un zonage en cliquant dessus
   zoomToFeature(e) {
     this.mapService.map.fitBounds(e.target.getBounds());
-  }
+  };
+
+
 }
+
+
+
+// L'idée est que lorsqu'on effectue le get data on renvoit un nombre de données et lorsqu'on renvoit ce nombre de données il faut qu'on effectue une 
+// fonction qui renvoie la légende associée et les couleurs. 
+// Or, les couleurs et la légende sont écrites en dur dont faut que je fasse des fonctions qui récupèrent ces infos. 
+// Une fois que j'ai fait ces fonctions 
+// Fonction qui doit avoir comme paramètre d'entrée le nb de classes voulues
