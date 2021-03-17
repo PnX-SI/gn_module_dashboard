@@ -27,36 +27,16 @@ export class DashboardMapsComponent
   public myAreas_length: any;
 
   // Fonction permettant d'afficher les zonages sur la carte (leaflet)
-  public showData: Function;
+  public showData = function(feature:any, layer:any){};
   // Degré de simplication des zonages
   public simplifyLevel = ModuleConfig.SIMPLIFY_LEVEL;
   // Couleurs de bordure des zonages
   public initialBorderColor = "rgb(255, 255, 255)";
   public selectedBorderColor = "rgb(50, 50, 50)";
   // Couleurs de remplissage des zonages pour la représentation en nombre d'observations
-  public obsColors: { [nbClasses: string]: any } = {
-    2: ["#BE8096", "#64112E"],
-    3: ["#D4AAB9", "#89173F", "#320917"],
-    4: ["#D4AAB9", "#9E4161", "#64112E", "#260712"],
-    5: ["#E9D4DC", "#B36B84", "#89173F", "#4B0D23", "#19050C"],
-    6: ["#E9D4DC", "#C995A7", "#9E4161", "#711334", "#3F0B1D", "#0D0306"],
-    7: ["#E9D4DC", "#C995A7", "#A95673", "#89173F", "#64112E", "#3F0B1D", "#19050C"],
-    8: ["#F4E9ED", "#DEBFCA", "#BE8096", "#9E4161", "#7D153A", "#580F29", "#320917", "#0D0306"],
-    9: ["#F4E9ED", "#DEBFCA", "#BE8096", "#9E4161", "#89173F", "#64112E", "#3F0B1D", "#260712", "#0D0306"],
-    10: ["#F4E9ED", "#DEBFCA", "#BE8096", "#9E4161", "#89173F", "#711334", "#580F29", "#3F0B1D", "#260712", "#0D0306"]
-  };
+  public obsColors = ModuleConfig.OBSCOLORS
   // Couleurs de remplissage des zonages pour la représentation en nombre de taxons
-  public taxColors: { [nbClasses: string]: any } = {
-    2: ["#8AB2B2", "#1E5454"],
-    3: ["#B1CCCC", "#297373", "#0F2A2A"],
-    4: ["#B1CCCC", "#4F8C8C", "#1E5454", "#0C2020"],
-    5: ["#D8E5E5", "#76A5A5", "#297373", "#173F3F", "#081515"],
-    6: ["#D8E5E5", "#9DBFBF", "#4F8C8C", "#225F5F", "#133535", "#040B0B"],
-    7: ["#D8E5E5", "#9DBFBF", "#639999", "#297373", "#1E5454", "#133535","#081515"],
-    8: ["#EBF2F2", "#C4D8D8", "#8AB2B2", "#4F8C8C", "#266969", "#1B4A4A", "#0F2A2A", "#040B0B"],
-    9: ["#EBF2F2", "#C4D8D8", "#8AB2B2", "#4F8C8C", "#297373", "#1E5454", "#133535", "#0C2020", "#040B0B"],
-    10: ["#EBF2F2", "#C4D8D8", "#8AB2B2", "#4F8C8C", "#297373", "#225F5F", "#1B4A4A", "#133535", "#0C2020", "#040B0B"]
-  };
+  public taxColors = ModuleConfig.TAXCOLORS
   // Encart pour la légende de la carte
   public legend: any;
   // Légende pour la représentation en nombre d'observations
@@ -107,8 +87,8 @@ export class DashboardMapsComponent
   public gradesTax:number[] = new Array(this.NB_CLASS_TAX); 
 
   // Initialisation de variables qui récupéreront le maximum d'observation ou de taxon par entité géographique 
-  public max_taxa: any;
-  public max_obs: any;
+  public maxTaxa: any; 
+  public maxObs: any;
 
   constructor(
     public dataService: DataService,
@@ -134,37 +114,13 @@ export class DashboardMapsComponent
   //////////////////////////////////////////////COMPOSANTS///////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  ngOnInit() {
+  ngOnInit() { 
+   this.currentMap = this.displayNBOBSbydefault ? 1 : 2;
+  }
+
+  ngAfterViewInit() {
     // Accès aux données de synthèse
-    this.subscription = this.dataService
-      .getDataAreas(this.simplifyLevel, this.currentTypeCode)
-      .subscribe(data => {
-        // Initialisation du tableau contenant la géométrie et les données des zonages : par défaut, la carte s'affiche automatiquement en mode "communes"
-        this.myAreas = data;   
-
-        // Récupération du nombre maximal de taxon et du nombre maximal d'observation pour les géométries sélectionnées
-        this.max_taxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax ?
-        this.max_obs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend obs ? 
-        
-        // Création des légendes 
-        this.createlegend_TAX(this.NB_CLASS_TAX, this.max_taxa);
-        this.createlegend_OBS(this.NB_CLASS_OBS, this.max_obs);
-
-        // Implémentation de la légende 
-        this.add_legend()
-
-        this.spinner = false;
-    });
-
-    // Initialisation de la fonction "showData" : la carte affichée par défaut dépend du choix de l'utilisateur.trice
-    if(this.displayNBOBSbydefault==true){
-      this.showData = this.onEachFeatureNbObs;
-      this.currentMap = 1;
-    }
-    else{
-      this.showData = this.onEachFeatureNbTax;
-      this.currentMap = 2;
-    }
+    this.loadData();
 
     // Récupération des noms de type_area qui seront contenus dans la liste déroulante du formulaire areaTypeControl
     this.dataService.getAreasTypes(ModuleConfig.AREA_TYPE).subscribe(data => {
@@ -180,31 +136,8 @@ export class DashboardMapsComponent
         this.spinner = true;
         this.currentTypeCode = value;
         // Accès aux données de synthèse
-        this.dataService
-          .getDataAreas(
-            this.simplifyLevel,
-            this.currentTypeCode,
-            this.filtersDict
-          )
-          .subscribe(data => {
-            this.myAreas = data;  
-
-            this.max_taxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
-            this.max_obs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
-        
-            this.createlegend_OBS(this.NB_CLASS_OBS, this.max_obs)
-            this.createlegend_TAX(this.NB_CLASS_TAX, this.max_taxa);
-
-            this.legend.remove()
-      
-            // Implémentation de la légende 
-            this.modify_legend()
-            this.spinner = false;
-          });
+        this.loadData();
       });
-  }
-
-  ngAfterViewInit() {
   }
 
   ngOnChanges(change) {
@@ -217,6 +150,53 @@ export class DashboardMapsComponent
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////FONCTIONS///////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  loadData(){
+    this.dataService
+    .getDataAreas(
+      this.simplifyLevel,
+      this.currentTypeCode,
+      this.filtersDict
+    )
+    .subscribe(data => {
+      this.myAreas = data;  
+
+      this.maxTaxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
+      this.maxObs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
+  
+      if (this.NB_CLASS_TAX>this.maxTaxa){
+        this.gradesTax = new Array(this.maxTaxa); 
+      }
+      else{
+        this.gradesTax = new Array(this.NB_CLASS_TAX);
+      }
+      if (this.NB_CLASS_OBS>this.maxObs){
+        this.gradesObs = new Array(this.maxObs); 
+      }
+      else{
+        this.gradesObs = new Array(this.NB_CLASS_OBS);
+      }
+
+      this.createlegend_OBS(this.gradesObs.length, this.maxObs)
+      this.createlegend_TAX(this.gradesTax.length, this.maxTaxa);
+  
+        // Initialisation de la fonction "showData" : la carte affichée par défaut dépend du choix de l'utilisateur.trice
+      if(this.currentMap == 1){
+        this.showData = this.onEachFeatureNbObs;
+      }
+      else{
+        this.showData = this.onEachFeatureNbTax;
+      }
+
+      if(this.legend){
+        this.legend.remove()
+      }
+  
+      // Implémentation de la légende 
+      this.add_legend()
+      this.spinner = false;
+    });
+  }
 
   //////////////////////////////////////////Relatives à la carte/////////////////////////////////////////////
 
@@ -281,8 +261,12 @@ export class DashboardMapsComponent
   createlegend_TAX(nb_classes, nb_taxa_area){
     this.divLegendTax = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendTax.innerHTML += "<b>Nombre de taxons</b><br/>";
+    if (nb_classes>nb_taxa_area){
+      nb_classes = nb_taxa_area
+      this.gradesTax = new Array(nb_classes); 
+      this.gradesTax[nb_classes] = nb_taxa_area
+    }
     for (var i = 0; i < nb_classes; i++){
-      console.log(Math.trunc((i/nb_classes)*nb_taxa_area))
       this.gradesTax[i] = Math.trunc((i/nb_classes)*nb_taxa_area)
     }
     for (var i = 0; i < nb_classes; i++) {
@@ -301,8 +285,12 @@ export class DashboardMapsComponent
   createlegend_OBS(nb_classes, nb_obs_area){
     this.divLegendObs = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendObs.innerHTML += "<b>Nombre d'observations</b><br/>";
+    if (nb_classes>nb_obs_area){
+      nb_classes = nb_obs_area
+      this.gradesObs = new Array(nb_classes); 
+      this.gradesObs[nb_classes] = nb_obs_area
+    }
     for (var i = 0; i < nb_classes; i++){
-      console.log(Math.trunc((i/nb_classes)*nb_obs_area))
       this.gradesObs[i] = Math.trunc((i/nb_classes)*nb_obs_area)
     }
     for (var i = 0; i < nb_classes; i++) {
@@ -319,24 +307,6 @@ export class DashboardMapsComponent
 
   // Ajout de la légende lors de l'init
   add_legend(){
-    this.legend = (this.mapService.L as any).control({
-      position: "bottomright"
-    });
-    if(this.displayNBOBSbydefault==true){
-      this.legend.onAdd = map => {
-        return this.divLegendObs;
-      };
-    }
-    else{
-      this.legend.onAdd = map => {
-        return this.divLegendTax;
-      };
-    }
-    this.legend.addTo(this.mapService.map);
-  }
-
-  // Modification de la légende
-  modify_legend(){
     this.legend = (this.mapService.L as any).control({
       position: "bottomright"
     });
@@ -395,22 +365,11 @@ export class DashboardMapsComponent
     // Afficher les données d'origine si la valeur vaut ""
     if (this.filter == "") {
       // Accès aux données de synthèse
-      this.dataService
-        .getDataAreas(
-          this.simplifyLevel,
-          this.currentTypeCode,
-          this.mapForm.value
-        )
-        .subscribe(data => {          
-          // Rafraichissement du tableau contenant la géométrie et les données des zonages
-          this.myAreas = data;
-
-        });
+      this.loadData();
     }
   }
 
   getCurrentParameters(event) {
-    this.subscription.unsubscribe();
     this.spinner = true;
     this.disabledTaxButton = false;
     // Copie des éléments du formulaire pour pouvoir y ajouter cd_ref s'il s'agit d'un filtre par taxon
@@ -437,22 +396,7 @@ export class DashboardMapsComponent
       this.disabledTaxButton = true;
     }
     // Accès aux données de synthèse
-    this.subscription = this.dataService
-      .getDataAreas(this.simplifyLevel, this.currentTypeCode, this.filtersDict)
-      .subscribe(data => {
-        this.myAreas = data;   
-        this.max_taxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
-        this.max_obs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
-        
-        this.createlegend_OBS(this.NB_CLASS_OBS, this.max_obs)
-        this.createlegend_TAX(this.NB_CLASS_TAX, this.max_taxa);
-
-        this.spinner = false;
-        this.legend.remove()
-
-        this.modify_legend()
-      });
-
+    this.loadData();
   }
 
   //////////////////////////////////////////Relatives à l'UX/////////////////////////////////////////////
@@ -495,14 +439,4 @@ export class DashboardMapsComponent
   zoomToFeature(e) {
     this.mapService.map.fitBounds(e.target.getBounds());
   };
-
-
 }
-
-
-
-// L'idée est que lorsqu'on effectue le get data on renvoit un nombre de données et lorsqu'on renvoit ce nombre de données il faut qu'on effectue une 
-// fonction qui renvoie la légende associée et les couleurs. 
-// Or, les couleurs et la légende sont écrites en dur dont faut que je fasse des fonctions qui récupèrent ces infos. 
-// Une fois que j'ai fait ces fonctions 
-// Fonction qui doit avoir comme paramètre d'entrée le nb de classes voulues
