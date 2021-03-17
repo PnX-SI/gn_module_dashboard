@@ -3,7 +3,7 @@ import { Title } from "@angular/platform-browser";
 // Services
 import { DataService } from "./services/data.services";
 import { ModuleConfig } from "./../module.config";
-
+import { MapService } from "@geonature_common/map/map.service";
 
 @Component({
   selector: "dashboard",
@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
   public showLineChart = false;
   public showSpecies = false;
 
-  constructor(title: Title, public dataService: DataService) {
+  constructor(title: Title, public dataService: DataService, private _mapService:MapService) {
     title.setTitle("GeoNature - Dashboard")
   }
 
@@ -146,6 +146,7 @@ export class DashboardComponent implements OnInit {
   }
   hideMap(event) {
     this.showMap = !this.showMap;
+    this._mapService.map.invalidateSize();
   }
   hidePieChart(event) {
     this.showPieChart = !this.showPieChart;

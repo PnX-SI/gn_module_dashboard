@@ -79,7 +79,7 @@ export class DashboardRecontactComponent implements OnInit {
 
   ngOnInit() {
     // Par défaut, le pie chart s'affiche sur l'année en court
-    this.recontactForm.controls["selectedYear"].setValue(this.distinctYears[this.distinctYears.length - 1]);
+    this.recontactForm.controls["selectedYear"].setValue(new Date().getFullYear());
     // Accès aux données de synthèse
     this.subscription = this.dataService.getDataRecontact(this.recontactForm.value.selectedYear).subscribe(
       (data) => {

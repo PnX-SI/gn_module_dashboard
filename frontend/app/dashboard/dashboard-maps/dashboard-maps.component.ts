@@ -18,7 +18,6 @@ import { DataService } from "../services/data.services";
   templateUrl: "dashboard-maps.component.html",
   // encapsulation: ViewEncapsulation.None,
   styleUrls: ["./dashboard-maps.component.scss"],
-  providers: [MapService]
 })
 export class DashboardMapsComponent
   implements OnInit, OnChanges, AfterViewInit {
@@ -116,6 +115,7 @@ export class DashboardMapsComponent
 
   ngOnInit() { 
    this.currentMap = this.displayNBOBSbydefault ? 1 : 2;
+   console.log("je passe dedans")
   }
 
   ngAfterViewInit() {
