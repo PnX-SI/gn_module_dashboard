@@ -7,8 +7,8 @@ CHANGELOG
 
 **🚀 Nouveautés**
 
-* Création d'une commande geonature de raffrachissement des VML
-* Automatisation du raffrachissement des VM via un cron et la commande créé ci-dessus
+* Création d'une commande geonature de rafraichissement des VML
+* Automatisation du rafraichissement des VM via un cron et la commande créé ci-dessus
 * Préchargement des graphiques
 * Possibilité d'afficher/masquer certains graphiques
 * Paramètre pour configurer le type d'entité géographique par défaut
