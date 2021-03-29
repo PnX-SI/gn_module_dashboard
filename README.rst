@@ -39,8 +39,10 @@ Configuration
 Un certain nombre de paramètres permettent de customiser le module en modifiant le fichier ``conf/conf_gn_module.toml`` (vous pouvez vous inspirer du fichier ``conf_gn_module.toml.example`` qui liste l'ensemble des paramètres disponibles et leurs valeurs par défaut) :
 
 - Paramétrage du niveau de simplification des zonages sur la carte "Synthèse par entité géographique" : ``SIMPLIFY_LEVEL``. Passer un nombre entier : plus cet entier est grand et plus la simplification est importante. Ce paramètre est nécessaire pour alléger le temps d'affichage des zonages.
-- Paramétrage des zonages affichables sur la carte "Synthèse par entité géographique" : ``AREA_TYPE``. Passer un tableau de ``type_code`` (table ``ref_geo.bib_areas_types``).
+- Paramétrage des zonages affichables sur la carte "Synthèse par entité géographique" : ``AREA_TYPE``. Passer un tableau de ``type_code`` (table ``ref_geo.bib_areas_types``). La première valeur de ce tableau sera la valeur utilisée par défaut pour le graphique de synthèse par entité géographique.
 - Paramétrage du nombre de classes sur la carte "Synthèse par entité géographique" : ``BORNE_OBS`` (mode 'nombre d'observations') et ``BORNE_TAXON`` (mode 'nombre de taxons'). Passer un tableau contenant les limites inférieures des bornes que l'on souhaite implémenter. 
+- Paramétrage de l'affichage des graphiques du dashboard : ``DISPLAY_XXXX_GRAPH``. Renseigner 'true' pour afficher le graphique en question et 'false' pour le masquer. 
+- Paramétrage de par défaut du graphique synthèse par entité géographique du dashboard : ``DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH`` Renseigner 'true' si vous souhaitez afficher par défault les observations, 'false' si vous souhaitez les taxons
 
 Vues matérialisées
 ==================
@@ -63,11 +65,11 @@ Une fonction permet de mettre à jour toutes les vues matérialisées du schéma
         crontab -e
 
 
-Ajouter la ligne suivante en prenant soin de mettre à jour les paramètres de connexion à la base de GeoNature-atlas :
+Ajouter la ligne suivante pour effectuer un raffraichissement journalier à minuit :
 
 ::
 
-    0 * * * * psql -d geonature2db -c "SELECT gn_dashboard.refresh_materialized_view_data();"
+    00 00 * * * psql -d geonature2db -c "SELECT gn_dashboard.refresh_materialized_view_data();"
 
 Pour enregistrer et sortir : ``Ctrl + O``, ENTER puis ``Ctrl + X``
 

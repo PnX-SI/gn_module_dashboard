@@ -18,6 +18,7 @@ import { DashboardFrameworksComponent } from "./dashboard/dashboard-frameworks/d
 import { DashboardRecontactComponent } from "./dashboard/dashboard-recontact/dashboard-recontact.component";
 // Services
 import { DataService } from "./dashboard/services/data.services"
+import { MapService } from "@geonature_common/map/map.service";
 
 // my module routing
 const routes: Routes = [
@@ -31,7 +32,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [DashboardComponent, DashboardMapsComponent, DashboardHistogramComponent, DashboardTaxonomyComponent, DashboardFrameworksComponent, DashboardRecontactComponent],
   imports: [GN2CommonModule, RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule, MatTabsModule, ChartsModule, NouisliderModule],
-  providers: [DataService],
+  providers: [DataService, MapService],
   bootstrap: [DashboardComponent]
 })
 export class GeonatureModule { }

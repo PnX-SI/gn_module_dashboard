@@ -6,7 +6,7 @@
     </div>
     <hr class="my-4">
 
-    <div class="row row-md">
+    <div *ngIf="displaySynthesePerYear" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideHistogram($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -23,10 +23,10 @@
             <em class="fa fa-xl fa-calendar" aria-hidden="true" *ngIf="!showHistogram"></em>
         </button>
     </div>
-    <dashboard-histogram [taxonomies]="taxonomies" *ngIf="showHistogram"></dashboard-histogram>
+    <dashboard-histogram [taxonomies]="taxonomies" [hidden]="!showHistogram"></dashboard-histogram>
 
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseGeo" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideMap($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -45,7 +45,7 @@
     </div>
     <dashboard-maps [taxonomies]="taxonomies" [yearsMinMax]="yearsMinMax" *ngIf="showMap"></dashboard-maps>
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseTaxoRank" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hidePieChart($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -62,10 +62,10 @@
             <em class="fa fa-xl fa-sitemap" aria-hidden="true" *ngIf="!showPieChart"></em>
         </button>
     </div>
-    <dashboard-taxonomy [taxonomies]="taxonomies" [yearsMinMax]="yearsMinMax" *ngIf="showPieChart">
+    <dashboard-taxonomy [taxonomies]="taxonomies" [yearsMinMax]="yearsMinMax" [hidden]="!showPieChart">
     </dashboard-taxonomy>
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseCA" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideLineChart($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -82,9 +82,9 @@
             <em class="fa fa-xl fa-cubes" aria-hidden="true" *ngIf="!showLineChart"></em>
         </button>
     </div>
-    <dashboard-frameworks *ngIf="showLineChart"></dashboard-frameworks>
+    <dashboard-frameworks [hidden]="!showLineChart"></dashboard-frameworks>
 
-    <div class="row row-md">
+    <div *ngIf="displaySyntheseTaxoContact" class="row row-md">
         <button class="btn btn-block btn-lg btn-title" (click)="hideSpecies($event)">
             <div class="row row-md">
                 <div class="col-md-1" style="text-align: left">
@@ -101,5 +101,5 @@
             <em class="fa fa-xl fa-paw" aria-hidden="true" *ngIf="!showSpecies"></em>
         </button>
     </div>
-    <dashboard-recontact [distinctYears]="distinctYears" *ngIf="showSpecies"></dashboard-recontact>
+    <dashboard-recontact [distinctYears]="distinctYears" [hidden]="!showSpecies"></dashboard-recontact>
 </div>

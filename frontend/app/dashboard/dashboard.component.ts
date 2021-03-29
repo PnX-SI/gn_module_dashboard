@@ -2,6 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 // Services
 import { DataService } from "./services/data.services";
+import { ModuleConfig } from "./../module.config";
+import { MapService } from "@geonature_common/map/map.service";
 
 @Component({
   selector: "dashboard",
@@ -22,13 +24,19 @@ export class DashboardComponent implements OnInit {
   public yearsMinMax: any;
   public distinctYears = [];
 
+  public displaySynthesePerYear = ModuleConfig.DISPLAY_PER_YEAR_GRAPH;
+  public displaySyntheseGeo = ModuleConfig.DISPLAY_PER_GEO_GRAPH;
+  public displaySyntheseTaxoRank = ModuleConfig.DISPLAY_PER_TAXONOMIC_RANK_GRAPH; 
+  public displaySyntheseCA = ModuleConfig.DISPLAY_PER_CA_GRAPH; 
+  public displaySyntheseTaxoContact = ModuleConfig.DISPLAY_TAXONOMIC_CONTACTS_GRAPH;
+
   public showHistogram = false;
   public showMap = false;
   public showPieChart = false;
   public showLineChart = false;
   public showSpecies = false;
 
-  constructor(title: Title, public dataService: DataService) {
+  constructor(title: Title, public dataService: DataService, private _mapService:MapService) {
     title.setTitle("GeoNature - Dashboard")
   }
 
@@ -138,6 +146,7 @@ export class DashboardComponent implements OnInit {
   }
   hideMap(event) {
     this.showMap = !this.showMap;
+    this._mapService.map.invalidateSize();
   }
   hidePieChart(event) {
     this.showPieChart = !this.showPieChart;

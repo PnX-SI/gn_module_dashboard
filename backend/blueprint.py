@@ -6,7 +6,7 @@ from geojson import FeatureCollection, Feature
 
 from sqlalchemy.sql.expression import label, distinct, case
 
-from geonature.utils.utilssqlalchemy import json_resp
+from utils_flask_sqla.response import json_resp
 from geonature.utils.env import DB
 
 from .models import VSynthese, VTaxonomie, VFrameworks

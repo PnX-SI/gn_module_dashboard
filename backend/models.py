@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.sql import select
 
-from geonature.utils.utilssqlalchemy import serializable
+from utils_flask_sqla.serializers import serializable
 from geonature.utils.env import DB
 
 # vm_synthese

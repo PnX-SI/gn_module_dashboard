@@ -115,7 +115,7 @@ export class DashboardTaxonomyComponent implements OnInit {
   @Input() taxonomies: any;
   @Input() yearsMinMax: any;
   public currentTaxLevel = "Règne";
-  public yearRange = [0, 2019];
+  public yearRange = [0, new Date().getFullYear()];
 
   // Pouvoir stoppper le chargement des données si un changement de filtre est opéré avant la fin du chargement
   public subscription: any;
