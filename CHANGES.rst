@@ -2,12 +2,23 @@
 CHANGELOG
 =========
 
-0.2.1 (unreleased)
+1.0.0 (2021-03-29)
 ------------------
+
+**🚀 Nouveautés**
+
+* Création d'une commande geonature de raffrachissement des VML
+* Automatisation du raffrachissement des VM via un cron et la commande créé ci-dessus
+* Préchargement des graphiques
+* Possibilité d'afficher/masquer certains graphiques
+* Paramètre pour configurer le type d'entité géographique par défaut
+* Implémentation des classes dynamiques 
+* Possibilité de configurer le graphique par défaut de "synthèse par entité géographique" (taxons ou observations)
 
 **🐛 Corrections**
 
-*
+* Correction année du slider en dur
+* Utilisation de la librairie utils-sqla
 
 0.2.0 (2020-02-20)
 ------------------
