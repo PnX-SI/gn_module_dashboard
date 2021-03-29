@@ -47,31 +47,24 @@ Un certain nombre de paramètres permettent de customiser le module en modifiant
 Vues matérialisées
 ==================
 
-Dans un soucis de performance, des vues matérialisées ont été mises en place. Elles sont renseignées lors de l'installation du module. Il faut rafraichir régulièrement ces vues matérialisées avec la fonction ``REFRESH MATERIALIZED VIEW`` pour prendre en compte les nouvelles données intégrées dans la Synthèse.
+Dans un souci de performance, des vues matérialisées ont été mises en place. Elles sont renseignées lors de l'installation du module. Il est nécessaire de rafraichir régulièrement ces vues matérialisées. Ce rafraîchissement est effectué toutes les semaines grâce à un CRON mis en place lors de l'installation du module.
 
-Une fonction permet de mettre à jour toutes les vues matérialisées du schéma ``gn_dashboard``.
+Pour aller voir le CRON 
+``crontab -e``
 
-* Pour lancer manuellement cette fonction, ouvrez une console SQL et exécutez la requête suivante :
+Le CRON utilise une commande GeoNature créée lors de l'installation du module 'gn_dashboard_refresh_vm'.
 
-  ::
+Cette commande peut être effectuée à tout moment depuis l'environnement virtuel de GeoNature : 
 
-        SELECT gn_dashboard.refresh_materialized_view_data();
+``source backend/venv/bin/activate``
 
-* Pour automatiser l'éxecution de cette fonction (toutes les heures dans cet exemple), ajoutez la dans le crontab de l'utilisateur ``postgres`` :
+Lancer la commande
 
-  ::
+``geonature gn_dashboard_refresh_vm``
 
-        sudo su postgres
-        crontab -e
+Cette commante utilise notamment la requête SQL suivante :
 
-
-Ajouter la ligne suivante pour effectuer un raffraichissement journalier à minuit :
-
-::
-
-    00 00 * * * psql -d geonature2db -c "SELECT gn_dashboard.refresh_materialized_view_data();"
-
-Pour enregistrer et sortir : ``Ctrl + O``, ENTER puis ``Ctrl + X``
+SELECT gn_dashboard.refresh_materialized_view_data();
 
 
 Mise à jour du module
