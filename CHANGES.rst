@@ -20,6 +20,13 @@ CHANGELOG
 * Correction année du slider en dur
 * Utilisation de la librairie utils-sqla
 
+**Note de version**
+
+Si vous faites une mise à jour du module. Vous pouvez mettre en place le cron. Ouvrez le fichier crontab: `crontab -e` et copiez la ligne suivante: 
+```
+* * * * SUN /home/theo/workspace/GeoNature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
+```
+
 0.2.0 (2020-02-20)
 ------------------
 
