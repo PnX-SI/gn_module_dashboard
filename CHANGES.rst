@@ -7,8 +7,8 @@ CHANGELOG
 
 **🚀 Nouveautés**
 
-* Création d'une commande geonature de rafraichissement des VML
-* Automatisation du rafraichissement des VM via un cron et la commande créé ci-dessus
+* Création d'une commande GeoNature de rafraîchissement des VM
+* Automatisation du rafraîchissement des VM via un cron et la nouvelle commande dédiée
 * Préchargement des graphiques
 * Possibilité d'afficher/masquer certains graphiques
 * Paramètre pour configurer le type d'entité géographique par défaut
@@ -22,10 +22,11 @@ CHANGELOG
 
 **Note de version**
 
-Si vous faites une mise à jour du module. Vous pouvez mettre en place le cron. Ouvrez le fichier crontab: `crontab -e` et copiez la ligne suivante: 
-```
-* * * * SUN /home/theo/workspace/GeoNature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
-```
+Si vous faites une mise à jour du module, vous pouvez mettre en place le cron de rafraîchissement des VM ou le mettre à jour. Ouvrez le fichier crontab (``crontab -e``) et copiez la ligne suivante en adaptant le chemin et éventuellement la fréquence d'exécution (tous les dimanches à minuit dans cet exemple) : 
+
+::
+
+    * * * * SUN /home/theo/workspace/GeoNature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
 
 0.2.0 (2020-02-20)
 ------------------
