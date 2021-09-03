@@ -7,18 +7,29 @@ CHANGELOG
 
 **🚀 Nouveautés**
 
-* Création d'une commande geonature de raffrachissement des VML
-* Automatisation du raffrachissement des VM via un cron et la commande créé ci-dessus
-* Préchargement des graphiques
-* Possibilité d'afficher/masquer certains graphiques
-* Paramètre pour configurer le type d'entité géographique par défaut
-* Implémentation des classes dynamiques 
-* Possibilité de configurer le graphique par défaut de "synthèse par entité géographique" (taxons ou observations)
+* Création d'une commande GeoNature de rafraîchissement des VM (#24)
+* Automatisation du rafraîchissement des VM via un cron et la nouvelle commande dédiée (#24)
+* Préchargement des graphiques (#17)
+* Possibilité d'afficher/masquer certains graphiques (#5)
+* Paramètre pour configurer le type d'entité géographique par défaut (#19)
+* Implémentation des classes dynamiques (#10)
+* Possibilité de configurer le graphique par défaut de "synthèse par entité géographique" (taxons ou observations) (#23)
 
 **🐛 Corrections**
 
-* Correction année du slider en dur
-* Utilisation de la librairie utils-sqla
+* Correction année du slider en dur (#20)
+* Utilisation de la librairie utils-sqla (#30)
+
+**Note de version**
+
+Si vous faites une mise à jour du module :
+
+* Dans le fichier ``config/conf_gn_module.toml``, remplacez les paramètres ``BORNE_TAXON`` et ``BORNE_OBS`` par ``NB_CLASS_OBS`` et ``NB_CLASS_TAX`` comme dans l'exemple (https://github.com/PnX-SI/gn_module_dashboard/blob/master/config/conf_gn_module.toml.example) 
+* Vous pouvez mettre en place le cron de rafraîchissement des VM ou le mettre à jour. Ouvrez le fichier crontab (``crontab -e``) et copiez la ligne suivante en adaptant le chemin et éventuellement la fréquence d'exécution (tous les dimanches à minuit dans cet exemple) : 
+
+::
+
+    * * * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
 
 0.2.0 (2020-02-20)
 ------------------

@@ -40,9 +40,9 @@ Un certain nombre de paramètres permettent de customiser le module en modifiant
 
 - Paramétrage du niveau de simplification des zonages sur la carte "Synthèse par entité géographique" : ``SIMPLIFY_LEVEL``. Passer un nombre entier : plus cet entier est grand et plus la simplification est importante. Ce paramètre est nécessaire pour alléger le temps d'affichage des zonages.
 - Paramétrage des zonages affichables sur la carte "Synthèse par entité géographique" : ``AREA_TYPE``. Passer un tableau de ``type_code`` (table ``ref_geo.bib_areas_types``). La première valeur de ce tableau sera la valeur utilisée par défaut pour le graphique de synthèse par entité géographique.
-- Paramétrage du nombre de classes sur la carte "Synthèse par entité géographique" : ``BORNE_OBS`` (mode 'nombre d'observations') et ``BORNE_TAXON`` (mode 'nombre de taxons'). Passer un tableau contenant les limites inférieures des bornes que l'on souhaite implémenter. 
+- Paramétrage du nombre de classes sur la carte "Synthèse par entité géographique" : ``NB_CLASS_OBS`` (mode 'nombre d'observations') et ``NB_CLASS_TAX`` (mode 'nombre de taxons').
 - Paramétrage de l'affichage des graphiques du dashboard : ``DISPLAY_XXXX_GRAPH``. Renseigner 'true' pour afficher le graphique en question et 'false' pour le masquer. 
-- Paramétrage de par défaut du graphique synthèse par entité géographique du dashboard : ``DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH`` Renseigner 'true' si vous souhaitez afficher par défault les observations, 'false' si vous souhaitez les taxons
+- Paramétrage par défaut du graphique "Synthèse par entité géographique" du dashboard : ``DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH`` Renseigner 'true' si vous souhaitez afficher par défault les observations, 'false' si vous souhaitez les taxons
 
 Vues matérialisées
 ==================
@@ -58,13 +58,13 @@ Cette commande peut être effectuée à tout moment depuis l'environnement virtu
 
 ``source backend/venv/bin/activate``
 
-Lancer la commande
+Lancer la commande :
 
 ``geonature gn_dashboard_refresh_vm``
 
-Cette commante utilise notamment la requête SQL suivante :
+Cette commande utilise notamment la requête SQL suivante :
 
-SELECT gn_dashboard.refresh_materialized_view_data();
+``SELECT gn_dashboard.refresh_materialized_view_data();``
 
 
 Mise à jour du module
@@ -87,7 +87,7 @@ Mise à jour du module
         mv /home/`whoami`/gn_module_dashboard-X.Y.Z /home/`whoami`/gn_module_dashboard
 
 
-- Rappatriez le fichiers de configuration
+- Rapatriez le fichiers de configuration
 
   ::
         
@@ -110,7 +110,7 @@ Licence
 =======
 
 * OpenSource - GPL-3.0
-* Copyleft 2019 - Parc National des Écrins
+* Copyleft 2019-2021 - Parc National des Écrins
 
 .. image:: http://geonature.fr/img/logo-pne.jpg
     :target: http://www.ecrins-parcnational.fr
