@@ -8,18 +8,18 @@ from marshmallow import Schema, fields, validates_schema, ValidationError
 from marshmallow.validate import Range
 
 class GnModuleSchemaConf(Schema):
-   AREA_TYPE = fields.List(fields.String(), missing=["COM", "M1", "M5", "M10"])
-   NB_CLASS_OBS = fields.Integer(missing=5, 
+   AREA_TYPE = fields.List(fields.String(), load_default=["COM", "M1", "M5", "M10"])
+   NB_CLASS_OBS = fields.Integer(load_default=5,
                                  validate=Range(min=1, max=10))
-   NB_CLASS_TAX = fields.Integer(missing=5, 
+   NB_CLASS_TAX = fields.Integer(load_default=5,
                                  validate=Range(min=1, max=10))
-   SIMPLIFY_LEVEL = fields.Integer(missing=50)
-   DISPLAY_PER_YEAR_GRAPH = fields.Boolean(missing=True) 
-   DISPLAY_PER_GEO_GRAPH = fields.Boolean(missing=True) 
-   DISPLAY_PER_TAXONOMIC_RANK_GRAPH = fields.Boolean(missing=True) 
-   DISPLAY_PER_CA_GRAPH = fields.Boolean(missing=True) 
-   DISPLAY_TAXONOMIC_CONTACTS_GRAPH = fields.Boolean(missing=True)
-   DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH = fields.Boolean(missing=True)
+   SIMPLIFY_LEVEL = fields.Integer(load_default=50)
+   DISPLAY_PER_YEAR_GRAPH = fields.Boolean(load_default=True)
+   DISPLAY_PER_GEO_GRAPH = fields.Boolean(load_default=True)
+   DISPLAY_PER_TAXONOMIC_RANK_GRAPH = fields.Boolean(load_default=True)
+   DISPLAY_PER_CA_GRAPH = fields.Boolean(load_default=True)
+   DISPLAY_TAXONOMIC_CONTACTS_GRAPH = fields.Boolean(load_default=True)
+   DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH = fields.Boolean(load_default=True)
    OBSCOLORS = fields.Dict(missing ={
       "1": ["#BE8096"],
       "2": ["#BE8096", "#64112E"],
