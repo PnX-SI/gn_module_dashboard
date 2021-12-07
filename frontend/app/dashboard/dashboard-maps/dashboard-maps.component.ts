@@ -12,6 +12,7 @@ import { AppConfig } from "@geonature_config/app.config";
 import { ModuleConfig } from "../../module.config";
 // Services
 import { DataService } from "../services/data.services";
+import { distinctUntilChanged, skip } from '@librairies/rxjs/operators';
 
 @Component({
   selector: "dashboard-maps",
@@ -66,7 +67,7 @@ export class DashboardMapsComponent
 
   // Gestion du formulaire contrôlant le type de zonage
   public areaTypeControl = new FormControl(ModuleConfig.AREA_TYPE[0]);
-  public currentTypeCode = ModuleConfig.AREA_TYPE[0]; // par défaut, la carte affiche la première géographie AREA_TYPE renseignée 
+  public currentTypeCode = ModuleConfig.AREA_TYPE[0]; // par défaut, la carte affiche la première géographie AREA_TYPE renseignée
 
   // Pouvoir stoppper le chargement des données si un changement de filtre est opéré avant la fin du chargement
   public subscription: any;
@@ -81,12 +82,12 @@ export class DashboardMapsComponent
   public NB_CLASS_TAX = ModuleConfig.NB_CLASS_TAX;
   public displayNBOBSbydefault = ModuleConfig.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
 
-  // Initiatialisation des tableaux vides qui contiendront les bornes des classes. Pour les observations et pour les taxons 
-  public gradesObs:number[] = new Array(this.NB_CLASS_OBS); 
-  public gradesTax:number[] = new Array(this.NB_CLASS_TAX); 
+  // Initiatialisation des tableaux vides qui contiendront les bornes des classes. Pour les observations et pour les taxons
+  public gradesObs:number[] = new Array(this.NB_CLASS_OBS);
+  public gradesTax:number[] = new Array(this.NB_CLASS_TAX);
 
-  // Initialisation de variables qui récupéreront le maximum d'observation ou de taxon par entité géographique 
-  public maxTaxa: any; 
+  // Initialisation de variables qui récupéreront le maximum d'observation ou de taxon par entité géographique
+  public maxTaxa: any;
   public maxObs: any;
 
   constructor(
@@ -113,9 +114,8 @@ export class DashboardMapsComponent
   //////////////////////////////////////////////COMPOSANTS///////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  ngOnInit() { 
+  ngOnInit() {
    this.currentMap = this.displayNBOBSbydefault ? 1 : 2;
-   console.log("je passe dedans")
   }
 
   ngAfterViewInit() {
@@ -130,8 +130,8 @@ export class DashboardMapsComponent
 
     // Abonnement à la liste déroulante du formulaire areaTypeControl afin de modifier le type de zonage à chaque changement
     this.areaTypeControl.valueChanges
-      .distinctUntilChanged() // le [disableControl] du HTML déclenche l'API sans fin
-      .skip(1) // l'initialisation de la liste déroulante sur "Communes" lance l'API une fois
+      .pipe(distinctUntilChanged(), // le [disableControl] du HTML déclenche l'API sans fin
+          skip(1)) // l'initialisation de la liste déroulante sur "Communes" lance l'API une fois
       .subscribe(value => {
         this.spinner = true;
         this.currentTypeCode = value;
@@ -159,19 +159,19 @@ export class DashboardMapsComponent
       this.filtersDict
     )
     .subscribe(data => {
-      this.myAreas = data;  
+      this.myAreas = data;
 
       this.maxTaxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
       this.maxObs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
-  
+
       if (this.NB_CLASS_TAX>this.maxTaxa){
-        this.gradesTax = new Array(this.maxTaxa); 
+        this.gradesTax = new Array(this.maxTaxa);
       }
       else{
         this.gradesTax = new Array(this.NB_CLASS_TAX);
       }
       if (this.NB_CLASS_OBS>this.maxObs){
-        this.gradesObs = new Array(this.maxObs); 
+        this.gradesObs = new Array(this.maxObs);
       }
       else{
         this.gradesObs = new Array(this.NB_CLASS_OBS);
@@ -179,7 +179,7 @@ export class DashboardMapsComponent
 
       this.createlegend_OBS(this.gradesObs.length, this.maxObs)
       this.createlegend_TAX(this.gradesTax.length, this.maxTaxa);
-  
+
         // Initialisation de la fonction "showData" : la carte affichée par défaut dépend du choix de l'utilisateur.trice
       if(this.currentMap == 1){
         this.showData = this.onEachFeatureNbObs;
@@ -191,8 +191,8 @@ export class DashboardMapsComponent
       if(this.legend){
         this.legend.remove()
       }
-  
-      // Implémentation de la légende 
+
+      // Implémentation de la légende
       this.add_legend()
       this.spinner = false;
     });
@@ -263,7 +263,7 @@ export class DashboardMapsComponent
     this.divLegendTax.innerHTML += "<b>Nombre de taxons</b><br/>";
     if (nb_classes>nb_taxa_area){
       nb_classes = nb_taxa_area
-      this.gradesTax = new Array(nb_classes); 
+      this.gradesTax = new Array(nb_classes);
       this.gradesTax[nb_classes] = nb_taxa_area
     }
     for (var i = 0; i < nb_classes; i++){
@@ -287,7 +287,7 @@ export class DashboardMapsComponent
     this.divLegendObs.innerHTML += "<b>Nombre d'observations</b><br/>";
     if (nb_classes>nb_obs_area){
       nb_classes = nb_obs_area
-      this.gradesObs = new Array(nb_classes); 
+      this.gradesObs = new Array(nb_classes);
       this.gradesObs[nb_classes] = nb_obs_area
     }
     for (var i = 0; i < nb_classes; i++){
