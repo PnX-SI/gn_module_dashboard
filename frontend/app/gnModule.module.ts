@@ -8,7 +8,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ChartsModule } from "ng2-charts";
 import { NouisliderModule } from 'ng2-nouislider';
 import "chartjs-plugin-labels";
-// import "chartjs-plugin-piechart-outlabels";
 // Components
 import { DashboardComponent } from "./dashboard/dashboard.component";
 import { DashboardMapsComponent } from "./dashboard/dashboard-maps/dashboard-maps.component";
@@ -16,6 +15,7 @@ import { DashboardHistogramComponent } from "./dashboard/dashboard-histogram/das
 import { DashboardTaxonomyComponent } from "./dashboard/dashboard-taxonomy/dashboard-taxonomy.component";
 import { DashboardFrameworksComponent } from "./dashboard/dashboard-frameworks/dashboard-frameworks.component";
 import { DashboardRecontactComponent } from "./dashboard/dashboard-recontact/dashboard-recontact.component";
+import { AnnualReportComponent } from "./dashboard/annual_report/annual_report.component";
 // Services
 import { DataService } from "./dashboard/services/data.services"
 import { MapService } from "@geonature_common/map/map.service";
@@ -26,11 +26,21 @@ const routes: Routes = [
   { path: "maps", component: DashboardMapsComponent },
   { path: "histogram", component: DashboardHistogramComponent },
   { path: "piechart", component: DashboardTaxonomyComponent },
-  { path: "linechart", component: DashboardFrameworksComponent }
+  { path: "linechart", component: DashboardFrameworksComponent },
+  { path: "annual_report", component: AnnualReportComponent },
+
 ];
 
 @NgModule({
-  declarations: [DashboardComponent, DashboardMapsComponent, DashboardHistogramComponent, DashboardTaxonomyComponent, DashboardFrameworksComponent, DashboardRecontactComponent],
+  declarations: [
+    DashboardComponent, 
+    DashboardMapsComponent, 
+    DashboardHistogramComponent, 
+    DashboardTaxonomyComponent, 
+    DashboardFrameworksComponent, 
+    DashboardRecontactComponent,
+    AnnualReportComponent
+  ],
   imports: [GN2CommonModule, RouterModule.forChild(routes), CommonModule, FormsModule, ReactiveFormsModule, MatTabsModule, ChartsModule, NouisliderModule],
   providers: [DataService, MapService],
   bootstrap: [DashboardComponent]

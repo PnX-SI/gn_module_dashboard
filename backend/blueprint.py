@@ -266,3 +266,125 @@ def get_years(model):
             func.max(func.date_part("year", VSynthese.date_min)),
         )
     return q.all()
+
+
+@blueprint.route("/report/<year>", methods=["GET"])
+def yearly_recap(year):
+
+    nb_obs_year = DB.session.execute(
+        """
+        SELECT count(*) 
+        FROM gn_synthese.synthese
+        WHERE date_part('year', date_min) = :year
+        """,
+        {"year": year},
+    ).scalar()
+    nb_obs_total = DB.session.execute(
+        """
+        SELECT count(*) 
+        FROM gn_synthese.synthese
+        """
+    ).scalar()
+    nb_new_species = DB.session.execute(
+        """
+        SELECT COUNT(*) FROM (
+            SELECT DISTINCT t.cd_ref 
+            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
+            WHERE date_part('year', date_min) = :year
+            EXCEPT
+            SELECT DISTINCT t.cd_ref 
+            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
+            WHERE date_part('year', date_min) < :year 
+        ) sub
+        """,
+        {"year": year},
+    ).scalar()
+    new_datasets = DB.session.execute(
+        """
+        SELECT count(*)
+        FROM gn_meta.t_datasets td 
+        WHERE date_part('year', td.meta_create_date) = :year
+        """,
+        {"year": year},
+    ).scalar()
+    new_species = DB.session.execute(
+        """
+        SELECT t.nom_complet, t.nom_vern, t.group2_inpn, count(s.*) FROM (
+            SELECT DISTINCT t.cd_ref 
+            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
+            WHERE date_part('year', date_min) = :year
+            EXCEPT
+            SELECT DISTINCT t.cd_ref 
+            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
+            WHERE date_part('year', date_min) < :year 
+            ) sub
+            JOIN gn_synthese.synthese s  ON sub.cd_ref = taxonomie.find_cdref(s.cd_nom)
+            JOIN taxonomie.taxref t on t.cd_nom = sub.cd_ref
+            WHERE date_part('year', date_min) = :year
+            GROUP BY t.nom_vern, t.nom_complet, t.group2_inpn
+            ORDER BY t.nom_complet ASC
+        """,
+        {"year": year},
+    ).fetchall()
+    most_viewed_species = DB.session.execute(
+        """
+        SELECT t.nom_complet, t.nom_vern,  t.group2_inpn, count(*)
+        FROM gn_synthese.synthese s 
+        JOIN taxonomie.taxref t on t.cd_nom = s.cd_nom 
+        WHERE date_part('year', date_min) = :year 
+        GROUP BY t.nom_complet , t.nom_vern, t.group2_inpn 
+        ORDER BY count(*) desc 
+        LIMIT 10
+        """,
+        {"year": year},
+    ).fetchall()
+
+    data_by_datasets = DB.session.execute(
+        """
+        SELECT  td.dataset_name, count(*)
+        FROM gn_synthese.synthese s 
+        JOIN gn_meta.t_datasets td on s.id_dataset = td.id_dataset 
+        WHERE date_part('year', s.date_min) = :year
+        GROUP BY td.dataset_name 
+        ORDER BY count(*) desc
+        """,
+        {"year": year},
+    ).fetchall()
+    nb_taxon_year = DB.session.execute(
+        """
+        SELECT count(distinct cd_ref)
+        FROM gn_synthese.synthese s 
+        JOIN taxonomie.taxref t on s.cd_nom = t.cd_nom
+        WHERE date_part('year', s.date_min) = :year
+        """,
+        {"year": year},
+    ).scalar()
+    observations_by_year = DB.session.execute(
+        """
+        select count(id_synthese), date_part('year', s.date_min) as year_
+        from gn_synthese.synthese s
+        WHERE date_part('year', s.date_min) > 1990
+        group by year_
+        order by year_ ASC
+        """
+    ).fetchall()
+    yearsWithObs = DB.session.execute(
+        """
+        SELECT distinct date_part('year', s.date_min) as year
+        FROM gn_synthese.synthese s
+        ORDER BY year DESC
+        """
+    ).fetchall()
+    return {
+        "yearsWithObs": yearsWithObs,
+        "year": year,
+        "nb_obs_year": nb_obs_year,
+        "nb_obs_total": nb_obs_total,
+        "nb_new_species": nb_new_species,
+        "nb_taxon_year": nb_taxon_year,
+        "new_datasets": new_datasets,
+        "new_species": new_species,
+        "most_viewed_species": most_viewed_species,
+        "data_by_datasets": data_by_datasets,
+        "observations_by_year": observations_by_year,
+    }

@@ -1,0 +1,146 @@
+<div
+  id="cover-spin"
+  *ngIf="dataLoading"
+>
+</div>
+    <div class="container">
+        <h3>L'année  
+          <select [formControl]="currentYearForm" name="" id="">
+              <option *ngFor="let year of yearsDataForm" [ngValue]="year">{{year}}</option>
+          </select>
+          sur GeoNature </h3>
+          
+        <div class="card-columns">
+            <div class="card">
+                <div class="card-body">
+                    <h3> {{data?.nb_obs_year}} </h3>
+                    <p class="text-muted">Observations </p>
+
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3> {{data?.nb_obs_total}} </h3>
+                    <p class="text-muted"> Observations au total </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3> {{data?.nb_new_species}} </h3>
+                    <p class="text-muted"> Nouvelles espèces </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3> {{data?.new_datasets}} </h3>
+                    <p class="text-muted"> Nouveaux jeux de données </p>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h3> {{data?.nb_taxon_year}} </h3>
+                    <p class="text-muted"> Taxons observés </p>
+                </div>
+            </div>
+
+        </div>
+        <div>
+
+        <div class="card">
+            <div class="card-body">
+                <h3>Les nouvelles espèces</h3>
+                <table class="table table-striped" >
+                    <thead> 
+                        <tr>
+                            <th>Nom latin</th>
+                            <th>Nom vernaculaire</th>
+                            <th>Groupe</th>
+                            <th>Nombre d'observation(s)</th>
+                        </tr>
+                    </thead>
+                        <tr *ngFor="let _new of data?.new_species">
+                            <td>{{_new.nom_complet}}</td>
+                            <td>{{_new.nom_vern}}</td>
+                            <td>{{_new.group2_inpn}}</td>
+                            <td>{{_new.count}}</td>
+                        </tr>
+                                        
+                </table>
+                <h5>Répartition des nouvelles espèces par groupe</h5>
+
+                <canvas 
+                    #newSpecies
+                    baseChart 
+                    [data]="newSpeciesData" 
+                    [labels]="newSpeciesLabel"
+                    [colors]="newSpeciesColors"
+                    [options]="pieChartOptions"
+                    chartType="doughnut"
+                    class="mb-3"
+                >
+                </canvas>
+                <h3 class="mt-3"> Les 10 espèces les plus observées</h3>
+                <table class="table table-striped" >
+                    <thead> 
+                        <tr>
+                            <th>#</th>
+                            <th>Nom latin</th>
+                            <th>Nom vernaculaire</th>
+                            <th>Groupe</th>
+                            <th>Nombre d'observation(s)</th>
+                        </tr>
+                    </thead>
+                        <tr *ngFor="let _new of data?.most_viewed_species; let i=index">
+                            <td>{{i + 1}}</td>
+                            <td>{{_new.nom_complet}}</td>
+                            <td>{{_new.nom_vern}}</td>
+                            <td>{{_new.group2_inpn}}</td>
+                            <td>{{_new.count}}</td>
+                        </tr>
+                        
+                        
+                </table>
+                <h5 class="mt-5">Répartition des espèces les plus observées par groupe</h5>
+
+                <canvas 
+                    baseChart 
+                    [data]="mostViewedData" 
+                    [labels]="mostViewedLabel" 
+                    [colors]="mostViewedColor"
+                    [options]="pieChartOptions"
+                    chartType="doughnut"
+                    class="mb-3"
+                >
+                </canvas>
+                <mat-divider></mat-divider>
+
+                <h3 class="mt-3"> Les données par jeux de données</h3>
+                <table class="table table-striped" >
+                    <thead> 
+                        <tr>
+                            <th>Nom du jeu de données</th>
+                            <th>Nombre d'observation(s)</th>
+                        </tr>
+                    </thead>
+                        <tr *ngFor="let d of data?.data_by_datasets" >
+                            <td>{{d.dataset_name}}</td>
+                            <td>{{d.count}}</td>
+                        </tr>
+                                        
+                </table>
+                <mat-divider></mat-divider>
+
+                <h3 class="mt-5">Nombre d'observations par année</h3>
+                <canvas *ngIf="yearObsData.length > 0" baseChart 
+                    [datasets]="yearObsData" 
+                    [labels]="yearObsLabel"
+                    [options]="barChartOptions"
+                    chartType="bar"
+                    >
+                </canvas>
+            </div>
+        </div>
+
+
+
+    </div>

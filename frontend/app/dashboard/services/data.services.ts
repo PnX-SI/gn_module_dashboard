@@ -3,6 +3,19 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { AppConfig } from "@geonature_config/app.config";
 import { ModuleConfig } from "../../module.config";
 
+export interface YearRecap {
+    yearsWithObs: Array<any>,
+    year: number,
+    nb_obs_year: number,
+    nb_obs_total: number,
+    nb_new_species: number,
+    nb_taxon_year: number,
+    new_datasets: Array<any>,
+    new_species: Array<any>,
+    most_viewed_species: Array<any>,
+    data_by_datasets: Array<any>,
+    observations_by_year: Array<any>,
+}
 @Injectable()
 export class DataService {
     constructor(private httpClient: HttpClient) { }
@@ -67,6 +80,10 @@ export class DataService {
 
     getYears(model) {
         return this.httpClient.get<any>(AppConfig.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/years/" + model)
+    }
+
+    getAnnualReport(year) {
+        return this.httpClient.get<YearRecap>(AppConfig.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/report/"+year)
     }
 
 }
