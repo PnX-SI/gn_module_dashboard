@@ -1,5 +1,5 @@
 import json
-from flask import Blueprint, current_app, session, request
+from flask import Blueprint, request, jsonify
 from sqlalchemy.sql import func, text, select
 
 from geojson import FeatureCollection, Feature
@@ -375,16 +375,18 @@ def yearly_recap(year):
         ORDER BY year DESC
         """
     ).fetchall()
-    return {
-        "yearsWithObs": yearsWithObs,
-        "year": year,
-        "nb_obs_year": nb_obs_year,
-        "nb_obs_total": nb_obs_total,
-        "nb_new_species": nb_new_species,
-        "nb_taxon_year": nb_taxon_year,
-        "new_datasets": new_datasets,
-        "new_species": new_species,
-        "most_viewed_species": most_viewed_species,
-        "data_by_datasets": data_by_datasets,
-        "observations_by_year": observations_by_year,
-    }
+    return jsonify(
+        {
+            "yearsWithObs": yearsWithObs,
+            "year": year,
+            "nb_obs_year": nb_obs_year,
+            "nb_obs_total": nb_obs_total,
+            "nb_new_species": nb_new_species,
+            "nb_taxon_year": nb_taxon_year,
+            "new_datasets": new_datasets,
+            "new_species": new_species,
+            "most_viewed_species": most_viewed_species,
+            "data_by_datasets": data_by_datasets,
+            "observations_by_year": observations_by_year,
+        }
+    )
