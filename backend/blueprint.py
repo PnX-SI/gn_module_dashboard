@@ -376,7 +376,7 @@ def yearly_recap(year):
         """
     ).fetchall()
     t = {
-        "yearsWithObs": yearsWithObs,
+        "yearsWithObs": [dict(row) for row in yearsWithObs],
         "year": year,
         "nb_obs_year": nb_obs_year,
         "nb_obs_total": nb_obs_total,
