@@ -375,18 +375,19 @@ def yearly_recap(year):
         ORDER BY year DESC
         """
     ).fetchall()
-    return jsonify(
-        {
-            "yearsWithObs": yearsWithObs,
-            "year": year,
-            "nb_obs_year": nb_obs_year,
-            "nb_obs_total": nb_obs_total,
-            "nb_new_species": nb_new_species,
-            "nb_taxon_year": nb_taxon_year,
-            "new_datasets": new_datasets,
-            "new_species": new_species,
-            "most_viewed_species": most_viewed_species,
-            "data_by_datasets": data_by_datasets,
-            "observations_by_year": observations_by_year,
-        }
-    )
+    t = {
+        "yearsWithObs": yearsWithObs,
+        "year": year,
+        "nb_obs_year": nb_obs_year,
+        "nb_obs_total": nb_obs_total,
+        "nb_new_species": nb_new_species,
+        "nb_taxon_year": nb_taxon_year,
+        "new_datasets": [dict(row) for row in new_datasets],
+        "new_species": [dict(row) for row in new_species],
+        "most_viewed_species": [dict(row) for row in most_viewed_species],
+        "data_by_datasets": [dict(row) for row in data_by_datasets],
+        "observations_by_year": [dict(row) for row in observations_by_year],
+    }
+    for key, val in t.items():
+        print(type(val))
+    return jsonify(t)
