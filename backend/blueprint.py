@@ -382,7 +382,7 @@ def yearly_recap(year):
         "nb_obs_total": nb_obs_total,
         "nb_new_species": nb_new_species,
         "nb_taxon_year": nb_taxon_year,
-        "new_datasets": [dict(row) for row in new_datasets],
+        "new_datasets": new_datasets,
         "new_species": [dict(row) for row in new_species],
         "most_viewed_species": [dict(row) for row in most_viewed_species],
         "data_by_datasets": [dict(row) for row in data_by_datasets],
