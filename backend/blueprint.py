@@ -363,7 +363,7 @@ def yearly_recap(year):
         """
         select count(id_synthese), date_part('year', s.date_min) as year_
         from gn_synthese.synthese s
-        WHERE date_part('year', s.date_min) > 1990
+        WHERE date_part('year', s.date_min) >= 1990
         group by year_
         order by year_ ASC
         """
@@ -380,8 +380,10 @@ def yearly_recap(year):
         SELECT count(*), t.group2_inpn
         FROM gn_synthese.synthese s
         JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
+        WHERE date_part('year', s.date_min) >= :year
         GROUP BY t.group2_inpn
-        """
+        """,
+        {"year": year},
     )
     t = {
         "yearsWithObs": [dict(row) for row in yearsWithObs],
