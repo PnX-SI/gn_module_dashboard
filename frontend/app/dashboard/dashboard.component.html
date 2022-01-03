@@ -7,22 +7,25 @@
     <hr class="my-4">
 
     <div *ngIf="displaySynthesePerYear" class="row row-md">
-        <button class="btn btn-block btn-lg btn-title" (click)="hideHistogram($event)">
-            <div class="row row-md">
-                <div class="col-md-1" style="text-align: left">
-                    <em class="fa fa-xl fa-calendar" aria-hidden="true" *ngIf="showHistogram"></em>
+        <div class="btn btn-block btn-title">
+            <div class="btn-lg " (click)="hideHistogram($event)">
+                <div class="row row-md">
+                    <div class="col-md-1" style="text-align: left">
+                        <em class="fa fa-xl fa-calendar" aria-hidden="true" *ngIf="showHistogram"></em>
+                    </div>
+                    <div class="col-md-10">
+                        <h3><b>Synthèse par année</b></h3>
+                    </div>
+                    <div class="col-md-1" style="text-align: right">
+                        <em class="fa fa-lg fa-chevron-down" aria-hidden="true" *ngIf="!showHistogram"></em>
+                        <em class="fa fa-lg fa-chevron-up" aria-hidden="true" *ngIf="showHistogram"></em>
+                    </div>
                 </div>
-                <div class="col-md-10">
-                    <h3><b>Synthèse par année</b></h3>
-                </div>
-                <div class="col-md-1" style="text-align: right">
-                    <em class="fa fa-lg fa-chevron-down" aria-hidden="true" *ngIf="!showHistogram"></em>
-                    <em class="fa fa-lg fa-chevron-up" aria-hidden="true" *ngIf="showHistogram"></em>
-                </div>
+                <em class="fa fa-xl fa-calendar" aria-hidden="true" *ngIf="!showHistogram"></em>
             </div>
-            <em class="fa fa-xl fa-calendar" aria-hidden="true" *ngIf="!showHistogram"></em>
-        </button>
-    </div>
+            <button class="float-right" mat-raised-button color="primary" [routerLink]="['annual_report']" > Rapport annuel </button>
+        </div>
+        </div>
     <dashboard-histogram [taxonomies]="taxonomies" [hidden]="!showHistogram"></dashboard-histogram>
 
 
