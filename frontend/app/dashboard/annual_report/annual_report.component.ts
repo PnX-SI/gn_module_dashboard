@@ -76,7 +76,7 @@ export class AnnualReportComponent implements OnInit {
                     this.yearObsLabel.push(element.year_);
                 });            
                 this.yearObsData = [
-                    {data : temp, label: "Nombre d'observation"},
+                    {data : temp, label: "Nombre d'observations"},
                 ]
             }
             this.data.observations_by_group.forEach(element => {
