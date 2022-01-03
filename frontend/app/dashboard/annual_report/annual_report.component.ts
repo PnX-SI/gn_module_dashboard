@@ -89,9 +89,9 @@ export class AnnualReportComponent implements OnInit {
             const tempNewSpecies = {}
             this.data.new_species.forEach(element => {
                 if(element.group2_inpn in tempNewSpecies) {
-                    tempNewSpecies[element.group2_inpn] += element.count
+                    tempNewSpecies[element.group2_inpn] += 1
                 } else {
-                    tempNewSpecies[element.group2_inpn] = element.count
+                    tempNewSpecies[element.group2_inpn] = 1
                 }
             })
             const randomColor = [];            
