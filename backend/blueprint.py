@@ -380,7 +380,7 @@ def yearly_recap(year):
         SELECT count(*), t.group2_inpn
         FROM gn_synthese.synthese s
         JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
-        WHERE date_part('year', s.date_min) >= :year
+        WHERE date_part('year', s.date_min) = :year
         GROUP BY t.group2_inpn
         """,
         {"year": year},
