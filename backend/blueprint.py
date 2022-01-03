@@ -284,7 +284,8 @@ def yearly_recap(year):
         SELECT count(*) 
         FROM gn_synthese.synthese
         WHERE date_part('year', date_min) <= :year
-        """
+        """,
+        {"year": year},
     ).scalar()
     nb_new_species = DB.session.execute(
         """
