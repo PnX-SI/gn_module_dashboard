@@ -1,8 +1,8 @@
 # Fichier listant les paramètres du module et leurs valeurs par défaut
 
 AREA_TYPE = ["COM", "M1", "M5", "M10"] #the first geometry entered will be the default one 
-NB_CLASS_OBS = 5 // must be inferior to 10
-NB_CLASS_TAX = 5 // must be inferior to 10
+NB_CLASS_OBS = 5 # must be inferior to 10
+NB_CLASS_TAX = 5 # must be inferior to 10
 SIMPLIFY_LEVEL = 50
 
 DISPLAY_PER_YEAR_GRAPH = true
