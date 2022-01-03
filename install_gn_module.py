@@ -33,8 +33,9 @@ def write_in_cron_tab():
     # Création nouveau job
     job = cron.new(command=cron_cmd, comment=cron_cmt)
 
-    # Configuration de la planification => @weekly
-    job.dow.on('SUN')
+    # every day at 2h : 0 2 * * *
+    job.hour.on(2)
+    job.minute.on(0)
     
     # Ecriture dans cron tab
     cron.write()

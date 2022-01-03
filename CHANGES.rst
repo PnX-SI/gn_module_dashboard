@@ -2,6 +2,13 @@
 CHANGELOG
 =========
 
+1.1.0 (2022-01-03)
+-----------------
+
+**🚀 Nouveautés**
+
+* Ajout d'un rapport annuel des observations (#40)
+
 1.0.1 (2021-10-08)
 ------------------
 
