@@ -15,6 +15,7 @@ export interface YearRecap {
     most_viewed_species: Array<any>,
     data_by_datasets: Array<any>,
     observations_by_year: Array<any>,
+    observations_by_group: Array<any>
 }
 @Injectable()
 export class DataService {

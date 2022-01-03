@@ -375,6 +375,14 @@ def yearly_recap(year):
         ORDER BY year DESC
         """
     ).fetchall()
+    observations_by_group = DB.session.execute(
+        """
+        SELECT count(*), t.group2_inpn
+        FROM gn_synthese.synthese s
+        JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
+        GROUP BY t.group2_inpn
+        """
+    )
     t = {
         "yearsWithObs": [dict(row) for row in yearsWithObs],
         "year": year,
@@ -385,9 +393,9 @@ def yearly_recap(year):
         "new_datasets": new_datasets,
         "new_species": [dict(row) for row in new_species],
         "most_viewed_species": [dict(row) for row in most_viewed_species],
+        "observations_by_group": [dict(row) for row in observations_by_group],
         "data_by_datasets": [dict(row) for row in data_by_datasets],
         "observations_by_year": [dict(row) for row in observations_by_year],
     }
-    for key, val in t.items():
-        print(type(val))
+
     return jsonify(t)

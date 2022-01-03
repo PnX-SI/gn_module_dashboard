@@ -4,7 +4,9 @@ import { DataService, YearRecap } from '../services/data.services';
 import {BaseChartDirective} from 'ng2-charts'
 @Component({
     selector: 'dashboard-annual-report',
-    templateUrl: 'annual_report.component.html'
+    templateUrl: 'annual_report.component.html',
+    styleUrls: ['./annual_report.component.scss'],
+
 })
 
 export class AnnualReportComponent implements OnInit {
@@ -19,9 +21,9 @@ export class AnnualReportComponent implements OnInit {
           },
           
     }
-    public mostViewedData = [];
-    public mostViewedLabel = [];
-    public mostViewedColor = [];
+    public obsByGroupData = [];
+    public obsByGroupLabel = [];
+    public obsByGroupColor = [{"backgroundColor": [], "borderWidth": 0.8 }];
 
     public newSpeciesData = [];
     public newSpeciesLabel = [];
@@ -62,10 +64,11 @@ export class AnnualReportComponent implements OnInit {
         this._api.getAnnualReport(year).subscribe(data => {
 
             this.dataLoading = false;
-            this.data = null;
             this.yearsDataForm = data.yearsWithObs.map(el => el.year)
             
             this.data = data;
+            console.log(data);
+            
             if(loadyearPlot) {
                 const temp = []
                 this.data.observations_by_year.forEach(element => {
@@ -76,24 +79,12 @@ export class AnnualReportComponent implements OnInit {
                     {data : temp, label: "Nombre d'observation"},
                 ]
             }
-            const tempMostView = {}
-            this.data.most_viewed_species.forEach(element => {
-                if(element.group2_inpn in tempMostView) {
-                    tempMostView[element.group2_inpn] += element.count
-                } else {
-                    tempMostView[element.group2_inpn] = element.count
-                }
+            this.data.observations_by_group.forEach(element => {
+                this.obsByGroupLabel.push(element.group2_inpn);
+                this.obsByGroupData.push(element.count);
+                this.obsByGroupColor[0]["backgroundColor"].push(this.randomRGB())
+
             })
-            const randomColorMostView = [];
-            for (let group in tempMostView) {
-                this.mostViewedLabel.push(group);
-                this.mostViewedData.push(tempMostView[group])
-                randomColorMostView.push(this.randomRGB());
-            }
-            this.mostViewedColor = [{
-                backgroundColor : randomColorMostView,
-                borderWidth: 0.8
-            }]
 
             const tempNewSpecies = {}
             this.data.new_species.forEach(element => {
@@ -114,9 +105,7 @@ export class AnnualReportComponent implements OnInit {
                     borderWidth: 0.8
                 }];
             
-            (this.charts as any)._results.forEach(element => {
-                console.log(element);
-                
+            (this.charts as any)._results.forEach(element => {                
                 element.chart.update()
             });
             
@@ -125,8 +114,8 @@ export class AnnualReportComponent implements OnInit {
      }
 
      refreshGraphValues() {
-        this.mostViewedData = [];
-        this.mostViewedLabel = [];
+        this.obsByGroupData = [];
+        this.obsByGroupLabel = [];
         this.newSpeciesData = [];
         this.newSpeciesLabel = [];
      }
