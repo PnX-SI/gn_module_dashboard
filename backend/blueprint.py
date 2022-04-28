@@ -11,7 +11,7 @@ from geonature.utils.env import DB
 
 from .models import VSynthese, VTaxonomie, VFrameworks
 from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese
-from geonature.core.ref_geo.models import LAreas, BibAreasTypes
+from ref_geo.models import BibAreasTypes
 from geonature.core.taxonomie.models import Taxref
 
 # # import des fonctions utiles depuis le sous-module d'authentification
