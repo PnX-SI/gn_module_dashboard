@@ -1,0 +1,2 @@
+MODULE_CODE = "DASHBOARD"
+MODULE_PICTO = "fa-upload"
