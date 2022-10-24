@@ -10,7 +10,49 @@ Nécessite la version 2.10.0 (ou plus) de GeoNature
 **Evolutions**
 
 - Compatibilité avec Angular version 12, mis à jour dans la version 2.10.0 de GeoNature (#38)
+- Packaging du module (bien suivre les notes de version pour la MAJ)
 
+**Note de version**
+
+Suite au packaging du module, la MAJ necessite unbe procédure particulière.
+- Téléchargez la nouvelle version du module
+
+  ::
+  
+        wget https://github.com/PnX-SI/gn_module_dashboard/archive/X.Y.Z.zip
+        unzip X.Y.Z.zip
+        rm X.Y.Z.zip
+  
+
+- Renommez l'ancien et le nouveau répertoire
+
+  ::
+  
+        mv /home/`whoami`/gn_module_dashboard /home/`whoami`/gn_module_dashboard_old
+        mv /home/`whoami`/gn_module_dashboard-X.Y.Z /home/`whoami`/gn_module_dashboard
+
+- Rapatriez le fichiers de configuration
+
+  ::
+        
+        cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/gn_module_dashboard/config/conf_gn_module.toml
+
+- Réinstallez le module et redémarrez GeoNature
+
+  ::
+        cd /home/`whoami`/gn_module_dashboard
+        pip install .
+        geonature db stamp dashboard@head
+        cd /home/`whoami`/geonature
+        npm run build
+        sudo systemctl restart geonature
+        
+
+- Stampez les migration SQL 
+
+  ::
+
+        geonature db stamp 
 1.1.0 (2022-01-03)
 -----------------
 

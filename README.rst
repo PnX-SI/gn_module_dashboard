@@ -29,7 +29,7 @@ Installation
 * Téléchargez la dernière version stable du module (``wget https://github.com/PnX-SI/gn_module_dashboard/archive/X.Y.Z.zip`` ou en cliquant sur le bouton GitHub "Clone or download" de cette page) dans ``/home/myuser/``
 * Dézippez la dans ``/home/myuser/`` (``unzip X.Y.Z.zip``)
 * Renommer le répertoire ``mv gn_module_dashboard-X.Y.Z gn_module_dashboard``
-* Placez-vous dans le répertoire ``backend`` de GeoNature et lancez les commandes ``source venv/bin/activate`` puis ``geonature install_gn_module <mon_chemin_absolu_vers_le_module> <url_relative_du_module>`` pour installer le module (exemple ``geonature install_gn_module /home/`whoami`/gn_module_dashboard /dashboard``)
+* Placez-vous dans le répertoire ``backend`` de GeoNature et lancez les commandes ``source venv/bin/activate`` puis ``geonature install-packaged-gn-module <mon_chemin_absolu_vers_le_module> <module_code>`` pour installer le module (exemple ``geonature install-packaged-gn-module /home/`whoami`/gn_module_dashboard DASHBOARD``)
 * Complétez la configuration du module dans le fichier ``config/conf_gn_module.toml`` à partir des paramètres présents dans ``config/conf_gn_module.toml.example``, dont vous pouvez surcoucher les valeurs par défaut. Relancez la mise à jour de la configuration depuis le répertoire ``geonature/backend`` avec les commandes ``source venv/bin/activate`` puis ``geonature update_module_configuration DASHBOARD``
 * Vous pouvez sortir du venv en lançant la commande ``deactivate``
 
