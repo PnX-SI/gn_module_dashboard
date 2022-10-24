@@ -54,4 +54,3 @@ class VFrameworks(DB.Model):
     acquisition_framework_name = DB.Column(DB.Unicode, primary_key=True)
     year = DB.Column(DB.Integer)
     nb_obs = DB.Column(DB.Integer)
-
