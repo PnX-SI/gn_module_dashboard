@@ -37,22 +37,22 @@ Suite au packaging du module, la MAJ necessite unbe procédure particulière.
         
         cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/gn_module_dashboard/config/conf_gn_module.toml
 
-- Réinstallez le module et redémarrez GeoNature
+- Réinstallez le backend et redémarrez GeoNature
 
   ::
         cd /home/`whoami`/gn_module_dashboard
-        pip install .
-        geonature db stamp dashboard@head
-        cd /home/`whoami`/geonature
-        npm run build
+        pip install -e .
+        geonature db stamp 2628978e1016
         sudo systemctl restart geonature
-        
 
-- Stampez les migration SQL 
+- Rebuildez le frontend :
 
   ::
+        cd /home/`whoami`/geonature/frontend
+        nvm use
+        npm run build
 
-        geonature db stamp 
+
 1.1.0 (2022-01-03)
 -----------------
 
