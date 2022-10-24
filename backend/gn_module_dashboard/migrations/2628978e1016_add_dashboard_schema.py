@@ -17,6 +17,7 @@ depends_on = None
 
 schema = "gn_dashboard"
 
+
 def upgrade():
     sql_file = "dashboard.sql"
     operations = pkg_resources.resource_string(
@@ -24,5 +25,6 @@ def upgrade():
     ).decode("utf-8")
     op.execute(operations)
 
+
 def downgrade():
-    op.execute(f"DROP SCHEMA if exists {schema} cascade")
+    op.execute(f"DROP SCHEMA {schema} CASCADE")

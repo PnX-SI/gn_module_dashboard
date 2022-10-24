@@ -5,3 +5,5 @@ frontend/app/module.config.ts
 config/conf_gn_module.toml
 .idea/
 *.egg-info
+/dist
+venv
