@@ -1,40 +1,12 @@
 ::ng-deep {
   @import "nouislider/dist/nouislider";
 
-  .noUi-handle {
-    outline: none;
-  }
-
-  .noUi-horizontal {
-    height: 12px;
-  }
-
-  .noUi-horizontal .noUi-handle {
-    width: 22px;
-    height: 19px;
-    left: -17px;
-    top: -5px;
-  }
-
-  .noUi-connect {
-    background: #bdbdbd;
-  }
-
-  .noUi-handle:after,
-  .noUi-handle:before {
-    height: 0px;
-    width: 0px;
-    background: #fff;
-  }
-
   .noUi-tooltip {
     border: 0px solid #fff;
     border-radius: 0px;
     background: transparent;
-  }
-
-  .noUi-horizontal .noUi-tooltip {
-    top: 120%;
+    font-size: small;
+    padding: 0 0 0 0;
   }
 }
 
