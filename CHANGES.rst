@@ -2,59 +2,31 @@
 CHANGELOG
 =========
 
-1.2.0 (unreleased)
+1.2.0 (2022-11-02)
 ------------------
 
-Nécessite la version 2.10.0 (ou plus) de GeoNature
+Nécessite la version 2.10.0 (ou plus) de GeoNature.
 
 **Evolutions**
 
 - Compatibilité avec Angular version 12, mis à jour dans la version 2.10.0 de GeoNature (#38)
-- Packaging du module (bien suivre les notes de version pour la MAJ)
+- Packaging du module
 
 **Note de version**
 
-Suite au packaging du module, la MAJ necessite unbe procédure particulière.
-- Téléchargez la nouvelle version du module
-
+- Suivez la procédure classique de mise à jour du module
+- Exécuter la commande suivante afin d’indiquer à Alembic l'état de votre base de données :
   ::
-  
-        wget https://github.com/PnX-SI/gn_module_dashboard/archive/X.Y.Z.zip
-        unzip X.Y.Z.zip
-        rm X.Y.Z.zip
-  
 
-- Renommez l'ancien et le nouveau répertoire
-
-  ::
-  
-        mv /home/`whoami`/gn_module_dashboard /home/`whoami`/gn_module_dashboard_old
-        mv /home/`whoami`/gn_module_dashboard-X.Y.Z /home/`whoami`/gn_module_dashboard
-
-- Rapatriez le fichiers de configuration
-
-  ::
-        
-        cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/gn_module_dashboard/config/conf_gn_module.toml
-
-- Réinstallez le backend et redémarrez GeoNature
-
-  ::
-        cd /home/`whoami`/gn_module_dashboard
-        pip install -e .
-        geonature db stamp 2628978e1016
-        sudo systemctl restart geonature
-
-- Rebuildez le frontend :
-
-  ::
-        cd /home/`whoami`/geonature/frontend
-        nvm use
-        npm run build
-
+    cd
+    source geonature/backend/venv/bin/activate
+    geonature db stamp 2628978e1016
+    geonature db autoupgrade
 
 1.1.0 (2022-01-03)
 -----------------
+
+Non compatible avec les versions 2.10 et supérieures de GeoNature.
 
 **🚀 Nouveautés**
 
