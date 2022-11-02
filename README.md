@@ -97,7 +97,7 @@ nécessaire de rafraichir régulièrement ces vues matérialisées. Pour cela
 vous pouvez mettre en place un CRON pour l'automatisation de cette
 tâche.
 
-Ouvrez le fichier ``/etc/cron/geonature`` s’il est exitant, sinon créez le. Reseignez le commande ``geonature dashboard refresh-vm``.
+Ouvrez le fichier ``/etc/cron/geonature`` s’il est existant, sinon créez le. Renseignez le commande `geonature dashboard refresh-vm`.
 
 ```
 0 0 * * 0 <UTLIATEUR LINUX GEONATURE> <CHEMIN_VERS_GEONATURE>/backend/venv/bin/geonature dashboard geonature dashboard refresh-vm chiro
