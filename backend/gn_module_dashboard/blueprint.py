@@ -11,14 +11,14 @@ from geonature.utils.env import DB
 
 from .models import VSynthese, VTaxonomie, VFrameworks
 from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese
-from geonature.core.ref_geo.models import LAreas, BibAreasTypes
+from ref_geo.models import BibAreasTypes
 from geonature.core.taxonomie.models import Taxref
 
 # # import des fonctions utiles depuis le sous-module d'authentification
 # from geonature.core.gn_permissions import decorators as permissions
 # from geonature.core.gn_permissions.tools import get_or_fetch_user_cruved
 
-blueprint = Blueprint("dashboard", __name__)
+blueprint = Blueprint("dashboard", __name__, cli_group="dashboard")
 
 # Obtenir le nombre d'observations et le nombre de taxons pour chaque année
 # vm_synthese
@@ -403,3 +403,12 @@ def yearly_recap(year):
     }
 
     return jsonify(t)
+
+
+@blueprint.cli.command()
+def refresh_vm():
+    """
+    Rafraîchissement des VM du dashboard
+    """
+    DB.session.execute(func.gn_dashboard.refresh_materialized_view_data())
+    DB.session.commit()

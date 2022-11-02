@@ -5,6 +5,7 @@ import { DataService } from "./services/data.services";
 import { ModuleConfig } from "./../module.config";
 import { MapService } from "@geonature_common/map/map.service";
 
+// noinspection TypeScriptValidateJSTypes
 @Component({
   selector: "dashboard",
   templateUrl: "dashboard.component.html",
@@ -51,8 +52,7 @@ export class DashboardComponent implements OnInit {
         );
       }
     );
-    this.taxonomies["Règne"] = this.regnes;
-
+        this.taxonomies["Règne"] = this.regnes;
     // Accès aux noms des différents phylum de la BDD GeoNature
     this.dataService.getTaxonomy("Phylum").subscribe(
       (data) => {
@@ -145,8 +145,10 @@ export class DashboardComponent implements OnInit {
     this.showHistogram = !this.showHistogram;
   }
   hideMap(event) {
-    this.showMap = !this.showMap;
-    this._mapService.map.invalidateSize();
+      this.showMap = !this.showMap;
+      if(this._mapService?.map){
+          this._mapService.map.invalidateSize();
+      }
   }
   hidePieChart(event) {
     this.showPieChart = !this.showPieChart;

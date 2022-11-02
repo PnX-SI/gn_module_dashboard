@@ -2,17 +2,31 @@
 CHANGELOG
 =========
 
-1.2.0 (unreleased)
+1.2.0 (2022-11-02)
 ------------------
 
-Nécessite la version 2.10.0 (ou plus) de GeoNature
+Nécessite la version 2.10.0 (ou plus) de GeoNature.
 
 **Evolutions**
 
 - Compatibilité avec Angular version 12, mis à jour dans la version 2.10.0 de GeoNature (#38)
+- Packaging du module
+
+**Note de version**
+
+- Suivez la procédure classique de mise à jour du module
+- Exécuter la commande suivante afin d’indiquer à Alembic l'état de votre base de données :
+  ::
+
+    cd
+    source geonature/backend/venv/bin/activate
+    geonature db stamp 2628978e1016
+    geonature db autoupgrade
 
 1.1.0 (2022-01-03)
 -----------------
+
+Non compatible avec les versions 2.10 et supérieures de GeoNature.
 
 **🚀 Nouveautés**
 

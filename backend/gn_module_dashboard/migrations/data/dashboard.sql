@@ -1,5 +1,3 @@
-DROP SCHEMA if exists gn_dashboard cascade;
-
 CREATE SCHEMA gn_dashboard;
 
 -- Vue matérialisée remettant à plat la taxonomie de toutes les observations présentes dans la synthèse
