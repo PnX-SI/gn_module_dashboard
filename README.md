@@ -41,30 +41,25 @@ Installation
     `mv gn_module_dashboard-X.Y.Z gn_module_dashboard`
 -   Placez-vous dans le répertoire `backend` de GeoNature et lancez les
     commandes `source venv/bin/activate` puis
-    `geonature install-packaged-gn-module <chemin_vers_le_module> <module_code>`
-    pour installer le module (exemple
-    `geonature install-packaged-gn-module ~/gn_module_dashboard DASHBOARD`)
--   Complétez la configuration du module dans le fichier
-    `config/conf_gn_module.toml` à partir des paramètres présents dans
-    `config/conf_gn_module.toml.example`, dont vous pouvez surcoucher
-    les valeurs par défaut. Relancez la mise à jour de la configuration
-    depuis le répertoire `geonature/backend` avec les commandes
-    `source venv/bin/activate` puis
-    `geonature update_module_configuration DASHBOARD`
--   Vous pouvez sortir du venv en lançant la commande `deactivate`
--   Relancez GeoNature et rebuilder le front
-    - `sudo systemctl restart geonature`
-    - `cd geonature/frontend`
-    - `nvm use`
-    - `npm run build`
+    `geonature install-gn-module ~/gn_module_dashboard DASHBOARD`
+-   Vous pouvez sortir du venv en exécutant la commande `deactivate`
+-   Relancez GeoNature (`sudo systemctl restart geonature`)
 
 Configuration
 -------------
 
-Un certain nombre de paramètres permettent de customiser le module en
-modifiant le fichier `conf/conf_gn_module.toml` (vous pouvez vous
-inspirer du fichier `conf_gn_module.toml.example` qui liste l'ensemble
-des paramètres disponibles et leurs valeurs par défaut) :
+Vous pouvez compléter la configuration du module dans le fichier
+`config/conf_gn_module.toml` à partir des paramètres présents dans
+`config/conf_gn_module.toml.example`, dont vous pouvez surcoucher
+les valeurs par défaut. 
+
+Pour appliquer ces changements, rechargez GeoNature (`sudo systemctl reload geonature`)
+puis la mise à jour de la configuration
+depuis le répertoire `geonature/backend` avec les commandes
+`source venv/bin/activate` puis
+`geonature update-configuration`
+
+Détail des paramètres modifiables :
 
 -   Paramétrage du niveau de simplification des zonages sur la carte
     "Synthèse par entité géographique" : `SIMPLIFY_LEVEL`. Passer un
@@ -84,25 +79,25 @@ des paramètres disponibles et leurs valeurs par défaut) :
     en question et 'false' pour le masquer.
 -   Paramétrage par défaut du graphique "Synthèse par entité
     géographique" du dashboard :
-    `DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH` Renseigner 'true'
-    si vous souhaitez afficher par défault les observations, 'false'
-    si vous souhaitez les taxons
+    `DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH`. Renseigner 'true'
+    si vous souhaitez afficher par défaut les observations, 'false'
+    si vous souhaitez les taxons.
 
 Vues matérialisées
 ------------------
 
-Dans un souci de performance, des vues matérialisées ont été mises en
+Dans un soucis de performance, des vues matérialisées ont été mises en
 place. Elles sont renseignées lors de l'installation du module. Il est
 nécessaire de rafraichir régulièrement ces vues matérialisées. Pour cela
 vous pouvez mettre en place un CRON pour l'automatisation de cette
 tâche.
 
-Ouvrez le fichier ``/etc/cron/geonature`` s’il est existant, sinon créez le. Renseignez le commande `geonature dashboard refresh-vm`.
+Ouvrez le fichier `/etc/cron/geonature` s’il est existant, sinon créez le. Renseignez le commande `geonature dashboard refresh-vm`.
 
 ```
-0 0 * * 0 <UTLIATEUR LINUX GEONATURE> <CHEMIN_VERS_GEONATURE>/backend/venv/bin/geonature dashboard geonature dashboard refresh-vm chiro
+0 0 * * 0 <UTLISATEUR LINUX GEONATURE> <CHEMIN_VERS_GEONATURE>/backend/venv/bin/geonature dashboard geonature dashboard refresh-vm
 Exemple (exécuté tous les dimanches à 00h00):
-0 0 * * 0 geonatadmin /home/geonatadmin/backend/venv/bin/geonature geonature dashboard refresh-vm chiro
+0 0 * * 0 geonatadmin /home/geonatadmin/backend/venv/bin/geonature geonature dashboard refresh-vm
 ```
 
 Cette commande peut être effectuée à tout moment depuis l’environnement
@@ -136,19 +131,12 @@ Mise à jour du module
 
         cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/gn_module_dashboard/config/conf_gn_module.toml
 
--   Réinstaller les librairies et relancer la compilation en mettant à
-    jour la configuration
+-   Lancez la mise à jour du module
 
-        cd /home/`whoami`/geonature/frontend
-        npm install /home/`whoami`/gn_module_dashboard/frontend
-        cd /home/`whoami`/geonature/backend
-        source venv/bin/activate
-        pip install -e ~/gn_module_dashboard/
-        geonature update_module_configuration DASHBOARD
+        cd /home/`whoami`/
+        source geonature/backend/venv/bin/activate
+        geonature install-gn-module ~/gn_module_dashboard DASHBOARD
         sudo systemctl restart geonature
-        cd ~/geonature/frontend
-        nvm use
-        npm run build
 
 Licence
 -------
