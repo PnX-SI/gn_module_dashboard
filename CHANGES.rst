@@ -2,6 +2,16 @@
 CHANGELOG
 =========
 
+1.2.1 (unreleased)
+------------------
+
+Compatible avec GeoNature 2.11 et plus.
+
+**Corrections**
+
+* Correction de l'utilisation des modèles de TaxRef
+* Correction et mise à jour de la documentation du module
+
 1.2.0 (2022-11-02)
 ------------------
 
