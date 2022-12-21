@@ -2,6 +2,18 @@
 CHANGELOG
 =========
 
+1.2.2 (unreleased)
+------------------
+
+**🚀 Nouveautés**
+
+* Rafraichissement automatique des vue matérialisées via Celery Beat.
+  Configuration via le paramètre ``CRONTAB``.
+
+**⚠️ Notes de version**
+
+* Si vous aviez mis en place un cron système, vous pouvez le supprimer.
+
 1.2.1 (2022-12-21)
 ------------------
 
@@ -27,7 +39,7 @@ Nécessite la version 2.10.0 (ou plus) de GeoNature.
 
 * Correction de la commande de mise à jour des vues matérialisées du module (#46)
 
-**Notes de version**
+**⚠️ Notes de version**
 
 * Suivez la procédure classique de mise à jour du module
 * Exécuter la commande suivante afin d’indiquer à Alembic l'état de votre base de données :
