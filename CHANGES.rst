@@ -84,7 +84,7 @@ Si vous faites une mise à jour du module :
 
 ::
 
-    * * * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
+    0 0 * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
 
 0.2.0 (2020-02-20)
 ------------------
