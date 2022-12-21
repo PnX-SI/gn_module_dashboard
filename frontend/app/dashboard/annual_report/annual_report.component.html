@@ -57,23 +57,25 @@
                         Les nouvelles espèces
                     </span>
                 </h3>
-                <table class="table table-striped" >
-                    <thead> 
-                        <tr>
-                            <th>Nom latin</th>
-                            <th>Nom vernaculaire</th>
-                            <th>Groupe</th>
-                            <th>Nombre d'observation(s)</th>
-                        </tr>
-                    </thead>
-                        <tr *ngFor="let _new of data?.new_species">
-                            <td>{{_new.nom_complet}}</td>
-                            <td>{{_new.nom_vern}}</td>
-                            <td>{{_new.group2_inpn}}</td>
-                            <td>{{_new.count}}</td>
-                        </tr>
-                                        
-                </table>
+                <div id="new-species">
+                    <table class="table table-striped" >
+                        <thead> 
+                            <tr>
+                                <th>Nom latin</th>
+                                <th>Nom vernaculaire</th>
+                                <th>Groupe</th>
+                                <th>Nombre d'observation(s)</th>
+                            </tr>
+                        </thead>
+                            <tr *ngFor="let _new of data?.new_species">
+                                <td>{{_new.nom_complet}}</td>
+                                <td>{{_new.nom_vern}}</td>
+                                <td>{{_new.group2_inpn}}</td>
+                                <td>{{_new.count}}</td>
+                            </tr>
+                                            
+                    </table>
+                </div>
                 <h5>
                     Répartition des nouvelles espèces par groupe
                 </h5>
