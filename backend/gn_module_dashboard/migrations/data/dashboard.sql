@@ -34,8 +34,8 @@ WITH DATA;
 COMMENT ON MATERIALIZED VIEW gn_dashboard.vm_synthese
     IS 'Vue matérialisée remettant à plat la taxonomie de toutes les observations présentes dans la synthèse';
 
-CREATE unique index on gn_dashboard.vm_synthese (id_synthese);
-CREATE index on gn_dashboard.vm_synthese (cd_ref);
+CREATE UNIQUE INDEX vm_synthese_id_synthese_idx ON gn_dashboard.vm_synthese (id_synthese);
+CREATE INDEX vm_synthese_cd_ref_idx ON gn_dashboard.vm_synthese (cd_ref);
 
 
 -- Vue matérialisée calculant le nombre d'observations par cadre d'acquisition par année
@@ -52,7 +52,7 @@ WITH DATA;
 COMMENT ON MATERIALIZED VIEW gn_dashboard.vm_synthese_frameworks
     IS 'Vue matérialisée calculant le nombre d''observations par cadre d''acquisition par année';
 
-CREATE unique index on gn_dashboard.vm_synthese_frameworks (acquisition_framework_name,year);
+CREATE UNIQUE INDEX vm_synthese_frameworks_acquisition_framework_name_year_idx ON gn_dashboard.vm_synthese_frameworks (acquisition_framework_name,year);
 
 
 -- Vue matérialisée listant tous les taxons pour lesquels des données ont été observées, ainsi que leur rang taxonomique
@@ -95,7 +95,7 @@ WITH DATA;
 COMMENT ON MATERIALIZED VIEW gn_dashboard.vm_synthese
     IS 'Vue matérialisée listant tous les taxons pour lesquels des données ont été observées, ainsi que leur rang taxonomique';
 
-CREATE unique index on gn_dashboard.vm_taxonomie (name_taxon,level);
+CREATE UNIQUE INDEX vm_taxonomie_name_taxon_level_idx ON gn_dashboard.vm_taxonomie (name_taxon,level);
 
 
 -- Fonction rafraichissant en parallèle toutes les vues matérialisées utilisées par le module Dashboard

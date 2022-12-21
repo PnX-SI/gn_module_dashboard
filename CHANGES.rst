@@ -2,20 +2,36 @@
 CHANGELOG
 =========
 
+1.2.1 (2022-12-21)
+------------------
+
+Compatible avec GeoNature 2.10, 2.11 et plus.
+
+**🐛 Corrections**
+
+* Suppression d’un import inutile supprimé dans GeoNature 2.11
+* Correction et mise à jour de la documentation du module
+* Ajout d’indexes potentiellement manquants sur les vieilles installations du module
+
 1.2.0 (2022-11-02)
 ------------------
 
 Nécessite la version 2.10.0 (ou plus) de GeoNature.
 
-**Evolutions**
+**🚀 Nouveautés**
 
-- Compatibilité avec Angular version 12, mis à jour dans la version 2.10.0 de GeoNature (#38)
-- Packaging du module
+* Compatibilité avec Angular version 12, mis à jour dans la version 2.10.0 de GeoNature (#38)
+* Packaging du module
 
-**Note de version**
+**🐛 Corrections**
 
-- Suivez la procédure classique de mise à jour du module
-- Exécuter la commande suivante afin d’indiquer à Alembic l'état de votre base de données :
+* Correction de la commande de mise à jour des vues matérialisées du module (#46)
+
+**Notes de version**
+
+* Suivez la procédure classique de mise à jour du module
+* Exécuter la commande suivante afin d’indiquer à Alembic l'état de votre base de données :
+
   ::
 
     cd
@@ -24,7 +40,7 @@ Nécessite la version 2.10.0 (ou plus) de GeoNature.
     geonature db autoupgrade
 
 1.1.0 (2022-01-03)
------------------
+------------------
 
 Non compatible avec les versions 2.10 et supérieures de GeoNature.
 
@@ -59,7 +75,7 @@ Nécessite la version 2.8.0 (ou plus) de GeoNature
 * Correction année du slider en dur (#20)
 * Utilisation de la librairie utils-sqla (#30)
 
-**Note de version**
+**⚠️ Notes de version**
 
 Si vous faites une mise à jour du module :
 
