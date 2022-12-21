@@ -2,7 +2,7 @@
 CHANGELOG
 =========
 
-1.2.1 (unreleased)
+1.2.1 (2022-12-21)
 ------------------
 
 Compatible avec GeoNature 2.10, 2.11 et plus.
