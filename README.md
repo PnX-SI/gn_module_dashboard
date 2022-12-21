@@ -87,31 +87,23 @@ Vues matérialisées
 ------------------
 
 Dans un soucis de performance, des vues matérialisées ont été mises en
-place. Elles sont renseignées lors de l'installation du module. Il est
-nécessaire de rafraichir régulièrement ces vues matérialisées. Pour cela
-vous pouvez mettre en place un CRON pour l'automatisation de cette
-tâche.
+place. Elles sont rafraichies automatiquement tous les jours à 2h du matin.
+Vous pouvez configurer la périodicité du rafraichissement via le paramètre
+de configuration ``CRONTAB``
+(syntaxe [crontab](https://crontab.guru/), ``CRONTAB=""`` pour désactiver).
 
-Ouvrez le fichier `/etc/cron/geonature` s’il est existant, sinon créez le. Renseignez le commande `geonature dashboard refresh-vm`.
+Vous pouvez également mettre à jour manuellement les vues matérialisées :
 
+```bash
+source backend/venv/bin/activate
+geonature dashboard refresh-vm
 ```
-0 0 * * 0 <UTLISATEUR LINUX GEONATURE> <CHEMIN_VERS_GEONATURE>/backend/venv/bin/geonature dashboard geonature dashboard refresh-vm
-Exemple (exécuté tous les dimanches à 00h00):
-0 0 * * 0 geonatadmin /home/geonatadmin/backend/venv/bin/geonature geonature dashboard refresh-vm
+
+Cette commande lance la requête SQL suivante :
+
+```sql
+SELECT gn_dashboard.refresh_materialized_view_data()
 ```
-
-Cette commande peut être effectuée à tout moment depuis l’environnement
-virtuel de GeoNature :
-
-`source backend/venv/bin/activate`
-
-Lancer la commande :
-
-`geonature dashboard refresh-vm`
-
-Cette commande utilise notamment la requête SQL suivante :
-
-`SELECT gn_dashboard.refresh_materialized_view_data();`
 
 Mise à jour du module
 ---------------------
