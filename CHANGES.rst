@@ -5,12 +5,13 @@ CHANGELOG
 1.2.1 (unreleased)
 ------------------
 
-Compatible avec GeoNature 2.11 et plus.
+Compatible avec GeoNature 2.10, 2.11 et plus.
 
 **Corrections**
 
-* Correction de l'utilisation des modèles de TaxRef
+* Suppression d’un import inutile supprimé dans GeoNature 2.11
 * Correction et mise à jour de la documentation du module
+* Ajout d’indexes potentiellement manquants sur les vieilles installations du module
 
 1.2.0 (2022-11-02)
 ------------------
