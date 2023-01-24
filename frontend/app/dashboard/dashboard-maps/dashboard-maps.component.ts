@@ -4,15 +4,14 @@ import {
   OnChanges,
   AfterViewInit,
   Input,
-  ViewEncapsulation
 } from "@angular/core";
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { MapService } from "@geonature_common/map/map.service";
-import { AppConfig } from "@geonature_config/app.config";
 import { ModuleConfig } from "../../module.config";
 // Services
 import { DataService } from "../services/data.services";
 import { distinctUntilChanged, skip } from '@librairies/rxjs/operators';
+import { ConfigService } from '@geonature/services/config.service';
 
 @Component({
   selector: "dashboard-maps",
@@ -75,7 +74,7 @@ export class DashboardMapsComponent
   public spinner = true;
 
   // Récupérer la liste des taxons existants dans la BDD pour permettre la recherche de taxon (pnx-taxonomy)
-  public taxonApiEndPoint = `${AppConfig.API_ENDPOINT}/synthese/taxons_autocomplete`;
+  public taxonApiEndPoint = null;
 
   // Réupération des paramètres de configuration
   public NB_CLASS_OBS = ModuleConfig.NB_CLASS_OBS;
@@ -93,8 +92,10 @@ export class DashboardMapsComponent
   constructor(
     public dataService: DataService,
     public fb: FormBuilder,
-    public mapService: MapService
+    public mapService: MapService,
+    public cs: ConfigService
   ) {
+    this.taxonApiEndPoint = `${AppConfig.API_ENDPOINT}/synthese/taxons_autocomplete`;
     // Déclaration du formulaire général contenant les filtres de la carte
     this.mapForm = fb.group({
       selectedYearRange: fb.control(this.yearRange),

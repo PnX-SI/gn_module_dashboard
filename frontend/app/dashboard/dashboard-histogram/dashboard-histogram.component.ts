@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, Input } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { BaseChartDirective } from "ng2-charts";
-import { AppConfig } from "@geonature_config/app.config";
 // Services
 import { DataService } from "../services/data.services";
 import { CommonService } from "@geonature_common/service/common.service";
+import { ConfigService } from '@geonature/services/config.service';
 
 @Component({
   selector: "dashboard-histogram",
@@ -102,13 +102,15 @@ export class DashboardHistogramComponent implements OnInit {
   public spinner = true;
 
   // Récupérer la liste des taxons existants dans la BDD pour permettre la recherche de taxon (pnx-taxonomy)
-  public taxonApiEndPoint = `${AppConfig.API_ENDPOINT}/synthese/taxons_autocomplete`;
+  public taxonApiEndPoint = null;
 
   constructor(
     public dataService: DataService,
     public commonService: CommonService,
-    public fb: FormBuilder
+    public fb: FormBuilder,
+    public cs: ConfigService
   ) {
+    this.taxonApiEndPoint = `${this.cs.API_ENDPOINT}/synthese/taxons_autocomplete`;
     // Déclaration du formulaire contenant les filtres de l'histogramme
     this.histForm = fb.group({
       selectedFilter: fb.control(null),
