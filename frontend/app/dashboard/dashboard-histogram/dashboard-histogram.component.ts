@@ -108,9 +108,9 @@ export class DashboardHistogramComponent implements OnInit {
     public dataService: DataService,
     public commonService: CommonService,
     public fb: FormBuilder,
-    public cs: ConfigService
+    public config: ConfigService
   ) {
-    this.taxonApiEndPoint = `${this.cs.API_ENDPOINT}/synthese/taxons_autocomplete`;
+    this.taxonApiEndPoint = `${this.config.API_ENDPOINT}/synthese/taxons_autocomplete`;
     // Déclaration du formulaire contenant les filtres de l'histogramme
     this.histForm = fb.group({
       selectedFilter: fb.control(null),

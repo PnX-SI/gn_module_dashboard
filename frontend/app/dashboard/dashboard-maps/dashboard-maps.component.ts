@@ -93,7 +93,7 @@ export class DashboardMapsComponent
     public dataService: DataService,
     public fb: FormBuilder,
     public mapService: MapService,
-    public cs: ConfigService
+    public config: ConfigService
   ) {
     this.taxonApiEndPoint = `${AppConfig.API_ENDPOINT}/synthese/taxons_autocomplete`;
     // Déclaration du formulaire général contenant les filtres de la carte
