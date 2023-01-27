@@ -2,8 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 // Services
 import { DataService } from "./services/data.services";
-import { ModuleConfig } from "./../module.config";
 import { MapService } from "@geonature_common/map/map.service";
+import { ConfigService } from '@geonature/services/config.service';
 
 // noinspection TypeScriptValidateJSTypes
 @Component({
@@ -25,11 +25,11 @@ export class DashboardComponent implements OnInit {
   public yearsMinMax: any;
   public distinctYears = [];
 
-  public displaySynthesePerYear = ModuleConfig.DISPLAY_PER_YEAR_GRAPH;
-  public displaySyntheseGeo = ModuleConfig.DISPLAY_PER_GEO_GRAPH;
-  public displaySyntheseTaxoRank = ModuleConfig.DISPLAY_PER_TAXONOMIC_RANK_GRAPH; 
-  public displaySyntheseCA = ModuleConfig.DISPLAY_PER_CA_GRAPH; 
-  public displaySyntheseTaxoContact = ModuleConfig.DISPLAY_TAXONOMIC_CONTACTS_GRAPH;
+  public displaySynthesePerYear = null;
+  public displaySyntheseGeo = null;
+  public displaySyntheseTaxoRank = null;
+  public displaySyntheseCA = null;
+  public displaySyntheseTaxoContact = null;
 
   public showHistogram = false;
   public showMap = false;
@@ -37,7 +37,13 @@ export class DashboardComponent implements OnInit {
   public showLineChart = false;
   public showSpecies = false;
 
-  constructor(title: Title, public dataService: DataService, private _mapService:MapService) {
+  constructor(title: Title, public dataService: DataService, private _mapService:MapService, public config: ConfigService) {
+    this.displaySynthesePerYear = this.config.DASHBOARD.DISPLAY_PER_YEAR_GRAPH;
+    this.displaySyntheseGeo = this.config.DASHBOARD.DISPLAY_PER_GEO_GRAPH;
+    this.displaySyntheseTaxoRank = this.config.DASHBOARD.DISPLAY_PER_TAXONOMIC_RANK_GRAPH; 
+    this.displaySyntheseCA = this.config.DASHBOARD.DISPLAY_PER_CA_GRAPH; 
+    this.displaySyntheseTaxoContact = this.config.DASHBOARD.DISPLAY_TAXONOMIC_CONTACTS_GRAPH;
+
     title.setTitle("GeoNature - Dashboard")
   }
 

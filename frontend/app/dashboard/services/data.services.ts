@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { ModuleConfig } from "../../module.config";
 import { ConfigService } from '@geonature/services/config.service';
 
 export interface YearRecap {
@@ -30,7 +29,7 @@ export class DataService {
                 }
             }
         }
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/synthese", { params: queryString })
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/synthese", { params: queryString })
     }
 
     getDataAreas(simplify_level, type_code, params?) {
@@ -42,7 +41,7 @@ export class DataService {
                 }
             }
         }
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/areas/" + simplify_level + "/" + type_code, { params: queryString })
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/areas/" + simplify_level + "/" + type_code, { params: queryString })
     }
 
     getDataSynthesePerTaxLevel(taxLevel, params?) {
@@ -54,19 +53,19 @@ export class DataService {
                 }
             }
         }
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/synthese_per_tax_level/" + taxLevel, { params: queryString })
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/synthese_per_tax_level/" + taxLevel, { params: queryString })
     }
 
     getDataFrameworks() {
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/frameworks")
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/frameworks")
     }
 
     getDataRecontact(year) {
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/recontact/" + year)
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/recontact/" + year)
     }
 
     getTaxonomy(taxLevel) {
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/taxonomy/" + taxLevel)
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/taxonomy/" + taxLevel)
     }
 
     getAreasTypes(types_codes: Array<string>) {
@@ -76,15 +75,15 @@ export class DataService {
                 queryString = queryString.append("type_code", elt);
             }
         )
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/areas_types", { params: queryString })
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/areas_types", { params: queryString })
     }
 
     getYears(model) {
-        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/years/" + model)
+        return this.httpClient.get<any>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/years/" + model)
     }
 
     getAnnualReport(year) {
-        return this.httpClient.get<YearRecap>(this.config.API_ENDPOINT + "/" + ModuleConfig.MODULE_URL + "/report/"+year)
+        return this.httpClient.get<YearRecap>(this.config.API_ENDPOINT + "/" + this.config.DASHBOARD.MODULE_URL + "/report/"+year)
     }
 
 }
