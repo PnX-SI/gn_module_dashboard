@@ -4,15 +4,13 @@ import {
   OnChanges,
   AfterViewInit,
   Input,
-  ViewEncapsulation
 } from "@angular/core";
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { MapService } from "@geonature_common/map/map.service";
-import { AppConfig } from "@geonature_config/app.config";
-import { ModuleConfig } from "../../module.config";
 // Services
 import { DataService } from "../services/data.services";
 import { distinctUntilChanged, skip } from '@librairies/rxjs/operators';
+import { ConfigService } from '@geonature/services/config.service';
 
 @Component({
   selector: "dashboard-maps",
@@ -29,14 +27,14 @@ export class DashboardMapsComponent
   // Fonction permettant d'afficher les zonages sur la carte (leaflet)
   public showData = function(feature:any, layer:any){};
   // Degré de simplication des zonages
-  public simplifyLevel = ModuleConfig.SIMPLIFY_LEVEL;
+  public simplifyLevel = null;
   // Couleurs de bordure des zonages
   public initialBorderColor = "rgb(255, 255, 255)";
   public selectedBorderColor = "rgb(50, 50, 50)";
   // Couleurs de remplissage des zonages pour la représentation en nombre d'observations
-  public obsColors = ModuleConfig.OBSCOLORS
+  public obsColors = null;
   // Couleurs de remplissage des zonages pour la représentation en nombre de taxons
-  public taxColors = ModuleConfig.TAXCOLORS
+  public taxColors = null;
   // Encart pour la légende de la carte
   public legend: any;
   // Légende pour la représentation en nombre d'observations
@@ -66,8 +64,8 @@ export class DashboardMapsComponent
   public tabAreasTypes: Array<any>;
 
   // Gestion du formulaire contrôlant le type de zonage
-  public areaTypeControl = new FormControl(ModuleConfig.AREA_TYPE[0]);
-  public currentTypeCode = ModuleConfig.AREA_TYPE[0]; // par défaut, la carte affiche la première géographie AREA_TYPE renseignée
+  public areaTypeControl = null;
+  public currentTypeCode = null; // par défaut, la carte affiche la première géographie AREA_TYPE renseignée
 
   // Pouvoir stoppper le chargement des données si un changement de filtre est opéré avant la fin du chargement
   public subscription: any;
@@ -75,12 +73,12 @@ export class DashboardMapsComponent
   public spinner = true;
 
   // Récupérer la liste des taxons existants dans la BDD pour permettre la recherche de taxon (pnx-taxonomy)
-  public taxonApiEndPoint = `${AppConfig.API_ENDPOINT}/synthese/taxons_autocomplete`;
+  public taxonApiEndPoint = null;
 
   // Réupération des paramètres de configuration
-  public NB_CLASS_OBS = ModuleConfig.NB_CLASS_OBS;
-  public NB_CLASS_TAX = ModuleConfig.NB_CLASS_TAX;
-  public displayNBOBSbydefault = ModuleConfig.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
+  public NB_CLASS_OBS = null;
+  public NB_CLASS_TAX = null;
+  public displayNBOBSbydefault = null;
 
   // Initiatialisation des tableaux vides qui contiendront les bornes des classes. Pour les observations et pour les taxons
   public gradesObs:number[] = new Array(this.NB_CLASS_OBS);
@@ -93,8 +91,19 @@ export class DashboardMapsComponent
   constructor(
     public dataService: DataService,
     public fb: FormBuilder,
-    public mapService: MapService
+    public mapService: MapService,
+    public config: ConfigService
   ) {
+    this.simplifyLevel = this.config.DASHBOARD.SIMPLIFY_LEVEL;
+    this.obsColors = this.config.DASHBOARD.OBSCOLORS
+    this.taxColors = this.config.DASHBOARD.TAXCOLORS
+    this.areaTypeControl = new FormControl(this.config.DASHBOARD.AREA_TYPE[0]);
+    this.currentTypeCode = this.config.DASHBOARD.AREA_TYPE[0];
+    this.NB_CLASS_OBS = this.config.DASHBOARD.NB_CLASS_OBS;
+    this.NB_CLASS_TAX = this.config.DASHBOARD.NB_CLASS_TAX;
+    this.displayNBOBSbydefault = this.config.DASHBOARD.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
+    
+    this.taxonApiEndPoint = `${this.config.API_ENDPOINT}/synthese/taxons_autocomplete`;
     // Déclaration du formulaire général contenant les filtres de la carte
     this.mapForm = fb.group({
       selectedYearRange: fb.control(this.yearRange),
@@ -123,7 +132,7 @@ export class DashboardMapsComponent
     this.loadData();
 
     // Récupération des noms de type_area qui seront contenus dans la liste déroulante du formulaire areaTypeControl
-    this.dataService.getAreasTypes(ModuleConfig.AREA_TYPE).subscribe(data => {
+    this.dataService.getAreasTypes(this.config.DASHBOARD.AREA_TYPE).subscribe(data => {
       // Création de la liste déroulante
       this.tabAreasTypes = data;
     });
