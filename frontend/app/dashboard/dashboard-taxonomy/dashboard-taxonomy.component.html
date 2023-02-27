@@ -22,11 +22,11 @@
                             <label class="col-form-label"><b> Période </b></label>
                             <div class="row justify-content-md-center">
                                 <div class="col-md-11">
-                                    <nouislider class="nouislider" [connect]="true" [tooltips]="true"
+                                    <!-- <nouislider class="nouislider" [connect]="true" [tooltips]="true"
                                         [min]="yearRange[0]" [max]="yearRange[1]" [step]="1"
                                         [formControl]="pieChartForm.controls.selectedYearRange"
                                         (change)="getCurrentParameters($event)" [disabled]="spinner"
-                                        *ngIf="yearRange[0]!=yearRange[1]"></nouislider>
+                                        *ngIf="yearRange[0]!=yearRange[1]"></nouislider> -->
                                 </div>
                             </div>
                         </div><br />
@@ -34,12 +34,12 @@
                             <label class="col-form-label"><b> Rang taxonomique </b></label>
                             <select class="form-control form-control-sm" formControlName="selectedFilter"
                                 (change)="getCurrentParameters($event)" [disableControl]="spinner">
-                                <option> Groupe INPN 1 </option>
-                                <option> Groupe INPN 2 </option>
-                                <option> Règne </option>
-                                <option> Phylum </option>
-                                <option> Classe </option>
-                                <option> Ordre </option>
+                                <option value="group1_inpn"> Groupe INPN 1 </option>
+                                <option value="group2_inpn"> Groupe INPN 2 </option>
+                                <option value="regne"> Règne </option>
+                                <option value="phylum"> Phylum </option>
+                                <option value="classe"> Classe </option>
+                                <option value="ordre"> Ordre </option>
                             </select>
                         </div>
                     </form>
@@ -66,11 +66,10 @@
         </div>
 
         <div style="display: block">
-            <canvas baseChart [data]="pieChartData" [labels]="pieChartLabels" [chartType]="pieChartType"
-                [colors]="pieChartColors" [options]="pieChartOptions">
+            <canvas baseChart [datasets]="pieChartData" [labels]="pieChartLabels" [type]="pietype"
+                [options]="pieChartOptions" [plugins]="pieChartPlugins">
             </canvas>
         </div>
-
     </div>
 
 </div>

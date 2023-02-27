@@ -4,31 +4,31 @@ import { BaseChartDirective } from "ng2-charts";
 // Services
 import { DataService } from "../services/data.services";
 import { CommonService } from "@geonature_common/service/common.service";
-import { ConfigService } from '@geonature/services/config.service';
+import { ConfigService } from "@geonature/services/config.service";
 
 @Component({
   selector: "dashboard-histogram",
   templateUrl: "dashboard-histogram.component.html",
-  styleUrls: ["./dashboard-histogram.component.scss"]
+  styleUrls: ["./dashboard-histogram.component.scss"],
 })
 export class DashboardHistogramComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective;
 
   // Type de graphe
-  public barChartType = "bar";
+  public bartype = "bar";
   // Tableau contenant les labels du graphe
   public barChartLabels = [];
   // Tableau contenant les données du graphe
   public barChartData = [
     { data: [], label: "Nombre d'observations", yAxisID: "yAxisObs" },
-    { data: [], label: "Nombre de taxons", yAxisID: "yAxisTax" }
+    { data: [], label: "Nombre de taxons", yAxisID: "yAxisTax" },
   ];
   // Pouvoir enregistrer le tableau des données au chargement du composant lorsqu'aucun filtre n'est sélectionné (accélérer l'affichage des données par la suite)
   public noFilterBarChartData = [];
   // Tableau contenant les couleurs du graphe
   public barChartColors = [
     { backgroundColor: "rgba(159, 5, 63, 0.8)" },
-    { backgroundColor: "rgba(0, 128, 128, 0.8)" }
+    { backgroundColor: "rgba(0, 128, 128, 0.8)" },
   ];
   // Dictionnaire contenant les options à implémenter sur le graphe (affichage des deux axes avec leur légende notamment)
   public barChartOptions = {
@@ -36,10 +36,10 @@ export class DashboardHistogramComponent implements OnInit {
     responsive: true,
     tooltips: {
       mode: "index",
-      intersect: true
+      intersect: true,
     },
     plugins: {
-      labels: []
+      labels: [],
     },
     scales: {
       xAxes: [
@@ -48,9 +48,9 @@ export class DashboardHistogramComponent implements OnInit {
           scaleLabel: {
             display: true,
             labelString: "Années",
-            fontSize: 16
-          }
-        }
+            fontSize: 16,
+          },
+        },
       ],
       yAxes: [
         {
@@ -59,14 +59,14 @@ export class DashboardHistogramComponent implements OnInit {
           stacked: true,
           ticks: {
             beginAtZero: true,
-            fontColor: "rgb(159, 5, 63)"
+            fontColor: "rgb(159, 5, 63)",
           },
           scaleLabel: {
             display: true,
             labelString: "Nombre d'observations",
             fontColor: "rgb(159, 5, 63)",
-            fontSize: 16
-          }
+            fontSize: 16,
+          },
         },
         {
           id: "yAxisTax",
@@ -74,20 +74,20 @@ export class DashboardHistogramComponent implements OnInit {
           stacked: true,
           ticks: {
             beginAtZero: true,
-            fontColor: "rgb(0, 128, 128)"
+            fontColor: "rgb(0, 128, 128)",
           },
           gridLines: {
-            drawOnChartArea: false
+            drawOnChartArea: false,
           },
           scaleLabel: {
             display: true,
             labelString: "Nombre de taxons",
             fontColor: "rgb(0, 128, 128)",
-            fontSize: 16
-          }
-        }
-      ]
-    }
+            fontSize: 16,
+          },
+        },
+      ],
+    },
   };
 
   // Gestion du formulaire
@@ -121,15 +121,15 @@ export class DashboardHistogramComponent implements OnInit {
       selectedFamille: fb.control(null),
       selectedGroup1INPN: fb.control(null),
       selectedGroup2INPN: fb.control(null),
-      taxon: fb.control(null)
+      taxon: fb.control(null),
     });
   }
 
   ngOnInit() {
     // Accès aux données de la VM vm_synthese
-    this.subscription = this.dataService.getDataSynthese().subscribe(data => {
+    this.subscription = this.dataService.getDataSynthese().subscribe((data) => {
       // Remplissage des array des labels et des données à afficher, paramètres de l'histogramme
-      data.forEach(elt => {
+      data.forEach((elt) => {
         this.barChartLabels.push(elt[0]);
         this.barChartData[0]["data"].push(elt[1]);
         this.barChartData[1]["data"].push(elt[2]);
@@ -185,17 +185,17 @@ export class DashboardHistogramComponent implements OnInit {
       // Réinitialisation de l'array des données à afficher, paramètre de l'histogramme
       var barChartDataTemp = [
         { data: [], label: "Nombre d'observations", yAxisID: "yAxisObs" },
-        { data: [], label: "Nombre de taxons", yAxisID: "yAxisTax" }
+        { data: [], label: "Nombre de taxons", yAxisID: "yAxisTax" },
       ];
       // Accès aux données de la VM vm_synthese
       this.subscription = this.dataService
         .getDataSynthese(this.histForm.value)
         .subscribe(
-          data => {
+          (data) => {
             // Remplissage de l'array des données, en tenant compte du fait qu'il peut n'y avoir aucune observation pour certaines années
             const dataLength = data.length;
             var start = 0;
-            this.barChartLabels.forEach(year => {
+            this.barChartLabels.forEach((year) => {
               var i = start;
               var keepGoing = true;
               while (i < dataLength && keepGoing == true) {
@@ -219,7 +219,7 @@ export class DashboardHistogramComponent implements OnInit {
             this.barChartData = barChartDataTemp;
             this.spinner = false;
           },
-          error => {
+          (error) => {
             // Affichage d'un message d'erreur s'il n'y a pas de données pour le taxon sélectionné
             this.commonService.regularToaster(
               "info",

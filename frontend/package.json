@@ -4,8 +4,6 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "chartjs-plugin-labels": "^1.1.0",
-    "chartjs-plugin-piechart-outlabels": "^0.1.4",
     "ng2-nouislider": "1.8.3",
     "nouislider": "15.5.0",
     "tslib": "^2.3.1"

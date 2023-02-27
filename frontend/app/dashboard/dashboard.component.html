@@ -65,7 +65,7 @@
             <em class="fa fa-xl fa-sitemap" aria-hidden="true" *ngIf="!showPieChart"></em>
         </button>
     </div>
-    <dashboard-taxonomy [taxonomies]="taxonomies" [yearsMinMax]="yearsMinMax" [hidden]="!showPieChart">
+    <dashboard-taxonomy [yearsMinMax]="yearsMinMax" [hidden]="!showPieChart">
     </dashboard-taxonomy>
 
     <div *ngIf="displaySyntheseCA" class="row row-md">
