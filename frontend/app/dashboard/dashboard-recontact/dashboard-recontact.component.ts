@@ -55,11 +55,10 @@ export class DashboardRecontactComponent implements OnInit {
         },
         formatter: (value, ctx) => {
           if (ctx.chart.data.labels) {
-            const currentValue = ctx.chart.data.datasets[0].data[ctx.dataIndex];
             const total = ctx.chart.data.datasets[0].data.reduce(
               (acc, prev) => acc + prev
             );
-            return Math.round((currentValue / total) * 100) + "%";
+            return Math.round((value / total) * 100) + "%";
           }
         },
       },

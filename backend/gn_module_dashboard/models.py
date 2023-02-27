@@ -52,6 +52,7 @@ class VTaxonomie(DB.Model):
 class VFrameworks(DB.Model):
     __tablename__ = "vm_synthese_frameworks"
     __table_args__ = {"schema": "gn_dashboard"}
-    acquisition_framework_name = DB.Column(DB.Unicode, primary_key=True)
+    id_acquisition_framework = DB.Column(DB.Integer, primary_key=True)
+    acquisition_framework_name = DB.Column(DB.Unicode)
     year = DB.Column(DB.Integer)
     nb_obs = DB.Column(DB.Integer)
