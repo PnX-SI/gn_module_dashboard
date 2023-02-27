@@ -4,6 +4,7 @@ from sqlalchemy.sql import select
 from utils_flask_sqla.serializers import serializable
 from geonature.utils.env import DB
 
+
 # vm_synthese
 @serializable
 class VSynthese(DB.Model):
