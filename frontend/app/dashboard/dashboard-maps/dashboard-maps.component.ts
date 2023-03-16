@@ -4,13 +4,14 @@ import {
   OnChanges,
   AfterViewInit,
   Input,
+  ViewEncapsulation,
 } from "@angular/core";
 import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
 import { MapService } from "@geonature_common/map/map.service";
 // Services
 import { DataService } from "../services/data.services";
-import { distinctUntilChanged, skip } from '@librairies/rxjs/operators';
-import { ConfigService } from '@geonature/services/config.service';
+import { distinctUntilChanged, skip } from "@librairies/rxjs/operators";
+import { ConfigService } from "@geonature/services/config.service";
 
 @Component({
   selector: "dashboard-maps",
@@ -19,13 +20,14 @@ import { ConfigService } from '@geonature/services/config.service';
   styleUrls: ["./dashboard-maps.component.scss"],
 })
 export class DashboardMapsComponent
-  implements OnInit, OnChanges, AfterViewInit {
+  implements OnInit, OnChanges, AfterViewInit
+{
   // Tableau contenant la géométrie et les données des zonages
   public myAreas: Array<any>;
   public myAreas_length: any;
 
   // Fonction permettant d'afficher les zonages sur la carte (leaflet)
-  public showData = function(feature:any, layer:any){};
+  public showData = function (feature: any, layer: any) {};
   // Degré de simplication des zonages
   public simplifyLevel = null;
   // Couleurs de bordure des zonages
@@ -81,8 +83,8 @@ export class DashboardMapsComponent
   public displayNBOBSbydefault = null;
 
   // Initiatialisation des tableaux vides qui contiendront les bornes des classes. Pour les observations et pour les taxons
-  public gradesObs:number[] = new Array(this.NB_CLASS_OBS);
-  public gradesTax:number[] = new Array(this.NB_CLASS_TAX);
+  public gradesObs: number[] = new Array(this.NB_CLASS_OBS);
+  public gradesTax: number[] = new Array(this.NB_CLASS_TAX);
 
   // Initialisation de variables qui récupéreront le maximum d'observation ou de taxon par entité géographique
   public maxTaxa: any;
@@ -95,36 +97,40 @@ export class DashboardMapsComponent
     public config: ConfigService
   ) {
     this.simplifyLevel = this.config.DASHBOARD.SIMPLIFY_LEVEL;
-    this.obsColors = this.config.DASHBOARD.OBSCOLORS
-    this.taxColors = this.config.DASHBOARD.TAXCOLORS
+    this.obsColors = this.config.DASHBOARD.OBSCOLORS;
+    this.taxColors = this.config.DASHBOARD.TAXCOLORS;
     this.areaTypeControl = new FormControl(this.config.DASHBOARD.AREA_TYPE[0]);
     this.currentTypeCode = this.config.DASHBOARD.AREA_TYPE[0];
     this.NB_CLASS_OBS = this.config.DASHBOARD.NB_CLASS_OBS;
     this.NB_CLASS_TAX = this.config.DASHBOARD.NB_CLASS_TAX;
-    this.displayNBOBSbydefault = this.config.DASHBOARD.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
-    
+    this.displayNBOBSbydefault =
+      this.config.DASHBOARD.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
+
     this.taxonApiEndPoint = `${this.config.API_ENDPOINT}/synthese/taxons_autocomplete`;
-    // Déclaration du formulaire général contenant les filtres de la carte
-    this.mapForm = fb.group({
-      selectedYearRange: fb.control(this.yearRange),
-      selectedFilter: fb.control(null),
-      selectedRegne: fb.control(null),
-      selectedPhylum: fb.control(null),
-      selectedClasse: fb.control(null),
-      selectedOrdre: fb.control(null),
-      selectedFamille: fb.control(null),
-      selectedGroup1INPN: fb.control(null),
-      selectedGroup2INPN: fb.control(null),
-      taxon: fb.control(null)
-    });
-  };
+  }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////COMPOSANTS///////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   ngOnInit() {
-   this.currentMap = this.displayNBOBSbydefault ? 1 : 2;
+    // Déclaration du formulaire général contenant les filtres de la carte
+    this.mapForm = this.fb.group({
+      yearStart: this.fb.control(this.yearsMinMax[0]),
+      yearEnd: this.fb.control(this.yearsMinMax[this.yearsMinMax.length - 1]),
+      selectedFilter: this.fb.control(null),
+      selectedRegne: this.fb.control(null),
+      selectedPhylum: this.fb.control(null),
+      selectedClasse: this.fb.control(null),
+      selectedOrdre: this.fb.control(null),
+      selectedFamille: this.fb.control(null),
+      selectedGroup1INPN: this.fb.control(null),
+      selectedGroup2INPN: this.fb.control(null),
+      taxon: this.fb.control(null),
+    });
+    console.log(this.yearRange);
+
+    this.currentMap = this.displayNBOBSbydefault ? 1 : 2;
   }
 
   ngAfterViewInit() {
@@ -132,16 +138,20 @@ export class DashboardMapsComponent
     this.loadData();
 
     // Récupération des noms de type_area qui seront contenus dans la liste déroulante du formulaire areaTypeControl
-    this.dataService.getAreasTypes(this.config.DASHBOARD.AREA_TYPE).subscribe(data => {
-      // Création de la liste déroulante
-      this.tabAreasTypes = data;
-    });
+    this.dataService
+      .getAreasTypes(this.config.DASHBOARD.AREA_TYPE)
+      .subscribe((data) => {
+        // Création de la liste déroulante
+        this.tabAreasTypes = data;
+      });
 
     // Abonnement à la liste déroulante du formulaire areaTypeControl afin de modifier le type de zonage à chaque changement
     this.areaTypeControl.valueChanges
-      .pipe(distinctUntilChanged(), // le [disableControl] du HTML déclenche l'API sans fin
-          skip(1)) // l'initialisation de la liste déroulante sur "Communes" lance l'API une fois
-      .subscribe(value => {
+      .pipe(
+        distinctUntilChanged(), // le [disableControl] du HTML déclenche l'API sans fin
+        skip(1)
+      ) // l'initialisation de la liste déroulante sur "Communes" lance l'API une fois
+      .subscribe((value) => {
         this.spinner = true;
         this.currentTypeCode = value;
         // Accès aux données de synthèse
@@ -160,51 +170,52 @@ export class DashboardMapsComponent
   ///////////////////////////////////////////////FONCTIONS///////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  loadData(){
+  loadData() {
+    console.log(this.filtersDict);
+
     this.dataService
-    .getDataAreas(
-      this.simplifyLevel,
-      this.currentTypeCode,
-      this.filtersDict
-    )
-    .subscribe(data => {
-      this.myAreas = data;
+      .getDataAreas(this.simplifyLevel, this.currentTypeCode, this.filtersDict)
+      .subscribe((data) => {
+        this.myAreas = data;
 
-      this.maxTaxa = Math.max(...data.features.map(o => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
-      this.maxObs = Math.max(...data.features.map(o => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
+        this.maxTaxa = Math.max(
+          ...data.features.map((o) => o.properties.nb_taxons),
+          0
+        ); // à mettre dans la fonction legend tax
+        this.maxObs = Math.max(
+          ...data.features.map((o) => o.properties.nb_obs),
+          0
+        ); // à mettre dans la fonction legend tax)
 
-      if (this.NB_CLASS_TAX>this.maxTaxa){
-        this.gradesTax = new Array(this.maxTaxa);
-      }
-      else{
-        this.gradesTax = new Array(this.NB_CLASS_TAX);
-      }
-      if (this.NB_CLASS_OBS>this.maxObs){
-        this.gradesObs = new Array(this.maxObs);
-      }
-      else{
-        this.gradesObs = new Array(this.NB_CLASS_OBS);
-      }
+        if (this.NB_CLASS_TAX > this.maxTaxa) {
+          this.gradesTax = new Array(this.maxTaxa);
+        } else {
+          this.gradesTax = new Array(this.NB_CLASS_TAX);
+        }
+        if (this.NB_CLASS_OBS > this.maxObs) {
+          this.gradesObs = new Array(this.maxObs);
+        } else {
+          this.gradesObs = new Array(this.NB_CLASS_OBS);
+        }
 
-      this.createlegend_OBS(this.gradesObs.length, this.maxObs)
-      this.createlegend_TAX(this.gradesTax.length, this.maxTaxa);
+        this.createlegend_OBS(this.gradesObs.length, this.maxObs);
+        this.createlegend_TAX(this.gradesTax.length, this.maxTaxa);
 
         // Initialisation de la fonction "showData" : la carte affichée par défaut dépend du choix de l'utilisateur.trice
-      if(this.currentMap == 1){
-        this.showData = this.onEachFeatureNbObs;
-      }
-      else{
-        this.showData = this.onEachFeatureNbTax;
-      }
+        if (this.currentMap == 1) {
+          this.showData = this.onEachFeatureNbObs;
+        } else {
+          this.showData = this.onEachFeatureNbTax;
+        }
 
-      if(this.legend){
-        this.legend.remove()
-      }
+        if (this.legend) {
+          this.legend.remove();
+        }
 
-      // Implémentation de la légende
-      this.add_legend()
-      this.spinner = false;
-    });
+        // Implémentation de la légende
+        this.add_legend();
+        this.spinner = false;
+      });
   }
 
   //////////////////////////////////////////Relatives à la carte/////////////////////////////////////////////
@@ -215,12 +226,12 @@ export class DashboardMapsComponent
       fillColor: this.getColorObs(feature.properties.nb_obs),
       color: this.initialBorderColor,
       fillOpacity: 0.9,
-      weight: 1
+      weight: 1,
     });
     layer.on({
       mouseover: this.highlightFeature.bind(this),
       mouseout: this.resetHighlight.bind(this),
-      click: this.zoomToFeature.bind(this)
+      click: this.zoomToFeature.bind(this),
     });
   }
 
@@ -230,12 +241,12 @@ export class DashboardMapsComponent
       fillColor: this.getColorTax(feature.properties.nb_taxons),
       color: this.initialBorderColor,
       fillOpacity: 0.9,
-      weight: 1
+      weight: 1,
     });
     layer.on({
       mouseover: this.highlightFeature.bind(this),
       mouseout: this.resetHighlight.bind(this),
-      click: this.zoomToFeature.bind(this)
+      click: this.zoomToFeature.bind(this),
     });
   }
 
@@ -263,20 +274,19 @@ export class DashboardMapsComponent
     return this.taxColors[nb_classes][nb_classes - 1];
   }
 
-
   //////////////////////////////////////////Relatives à la légende/////////////////////////////////////////////
 
   // Légende concernant le nombre de taxons
-  createlegend_TAX(nb_classes, nb_taxa_area){
+  createlegend_TAX(nb_classes, nb_taxa_area) {
     this.divLegendTax = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendTax.innerHTML += "<b>Nombre de taxons</b><br/>";
-    if (nb_classes>nb_taxa_area){
-      nb_classes = nb_taxa_area
+    if (nb_classes > nb_taxa_area) {
+      nb_classes = nb_taxa_area;
       this.gradesTax = new Array(nb_classes);
-      this.gradesTax[nb_classes] = nb_taxa_area
+      this.gradesTax[nb_classes] = nb_taxa_area;
     }
-    for (var i = 0; i < nb_classes; i++){
-      this.gradesTax[i] = Math.trunc((i/nb_classes)*nb_taxa_area)
+    for (var i = 0; i < nb_classes; i++) {
+      this.gradesTax[i] = Math.trunc((i / nb_classes) * nb_taxa_area);
     }
     for (var i = 0; i < nb_classes; i++) {
       this.divLegendTax.innerHTML +=
@@ -287,20 +297,20 @@ export class DashboardMapsComponent
         (this.gradesTax[i + 1]
           ? "&ndash;" + (this.gradesTax[i + 1] - 1) + "</div>"
           : "+ </div>");
-    };
+    }
   }
 
   // Légende concernant le nombre d'Obs
-  createlegend_OBS(nb_classes, nb_obs_area){
+  createlegend_OBS(nb_classes, nb_obs_area) {
     this.divLegendObs = this.mapService.L.DomUtil.create("div", "divLegend");
     this.divLegendObs.innerHTML += "<b>Nombre d'observations</b><br/>";
-    if (nb_classes>nb_obs_area){
-      nb_classes = nb_obs_area
+    if (nb_classes > nb_obs_area) {
+      nb_classes = nb_obs_area;
       this.gradesObs = new Array(nb_classes);
-      this.gradesObs[nb_classes] = nb_obs_area
+      this.gradesObs[nb_classes] = nb_obs_area;
     }
-    for (var i = 0; i < nb_classes; i++){
-      this.gradesObs[i] = Math.trunc((i/nb_classes)*nb_obs_area)
+    for (var i = 0; i < nb_classes; i++) {
+      this.gradesObs[i] = Math.trunc((i / nb_classes) * nb_obs_area);
     }
     for (var i = 0; i < nb_classes; i++) {
       this.divLegendObs.innerHTML +=
@@ -311,21 +321,20 @@ export class DashboardMapsComponent
         (this.gradesObs[i + 1]
           ? "&ndash;" + (this.gradesObs[i + 1] - 1) + "</div>"
           : "+ </div>");
-    };
+    }
   }
 
   // Ajout de la légende lors de l'init
-  add_legend(){
+  add_legend() {
     this.legend = (this.mapService.L as any).control({
-      position: "bottomright"
+      position: "bottomright",
     });
-    if(this.currentMap == 1){
-      this.legend.onAdd = map => {
+    if (this.currentMap == 1) {
+      this.legend.onAdd = (map) => {
         return this.divLegendObs;
       };
-    }
-    else{
-      this.legend.onAdd = map => {
+    } else {
+      this.legend.onAdd = (map) => {
         return this.divLegendTax;
       };
     }
@@ -337,7 +346,7 @@ export class DashboardMapsComponent
     this.myAreas = Object.assign({}, this.myAreas);
     this.showData = this.onEachFeatureNbTax.bind(this);
     this.mapService.map.removeControl(this.legend);
-    this.legend.onAdd = map => {
+    this.legend.onAdd = (map) => {
       return this.divLegendTax;
     };
     this.legend.addTo(this.mapService.map);
@@ -349,7 +358,7 @@ export class DashboardMapsComponent
     this.myAreas = Object.assign({}, this.myAreas);
     this.showData = this.onEachFeatureNbObs.bind(this);
     this.mapService.map.removeControl(this.legend);
-    this.legend.onAdd = map => {
+    this.legend.onAdd = (map) => {
       return this.divLegendObs;
     };
     this.legend.addTo(this.mapService.map);
@@ -416,7 +425,7 @@ export class DashboardMapsComponent
     layer.setStyle({
       color: this.selectedBorderColor,
       weight: 5,
-      fillOpacity: 1
+      fillOpacity: 1,
     });
     layer.bringToFront();
     this.introLegend = null;
@@ -440,12 +449,12 @@ export class DashboardMapsComponent
     layer.setStyle({
       color: this.initialBorderColor,
       weight: 1,
-      fillOpacity: 0.9
+      fillOpacity: 0.9,
     });
   }
 
   // Zoomer sur un zonage en cliquant dessus
   zoomToFeature(e) {
     this.mapService.map.fitBounds(e.target.getBounds());
-  };
+  }
 }

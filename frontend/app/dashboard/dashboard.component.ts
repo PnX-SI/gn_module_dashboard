@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewEncapsulation } from "@angular/core";
 import { Title } from "@angular/platform-browser";
 // Services
 import { DataService } from "./services/data.services";
@@ -108,7 +108,7 @@ export class DashboardComponent implements OnInit {
 
     // Accès aux années extrêmes de la BDD
     this.dataService.getYears().subscribe((data) => {
-      this.yearsMinMax = data[0];
+      this.yearsMinMax = data;
     });
     // Accès aux années extrêmes de la BDD
     this.dataService.getYears().subscribe((data) => {

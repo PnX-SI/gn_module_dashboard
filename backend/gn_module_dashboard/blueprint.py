@@ -57,15 +57,16 @@ def get_synthese_stat():
 def get_areas_stat(simplify_level, type_code):
     params = request.args
     # x : Variable contenant les conditions WHERE à ajouter à la requête générale
+    year_start = request.args.get("yearStart", None)
+    year_end = request.args.get("yearEnd", None)
     x = """ """
-    if "selectedYearRange" in params:
-        yearRange = params["selectedYearRange"].split(",")
+    if year_start or year_end:
         x = (
             x
-            + """ AND date_part('year', s.date_min) <= """
-            + yearRange[1]
-            + """ AND date_part('year', s.date_max) >= """
-            + yearRange[0]
+            + """ AND date_part('year', s.date_min) >= """
+            + year_start
+            + """ AND date_part('year', s.date_max) <= """
+            + year_end
         )
     if ("selectedRegne" in params) and (params["selectedRegne"] != ""):
         x = x + """AND t.regne = '""" + params["selectedRegne"] + """' """
@@ -134,10 +135,9 @@ def get_synthese_per_tax_level_stat(taxLevel):
         .group_by(column_taxlevel)
         .order_by(column_taxlevel)
     )
-    if "selectedYearRange" in params:
-        yearRange = params["selectedYearRange"].split(",")
-        q = q.filter(func.date_part("year", VSynthese.date_min) <= yearRange[1])
-        q = q.filter(func.date_part("year", VSynthese.date_max) >= yearRange[0])
+    if "yearStart" in params and "yearEnd" in params:
+        q = q.filter(func.date_part("year", VSynthese.date_min) >= params["yearStart"])
+        q = q.filter(func.date_part("year", VSynthese.date_max) <= params["yearEnd"])
     return [{"taxon": d[0], "nb_obs": d[1]} for d in q.all()]
 
 

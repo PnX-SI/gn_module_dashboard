@@ -70,13 +70,14 @@ export class DashboardTaxonomyComponent implements OnInit {
 
   constructor(public dataService: DataService, public fb: FormBuilder) {
     // Déclaration du formulaire contenant les filtres du pie chart
-    this.pieChartForm = fb.group({
-      selectedYearRange: fb.control(this.yearRange),
-      selectedFilter: fb.control(null),
-    });
   }
 
   ngOnInit() {
+    this.pieChartForm = this.fb.group({
+      yearStart: this.fb.control(null),
+      yearEnd: this.fb.control(null),
+      selectedFilter: this.fb.control(null),
+    });
     // generate an a tab of random color
     [...Array(100)].forEach((el, index) => {
       this.colors.push(this.dynamicColors());
@@ -102,7 +103,13 @@ export class DashboardTaxonomyComponent implements OnInit {
   ngOnChanges(change) {
     // Récupération des années min et max présentes dans la synthèse de GeoNature
     if (change.yearsMinMax && change.yearsMinMax.currentValue != undefined) {
-      this.yearRange = change.yearsMinMax.currentValue;
+      this.pieChartForm.patchValue({
+        yearStart: change.yearsMinMax.currentValue[0],
+        yearEnd:
+          change.yearsMinMax.currentValue[
+            change.yearsMinMax.currentValue.length - 1
+          ],
+      });
     }
   }
   dynamicColors() {
