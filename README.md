@@ -3,10 +3,9 @@ Dashboard
 
 Module GeoNature permettant de proposer un tableau de bord contenant
 plusieurs graphiques et cartes basés sur les données présentes dans la
-synthèse de GeoNature. 
+synthèse de GeoNature.
 
-Développé par Elsa Guilley, stagiaire au Parc
-national des Ecrins en 2019.
+Développé par Elsa Guilley, stagiaire au Parc national des Ecrins en 2019.
 
 Démo vidéo :
 <https://geonature.fr/docs/img/2019-09-GN-dashboard-0.1.0.gif>
@@ -14,8 +13,7 @@ Démo vidéo :
 **Fonctionnalités** :
 
 -   Nombre d'observations et de taxons par année
--   Nombre d'observations et de taxons par zonage (communes,
-    mailles...)
+-   Nombre d'observations et de taxons par zonage (communes, mailles...)
 -   Répartition des observations par rang taxonomique
 -   Nombre d'observations par cadre d'acquisition par année
 -   Taxons recontactés, non recontactés et nouveaux par année
@@ -48,16 +46,12 @@ Installation
 Configuration
 -------------
 
-Vous pouvez compléter la configuration du module dans le fichier
-`config/conf_gn_module.toml` à partir des paramètres présents dans
+Vous pouvez compléter la configuration du module en créant un fichier
+`geonature/config/dashboard_conf.toml` à partir des paramètres présents dans
 `config/conf_gn_module.toml.example`, dont vous pouvez surcoucher
 les valeurs par défaut. 
 
-Pour appliquer ces changements, rechargez GeoNature (`sudo systemctl reload geonature`)
-puis la mise à jour de la configuration
-depuis le répertoire `geonature/backend` avec les commandes
-`source venv/bin/activate` puis
-`geonature update-configuration`
+Pour appliquer ces changements, rechargez GeoNature (`sudo systemctl reload geonature`).
 
 Détail des paramètres modifiables :
 
@@ -78,7 +72,7 @@ Détail des paramètres modifiables :
     `DISPLAY_XXXX_GRAPH`. Renseigner 'true' pour afficher le graphique
     en question et 'false' pour le masquer.
 -   Paramétrage par défaut du graphique "Synthèse par entité
-    géographique" du dashboard :
+    géographique" du Dashboard :
     `DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH`. Renseigner 'true'
     si vous souhaitez afficher par défaut les observations, 'false'
     si vous souhaitez les taxons.
@@ -87,9 +81,9 @@ Vues matérialisées
 ------------------
 
 Dans un soucis de performance, des vues matérialisées ont été mises en
-place. Elles sont rafraichies automatiquement tous les jours à 2h du matin.
+place. Elles sont rafraichies automatiquement par Celery tous les jours à 2h du matin.
 Vous pouvez configurer la périodicité du rafraichissement via le paramètre
-de configuration ``CRONTAB``
+de configuration ``CRONTAB`` 
 (syntaxe [crontab](https://crontab.guru/), ``CRONTAB=""`` pour désactiver).
 
 Vous pouvez également mettre à jour manuellement les vues matérialisées :
@@ -119,9 +113,10 @@ Mise à jour du module
         mv /home/`whoami`/gn_module_dashboard /home/`whoami`/gn_module_dashboard_old
         mv /home/`whoami`/gn_module_dashboard-X.Y.Z /home/`whoami`/gn_module_dashboard
 
--   Rapatriez le fichiers de configuration
+-   Si vous avez encore votre configuration du module dans les dossiers du module, rapatriez le fichier de configuration dans le dossier
+    de configuration centralisée de GeoNature (depuis sa version 2.11) :
 
-        cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/gn_module_dashboard/config/conf_gn_module.toml
+        cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/geonature/config/dashboard_conf.toml
 
 -   Lancez la mise à jour du module
 
@@ -134,6 +129,6 @@ Licence
 -------
 
 -   OpenSource - GPL-3.0
--   Copyleft 2019-2022 - Parc National des Écrins
+-   Copyleft 2019-2023 - Parc National des Écrins
 
-[![image](http://geonature.fr/img/logo-pne.jpg)](http://www.ecrins-parcnational.fr)
+[![image](https://geonature.fr/img/logo-pne.jpg)](http://www.ecrins-parcnational.fr)
