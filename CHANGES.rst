@@ -2,17 +2,25 @@
 CHANGELOG
 =========
 
-1.2.2 (unreleased)
+1.3.0 (unreleased)
 ------------------
+
+Nécessite GeoNature version 2.12.0 (ou plus)
 
 **🚀 Nouveautés**
 
-* Rafraichissement automatique des vue matérialisées via Celery Beat.
-  Configuration via le paramètre ``CRONTAB``.
+* Compatibilité avec GeoNature 2.12 (Angular 15, configuration dynamique)
+* Rafraichissement automatique des vue matérialisées via Celery Beat tous les jours à 2h.
+  La fréquence est modifiable avec le paramètre ``CRONTAB`` de la configuration du module.
+* Refonte du graphique des cadres d'acquisition pour le rendre plus lisible (#16)  
+* Mise à jour de Chart.js version 2 à 4
+* Remplacement de noUiSlider par Material slider
+* Factorisation et nettoyage général du code du module
 
 **⚠️ Notes de version**
 
-* Si vous aviez mis en place un cron système, vous pouvez le supprimer.
+* Si vous aviez mis en place un cron système pour rafraichir les vues matérialisées (dans `/etc/cron/geonature` ou autre),
+  vous pouvez le supprimer car elles sont désormais rafraichies automatiquement avec Celery Beat.
 
 1.2.1 (2022-12-21)
 ------------------
