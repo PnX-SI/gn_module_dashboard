@@ -79,18 +79,19 @@
                 <h5>
                     Répartition des nouvelles espèces par groupe
                 </h5>
-
-                <canvas 
-                    *ngIf="newSpeciesData.length > 0"
-                    baseChart 
-                    [data]="newSpeciesData" 
-                    [labels]="newSpeciesLabel"
-                    [colors]="newSpeciesColors"
-                    [options]="pieChartOptions"
-                    type="doughnut"
-                    class="mb-3"
-                >
-                </canvas>
+                <div style="display: block ; width: 90%; height: 60vh" >
+                    <canvas 
+                        *ngIf="newSpeciesData[0].data.length > 0"
+                        baseChart 
+                        [datasets]="newSpeciesData" 
+                        [labels]="newSpeciesLabel"
+                        [options]="pieChartOptions"
+                        [plugins]="pieChartPlugins"
+                        type="doughnut"
+                        class="mb-3"
+                    >
+                    </canvas>
+                </div>
                 <h3 class="mt-3"> 
                     <span class="underline--magical">
                         Les 10 espèces les plus observées
@@ -117,18 +118,19 @@
                         
                 </table>
                 <h5 class="mt-5">Répartition des observations par groupe</h5>
-
-                <canvas 
-                    *ngIf="obsByGroupData.length > 0"
-                    baseChart 
-                    [data]="obsByGroupData" 
-                    [labels]="obsByGroupLabel" 
-                    [colors]="obsByGroupColor"
-                    [options]="pieChartOptions"
-                    type="doughnut"
-                    class="mb-3"
-                >
-                </canvas>
+                <div style="display: block ; width: 90%; height: 60vh" >
+                    <canvas 
+                        *ngIf="obsByGroupData.length > 0"
+                        baseChart 
+                        [datasets]="obsByGroupData" 
+                        [labels]="obsByGroupLabel" 
+                        [options]="pieChartOptions"
+                        [plugins]="pieChartPlugins"
+                        type="doughnut"
+                        class="mb-3"
+                    >
+                    </canvas>
+                </div>
                 <mat-divider></mat-divider>
 
                 <h3 class="mt-3"> 
