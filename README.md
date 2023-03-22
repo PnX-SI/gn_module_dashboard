@@ -105,7 +105,7 @@ de configuration ``CRONTAB``
 Vous pouvez également mettre à jour manuellement les vues matérialisées :
 
 ```bash
-source backend/venv/bin/activate
+source ~geonature/backend/venv/bin/activate
 geonature dashboard refresh-vm
 ```
 
