@@ -29,29 +29,45 @@ Démo vidéo :
 Installation
 ------------
 
--   Installez GeoNature (<https://github.com/PnX-SI/GeoNature>)
--   Téléchargez la dernière version stable du module
-    (`wget https://github.com/PnX-SI/gn_module_dashboard/archive/X.Y.Z.zip`
-    ou en cliquant sur le bouton GitHub "Clone or download" de cette
-    page) dans `/home/myuser/`
--   Dézippez la dans `/home/myuser/` (`unzip X.Y.Z.zip`)
--   Renommer le répertoire
-    `mv gn_module_dashboard-X.Y.Z gn_module_dashboard`
--   Placez-vous dans le répertoire `backend` de GeoNature et lancez les
-    commandes `source venv/bin/activate` puis
-    `geonature install-gn-module ~/gn_module_dashboard DASHBOARD`
--   Vous pouvez sortir du venv en exécutant la commande `deactivate`
--   Relancez GeoNature (`sudo systemctl restart geonature`)
+- Téléchargez la dernière version stable du module
+  ```bash
+  wget https://github.com/PnX-SI/gn_module_dashboard/archive/X.Y.Z.zip
+  ```
+- Dézippez la dans `/home/myuser/` 
+  ```bash
+  unzip X.Y.Z.zip
+  ```
+- Renommer le répertoire
+  ```bash
+  mv gn_module_dashboard-X.Y.Z gn_module_dashboard
+  ```
+- Placez-vous dans le répertoire `backend` de GeoNature et lancez les commandes 
+  ```bash
+  source ~/geonature/venv/bin/activate
+  geonature install-gn-module ~/gn_module_dashboard DASHBOARD
+  ```
+- Vous pouvez sortir du venv
+  ```bash
+  deactivate
+  ```
+- Relancez GeoNature 
+  ```bash
+  sudo systemctl restart geonature
+  ```
 
 Configuration
 -------------
 
 Vous pouvez compléter la configuration du module en créant un fichier
-`geonature/config/dashboard_conf.toml` à partir des paramètres présents dans
-`config/conf_gn_module.toml.example`, dont vous pouvez surcoucher
-les valeurs par défaut. 
+`dashboard_config.toml` dans le dossier `config` de GeoNature, à partir des paramètres présents dans
+le fichier `dashboard_config.toml.example`, dont vous pouvez surcoucher
+les valeurs par défaut.
 
-Pour appliquer ces changements, rechargez GeoNature (`sudo systemctl reload geonature`).
+```bash
+cp ~/gn_module_dashboard/dashboard_config.toml.example ~/geonature/config/dashboard_config.toml
+```
+
+Pour appliquer les changements de la configuration, rechargez GeoNature (`sudo systemctl reload geonature`).
 
 Détail des paramètres modifiables :
 
