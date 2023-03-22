@@ -9,7 +9,7 @@ Nécessite GeoNature version 2.12.0 (ou plus)
 
 **🚀 Nouveautés**
 
-* Compatibilité avec GeoNature 2.12 (Angular 15, configuration dynamique)
+* Compatibilité avec GeoNature 2.12 (Angular 15, configuration dynamique, configuration centralisée)
 * Rafraichissement automatique des vue matérialisées via Celery Beat tous les jours à 2h.
   La fréquence est modifiable avec le paramètre ``CRONTAB`` de la configuration du module.
 * Refonte du graphique des cadres d'acquisition pour le rendre plus lisible (#16)  
