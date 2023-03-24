@@ -58,16 +58,12 @@ Installation
 Configuration
 -------------
 
-Vous pouvez compléter la configuration du module en créant un fichier
-`dashboard_config.toml` dans le dossier `config` de GeoNature, à partir des paramètres présents dans
-le fichier `dashboard_config.toml.example`, dont vous pouvez surcoucher
-les valeurs par défaut.
+Vous pouvez modifier la configuration du module en créant un fichier
+`dashboard_config.toml` dans le dossier `config` de GeoNature, en vous inspirant 
+du fichier `dashboard_config.toml.example` et en surcouchant les paramètres que vous souhaitez.
 
-```bash
-cp ~/gn_module_dashboard/dashboard_config.toml.example ~/geonature/config/dashboard_config.toml
-```
-
-Pour appliquer les changements de la configuration, rechargez GeoNature (`sudo systemctl reload geonature`).
+Pour appliquer les modifications de la configuration du module, consultez 
+la [rubrique dédiée de la documentation de GeoNature](https://docs.geonature.fr/installation.html#module-config).
 
 Détail des paramètres modifiables :
 
@@ -97,7 +93,7 @@ Vues matérialisées
 ------------------
 
 Dans un soucis de performance, des vues matérialisées ont été mises en
-place. Elles sont rafraichies automatiquement par Celery tous les jours à 2h du matin.
+place. Elles sont rafraichies automatiquement par Celery tous les jours à 2h du matin.  
 Vous pouvez configurer la périodicité du rafraichissement via le paramètre
 de configuration ``CRONTAB`` 
 (syntaxe [crontab](https://crontab.guru/), ``CRONTAB=""`` pour désactiver).
