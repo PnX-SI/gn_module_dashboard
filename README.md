@@ -101,7 +101,7 @@ de configuration ``CRONTAB``
 Vous pouvez également mettre à jour manuellement les vues matérialisées :
 
 ```bash
-source ~geonature/backend/venv/bin/activate
+source ~/geonature/backend/venv/bin/activate
 geonature dashboard refresh-vm
 ```
 
@@ -122,18 +122,17 @@ Mise à jour du module
 
 -   Renommez l'ancien et le nouveau répertoire
 
-        mv /home/`whoami`/gn_module_dashboard /home/`whoami`/gn_module_dashboard_old
-        mv /home/`whoami`/gn_module_dashboard-X.Y.Z /home/`whoami`/gn_module_dashboard
+        mv ~/gn_module_dashboard ~/gn_module_dashboard_old
+        mv ~/gn_module_dashboard-X.Y.Z ~/gn_module_dashboard
 
--   Si vous avez encore votre configuration du module dans les dossiers du module, rapatriez le fichier de configuration dans le dossier
-    de configuration centralisée de GeoNature (depuis sa version 2.11) :
+-   Si vous avez encore votre configuration du module dans le dossier `config` du module, 
+    copiez le vers le dossier de configuration centralisée de GeoNature :
 
-        cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/geonature/config/dashboard_conf.toml
+        cp ~/gn_module_dashboard_old/config/conf_gn_module.toml ~/geonature/config/dashboard_conf.toml
 
 -   Lancez la mise à jour du module
 
-        cd /home/`whoami`/
-        source geonature/backend/venv/bin/activate
+        source ~/geonature/backend/venv/bin/activate
         geonature install-gn-module ~/gn_module_dashboard DASHBOARD
         sudo systemctl restart geonature
 
