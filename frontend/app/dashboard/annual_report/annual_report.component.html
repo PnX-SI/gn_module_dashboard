@@ -57,38 +57,41 @@
                         Les nouvelles espèces
                     </span>
                 </h3>
-                <table class="table table-striped" >
-                    <thead> 
-                        <tr>
-                            <th>Nom latin</th>
-                            <th>Nom vernaculaire</th>
-                            <th>Groupe</th>
-                            <th>Nombre d'observation(s)</th>
-                        </tr>
-                    </thead>
-                        <tr *ngFor="let _new of data?.new_species">
-                            <td>{{_new.nom_complet}}</td>
-                            <td>{{_new.nom_vern}}</td>
-                            <td>{{_new.group2_inpn}}</td>
-                            <td>{{_new.count}}</td>
-                        </tr>
-                                        
-                </table>
+                <div id="new-species">
+                    <table class="table table-striped" >
+                        <thead> 
+                            <tr>
+                                <th>Nom latin</th>
+                                <th>Nom vernaculaire</th>
+                                <th>Groupe</th>
+                                <th>Nombre d'observation(s)</th>
+                            </tr>
+                        </thead>
+                            <tr *ngFor="let _new of data?.new_species">
+                                <td>{{_new.nom_complet}}</td>
+                                <td>{{_new.nom_vern}}</td>
+                                <td>{{_new.group2_inpn}}</td>
+                                <td>{{_new.count}}</td>
+                            </tr>
+                                            
+                    </table>
+                </div>
                 <h5>
                     Répartition des nouvelles espèces par groupe
                 </h5>
-
-                <canvas 
-                    *ngIf="newSpeciesData.length > 0"
-                    baseChart 
-                    [data]="newSpeciesData" 
-                    [labels]="newSpeciesLabel"
-                    [colors]="newSpeciesColors"
-                    [options]="pieChartOptions"
-                    chartType="doughnut"
-                    class="mb-3"
-                >
-                </canvas>
+                <div style="display: block ; width: 90%; height: 60vh" >
+                    <canvas 
+                        *ngIf="newSpeciesData[0].data.length > 0"
+                        baseChart 
+                        [datasets]="newSpeciesData" 
+                        [labels]="newSpeciesLabel"
+                        [options]="pieChartOptions"
+                        [plugins]="pieChartPlugins"
+                        type="doughnut"
+                        class="mb-3"
+                    >
+                    </canvas>
+                </div>
                 <h3 class="mt-3"> 
                     <span class="underline--magical">
                         Les 10 espèces les plus observées
@@ -115,18 +118,19 @@
                         
                 </table>
                 <h5 class="mt-5">Répartition des observations par groupe</h5>
-
-                <canvas 
-                    *ngIf="obsByGroupData.length > 0"
-                    baseChart 
-                    [data]="obsByGroupData" 
-                    [labels]="obsByGroupLabel" 
-                    [colors]="obsByGroupColor"
-                    [options]="pieChartOptions"
-                    chartType="doughnut"
-                    class="mb-3"
-                >
-                </canvas>
+                <div style="display: block ; width: 90%; height: 60vh" >
+                    <canvas 
+                        *ngIf="obsByGroupData.length > 0"
+                        baseChart 
+                        [datasets]="obsByGroupData" 
+                        [labels]="obsByGroupLabel" 
+                        [options]="pieChartOptions"
+                        [plugins]="pieChartPlugins"
+                        type="doughnut"
+                        class="mb-3"
+                    >
+                    </canvas>
+                </div>
                 <mat-divider></mat-divider>
 
                 <h3 class="mt-3"> 
@@ -159,7 +163,7 @@
                     [labels]="yearObsLabel"
                     [options]="barChartOptions"
                     [colors]="[{'backgroundColor': 'rgb(0, 0, 0)'}]"
-                    chartType="bar"
+                    type="bar"
                     >
                 </canvas>
             </div>

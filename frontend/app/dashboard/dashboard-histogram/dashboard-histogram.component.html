@@ -110,7 +110,7 @@
                         </div>
                         <div id="taxon_filter" *ngIf="filter === 'Rechercher un taxon/une espèce...'">
                             <label class="col-form-label"> Taxon/espèce </label>
-                            <pnx-taxonomy label="" [parentFormControl]="histForm.controls.taxon" [idList]="500"
+                            <pnx-taxonomy label="" [parentFormControl]="histForm.controls.taxon"
                                 [charNumber]="3" [listLength]="30" [apiEndPoint]="taxonApiEndPoint"
                                 (onChange)="getCurrentTax($event)">
                             </pnx-taxonomy>
@@ -158,9 +158,10 @@
 
         <div style="display: block">
             <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
-                [colors]="barChartColors" [chartType]="barChartType">
+             [type]="bartype">
             </canvas>
         </div>
+
 
     </div>
 

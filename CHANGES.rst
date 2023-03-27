@@ -2,6 +2,26 @@
 CHANGELOG
 =========
 
+1.3.0 (2023-03-27)
+------------------
+
+Nécessite GeoNature version 2.12.0 (ou plus)
+
+**🚀 Nouveautés**
+
+* Compatibilité avec GeoNature 2.12 (Angular 15, configuration dynamique, configuration centralisée)
+* Rafraichissement automatique des vue matérialisées via Celery Beat tous les jours à 2h.
+  La fréquence est modifiable avec le paramètre ``CRONTAB`` de la configuration du module.
+* Refonte du graphique des cadres d'acquisition pour le rendre plus lisible (#16)  
+* Mise à jour de Chart.js version 2 à 4
+* Remplacement de noUiSlider par Material slider
+* Factorisation et nettoyage général du code du module
+
+**⚠️ Notes de version**
+
+* Si vous aviez mis en place un cron système pour rafraichir les vues matérialisées (dans `/etc/cron/geonature` ou autre),
+  vous pouvez le supprimer car elles sont désormais rafraichies automatiquement avec Celery Beat.
+
 1.2.1 (2022-12-21)
 ------------------
 
@@ -27,7 +47,7 @@ Nécessite la version 2.10.0 (ou plus) de GeoNature.
 
 * Correction de la commande de mise à jour des vues matérialisées du module (#46)
 
-**Notes de version**
+**⚠️ Notes de version**
 
 * Suivez la procédure classique de mise à jour du module
 * Exécuter la commande suivante afin d’indiquer à Alembic l'état de votre base de données :
@@ -84,7 +104,7 @@ Si vous faites une mise à jour du module :
 
 ::
 
-    * * * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
+    0 0 * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
 
 0.2.0 (2020-02-20)
 ------------------

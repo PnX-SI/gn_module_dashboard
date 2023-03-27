@@ -1,0 +1,16 @@
+# Fichier listant les paramètres du module et leurs valeurs par défaut
+
+CRONTAB = "0 2 * * *" # Frequency to refresh data
+
+AREA_TYPE = ["COM", "M1", "M5", "M10"]  # The first geometry entered will be the default one 
+NB_CLASS_OBS = 5  # Must be inferior to 10
+NB_CLASS_TAX = 5  # Must be inferior to 10
+SIMPLIFY_LEVEL = 50  # Level of geometry simplification on PER GEO GRAPH
+
+DISPLAY_PER_YEAR_GRAPH = true
+DISPLAY_PER_GEO_GRAPH = true
+DISPLAY_PER_TAXONOMIC_RANK_GRAPH = true
+DISPLAY_PER_CA_GRAPH = true
+DISPLAY_TAXONOMIC_CONTACTS_GRAPH = true
+
+DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH = true

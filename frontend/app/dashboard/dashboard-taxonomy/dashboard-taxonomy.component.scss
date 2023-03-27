@@ -3,19 +3,11 @@
   border-color: rgb(150, 150, 150);
 }
 
-.card-header {
-  background: radial-gradient(
-    circle at top left,
-    rgba(62, 69, 81, 0.7),
-    #e0e0e0
-  );
-}
-
 .card-body {
   text-align: justify;
 }
 
-.card-absolute {
+.custom-card {
   margin-left: 1.3rem;
   margin-right: 0.1rem;
   margin-top: 0.1rem;

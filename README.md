@@ -3,10 +3,9 @@ Dashboard
 
 Module GeoNature permettant de proposer un tableau de bord contenant
 plusieurs graphiques et cartes basés sur les données présentes dans la
-synthèse de GeoNature. 
+synthèse de GeoNature.
 
-Développé par Elsa Guilley, stagiaire au Parc
-national des Ecrins en 2019.
+Développé par Elsa Guilley, stagiaire au Parc national des Ecrins en 2019.
 
 Démo vidéo :
 <https://geonature.fr/docs/img/2019-09-GN-dashboard-0.1.0.gif>
@@ -14,8 +13,7 @@ Démo vidéo :
 **Fonctionnalités** :
 
 -   Nombre d'observations et de taxons par année
--   Nombre d'observations et de taxons par zonage (communes,
-    mailles...)
+-   Nombre d'observations et de taxons par zonage (communes, mailles...)
 -   Répartition des observations par rang taxonomique
 -   Nombre d'observations par cadre d'acquisition par année
 -   Taxons recontactés, non recontactés et nouveaux par année
@@ -31,33 +29,41 @@ Démo vidéo :
 Installation
 ------------
 
--   Installez GeoNature (<https://github.com/PnX-SI/GeoNature>)
--   Téléchargez la dernière version stable du module
-    (`wget https://github.com/PnX-SI/gn_module_dashboard/archive/X.Y.Z.zip`
-    ou en cliquant sur le bouton GitHub "Clone or download" de cette
-    page) dans `/home/myuser/`
--   Dézippez la dans `/home/myuser/` (`unzip X.Y.Z.zip`)
--   Renommer le répertoire
-    `mv gn_module_dashboard-X.Y.Z gn_module_dashboard`
--   Placez-vous dans le répertoire `backend` de GeoNature et lancez les
-    commandes `source venv/bin/activate` puis
-    `geonature install-gn-module ~/gn_module_dashboard DASHBOARD`
--   Vous pouvez sortir du venv en exécutant la commande `deactivate`
--   Relancez GeoNature (`sudo systemctl restart geonature`)
+- Téléchargez la dernière version stable du module
+  ```bash
+  wget https://github.com/PnX-SI/gn_module_dashboard/archive/X.Y.Z.zip
+  ```
+- Dézippez la dans `/home/myuser/` 
+  ```bash
+  unzip X.Y.Z.zip
+  ```
+- Renommer le répertoire
+  ```bash
+  mv gn_module_dashboard-X.Y.Z gn_module_dashboard
+  ```
+- Placez-vous dans le répertoire `backend` de GeoNature et lancez les commandes 
+  ```bash
+  source ~/geonature/venv/bin/activate
+  geonature install-gn-module ~/gn_module_dashboard DASHBOARD
+  ```
+- Vous pouvez sortir du venv
+  ```bash
+  deactivate
+  ```
+- Relancez GeoNature 
+  ```bash
+  sudo systemctl restart geonature
+  ```
 
 Configuration
 -------------
 
-Vous pouvez compléter la configuration du module dans le fichier
-`config/conf_gn_module.toml` à partir des paramètres présents dans
-`config/conf_gn_module.toml.example`, dont vous pouvez surcoucher
-les valeurs par défaut. 
+Vous pouvez modifier la configuration du module en créant un fichier
+`dashboard_config.toml` dans le dossier `config` de GeoNature, en vous inspirant 
+du fichier `dashboard_config.toml.example` et en surcouchant les paramètres que vous souhaitez.
 
-Pour appliquer ces changements, rechargez GeoNature (`sudo systemctl reload geonature`)
-puis la mise à jour de la configuration
-depuis le répertoire `geonature/backend` avec les commandes
-`source venv/bin/activate` puis
-`geonature update-configuration`
+Pour appliquer les modifications de la configuration du module, consultez 
+la [rubrique dédiée de la documentation de GeoNature](https://docs.geonature.fr/installation.html#module-config).
 
 Détail des paramètres modifiables :
 
@@ -78,7 +84,7 @@ Détail des paramètres modifiables :
     `DISPLAY_XXXX_GRAPH`. Renseigner 'true' pour afficher le graphique
     en question et 'false' pour le masquer.
 -   Paramétrage par défaut du graphique "Synthèse par entité
-    géographique" du dashboard :
+    géographique" du Dashboard :
     `DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH`. Renseigner 'true'
     si vous souhaitez afficher par défaut les observations, 'false'
     si vous souhaitez les taxons.
@@ -87,31 +93,23 @@ Vues matérialisées
 ------------------
 
 Dans un soucis de performance, des vues matérialisées ont été mises en
-place. Elles sont renseignées lors de l'installation du module. Il est
-nécessaire de rafraichir régulièrement ces vues matérialisées. Pour cela
-vous pouvez mettre en place un CRON pour l'automatisation de cette
-tâche.
+place. Elles sont rafraichies automatiquement par Celery tous les jours à 2h du matin.  
+Vous pouvez configurer la périodicité du rafraichissement via le paramètre
+de configuration ``CRONTAB`` 
+(syntaxe [crontab](https://crontab.guru/), ``CRONTAB=""`` pour désactiver).
 
-Ouvrez le fichier `/etc/cron/geonature` s’il est existant, sinon créez le. Renseignez le commande `geonature dashboard refresh-vm`.
+Vous pouvez également mettre à jour manuellement les vues matérialisées :
 
+```bash
+source ~/geonature/backend/venv/bin/activate
+geonature dashboard refresh-vm
 ```
-0 0 * * 0 <UTLISATEUR LINUX GEONATURE> <CHEMIN_VERS_GEONATURE>/backend/venv/bin/geonature dashboard geonature dashboard refresh-vm
-Exemple (exécuté tous les dimanches à 00h00):
-0 0 * * 0 geonatadmin /home/geonatadmin/backend/venv/bin/geonature geonature dashboard refresh-vm
+
+Cette commande lance la requête SQL suivante :
+
+```sql
+SELECT gn_dashboard.refresh_materialized_view_data()
 ```
-
-Cette commande peut être effectuée à tout moment depuis l’environnement
-virtuel de GeoNature :
-
-`source backend/venv/bin/activate`
-
-Lancer la commande :
-
-`geonature dashboard refresh-vm`
-
-Cette commande utilise notamment la requête SQL suivante :
-
-`SELECT gn_dashboard.refresh_materialized_view_data();`
 
 Mise à jour du module
 ---------------------
@@ -124,17 +122,17 @@ Mise à jour du module
 
 -   Renommez l'ancien et le nouveau répertoire
 
-        mv /home/`whoami`/gn_module_dashboard /home/`whoami`/gn_module_dashboard_old
-        mv /home/`whoami`/gn_module_dashboard-X.Y.Z /home/`whoami`/gn_module_dashboard
+        mv ~/gn_module_dashboard ~/gn_module_dashboard_old
+        mv ~/gn_module_dashboard-X.Y.Z ~/gn_module_dashboard
 
--   Rapatriez le fichiers de configuration
+-   Si vous avez encore votre configuration du module dans le dossier `config` du module, 
+    copiez le vers le dossier de configuration centralisée de GeoNature :
 
-        cp /home/`whoami`/gn_module_dashboard_old/config/conf_gn_module.toml /home/`whoami`/gn_module_dashboard/config/conf_gn_module.toml
+        cp ~/gn_module_dashboard_old/config/conf_gn_module.toml ~/geonature/config/dashboard_conf.toml
 
 -   Lancez la mise à jour du module
 
-        cd /home/`whoami`/
-        source geonature/backend/venv/bin/activate
+        source ~/geonature/backend/venv/bin/activate
         geonature install-gn-module ~/gn_module_dashboard DASHBOARD
         sudo systemctl restart geonature
 
@@ -142,6 +140,6 @@ Licence
 -------
 
 -   OpenSource - GPL-3.0
--   Copyleft 2019-2022 - Parc National des Écrins
+-   Copyleft 2019-2023 - Parc National des Écrins
 
-[![image](http://geonature.fr/img/logo-pne.jpg)](http://www.ecrins-parcnational.fr)
+[![image](https://geonature.fr/img/logo-pne.jpg)](http://www.ecrins-parcnational.fr)

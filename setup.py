@@ -35,6 +35,7 @@ setuptools.setup(
             "blueprint = gn_module_dashboard.blueprint:blueprint",
             "config_schema = gn_module_dashboard.conf_schema_toml:GnModuleSchemaConf",
             "migrations = gn_module_dashboard:migrations",
+            "tasks = gn_module_dashboard.tasks",
         ],
     },
     classifiers=[
