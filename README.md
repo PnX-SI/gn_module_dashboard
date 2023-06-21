@@ -43,7 +43,7 @@ Installation
   ```
 - Placez-vous dans le répertoire `backend` de GeoNature et lancez les commandes 
   ```bash
-  source ~/geonature/venv/bin/activate
+  source ~/geonature/backend/venv/bin/activate
   geonature install-gn-module ~/gn_module_dashboard DASHBOARD
   ```
 - Vous pouvez sortir du venv
