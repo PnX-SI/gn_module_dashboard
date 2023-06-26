@@ -133,9 +133,17 @@ export class AnnualReportComponent implements OnInit {
   }
 
   refreshGraphValues() {
-    this.obsByGroupData = [];
+    this.obsByGroupData = [
+      {
+        data: [],
+      },
+    ];
     this.obsByGroupLabel = [];
-    this.newSpeciesData = [];
+    this.newSpeciesData = [
+      {
+        data: [],
+      },
+    ];
     this.newSpeciesLabel = [];
   }
 }
