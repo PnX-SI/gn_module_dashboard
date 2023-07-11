@@ -2,6 +2,19 @@
 CHANGELOG
 =========
 
+1.4.0 (unreleased)
+------------------
+
+Nécessite la version 2.13.0 (ou plus) de GeoNature.
+
+**🚀 Nouveautés**
+
+* Compatibilité avec GeoNature 2.13.0 et la refonte des permissions, en définissant les permissions disponibles du module (#63)
+
+**🐛 Corrections**
+
+* Correction du changement d'année sur le rapport annuel (#61)
+
 1.3.0 (2023-03-27)
 ------------------
 
