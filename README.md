@@ -43,7 +43,7 @@ Installation
   ```
 - Placez-vous dans le répertoire `backend` de GeoNature et lancez les commandes 
   ```bash
-  source ~/geonature/venv/bin/activate
+  source ~/geonature/backend/venv/bin/activate
   geonature install-gn-module ~/gn_module_dashboard DASHBOARD
   ```
 - Vous pouvez sortir du venv
@@ -54,6 +54,8 @@ Installation
   ```bash
   sudo systemctl restart geonature
   ```
+
+Il vous faut désormais attribuer des permissions aux groupes ou utilisateurs que vous souhaitez, pour qu'ils puissent accéder et utiliser le module (voir https://docs.geonature.fr/admin-manual.html#gestion-des-droits). Si besoin une commande permet d'attribuer automatiquement toutes les permissions dans tous les modules à un groupe ou utilisateur administrateur.
 
 Configuration
 -------------
