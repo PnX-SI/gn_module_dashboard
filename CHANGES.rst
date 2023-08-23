@@ -2,7 +2,7 @@
 CHANGELOG
 =========
 
-1.4.0 (unreleased)
+1.4.0 (2023-08-23)
 ------------------
 
 Nécessite la version 2.13.0 (ou plus) de GeoNature.
@@ -13,7 +13,7 @@ Nécessite la version 2.13.0 (ou plus) de GeoNature.
 
 **🐛 Corrections**
 
-* Correction du changement d'année sur le rapport annuel (#61)
+* Correction du changement d'année sur le rapport annuel (#61, par @hypsug0)
 
 1.3.0 (2023-03-27)
 ------------------
