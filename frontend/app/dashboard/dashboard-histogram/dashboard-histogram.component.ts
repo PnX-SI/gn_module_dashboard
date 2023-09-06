@@ -121,6 +121,7 @@ export class DashboardHistogramComponent implements OnInit {
       selectedFamille: fb.control(null),
       selectedGroup1INPN: fb.control(null),
       selectedGroup2INPN: fb.control(null),
+      selectedGroup3INPN: fb.control(null),
       taxon: fb.control(null),
     });
   }
@@ -148,6 +149,7 @@ export class DashboardHistogramComponent implements OnInit {
     // Réinitialiser l'ancien filtre qui a été sélectionné pour empêcher les erreurs de requête
     this.histForm.controls['selectedGroup1INPN'].reset();
     this.histForm.controls['selectedGroup2INPN'].reset();
+    this.histForm.controls['selectedGroup3INPN'].reset();
     this.histForm.controls['selectedRegne'].reset();
     this.histForm.controls['selectedPhylum'].reset();
     this.histForm.controls['selectedClasse'].reset();
