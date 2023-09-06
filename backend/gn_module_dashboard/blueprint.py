@@ -42,6 +42,8 @@ def get_synthese_stat():
         q = q.filter(VSynthese.ordre == params["selectedOrdre"])
     if "selectedFamille" in params and (params["selectedFamille"] != ""):
         q = q.filter(VSynthese.famille == params["selectedFamille"])
+    if ("selectedGroup3INPN" in params) and (params["selectedGroup3INPN"] != ""):
+        q = q.filter(VSynthese.group3_inpn == params["selectedGroup3INPN"])
     if ("selectedGroup2INPN" in params) and (params["selectedGroup2INPN"] != ""):
         q = q.filter(VSynthese.group2_inpn == params["selectedGroup2INPN"])
     if ("selectedGroup1INPN" in params) and (params["selectedGroup1INPN"] != ""):
