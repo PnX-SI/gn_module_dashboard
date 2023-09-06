@@ -126,6 +126,7 @@ export class DashboardMapsComponent
       selectedFamille: this.fb.control(null),
       selectedGroup1INPN: this.fb.control(null),
       selectedGroup2INPN: this.fb.control(null),
+      selectedGroup3INPN: this.fb.control(null),
       taxon: this.fb.control(null),
     });
     console.log(this.yearRange);
@@ -374,6 +375,7 @@ export class DashboardMapsComponent
     // Réinitialiser l'ancien filtre qui a été sélectionné pour empêcher les erreurs de requête
     this.mapForm.controls["selectedGroup1INPN"].reset();
     this.mapForm.controls["selectedGroup2INPN"].reset();
+    this.mapForm.controls["selectedGroup3INPN"].reset();
     this.mapForm.controls["selectedRegne"].reset();
     this.mapForm.controls["selectedPhylum"].reset();
     this.mapForm.controls["selectedClasse"].reset();
