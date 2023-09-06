@@ -106,6 +106,14 @@ export class DashboardComponent implements OnInit {
     });
     this.taxonomies["Groupe INPN 2"] = this.group2INPN;
 
+    const group3INPN = []
+    this.dataService.getTaxonomy("Groupe INPN 3").subscribe((data) => {
+      data.forEach((elt) => {
+        group3INPN.push(elt[0]);
+      });
+    });
+    this.taxonomies["Groupe INPN 3"] = group3INPN;
+
     // Accès aux années extrêmes de la BDD
     this.dataService.getYears().subscribe((data) => {
       this.yearsMinMax = data;
