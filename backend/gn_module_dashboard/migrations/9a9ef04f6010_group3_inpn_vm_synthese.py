@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '9a9ef04f6010'
-down_revision = 'cef2c2d66eb2'
+revision = "9a9ef04f6010"
+down_revision = "cef2c2d66eb2"
 branch_labels = None
 depends_on = None
 
@@ -19,7 +19,8 @@ depends_on = None
 def upgrade():
     op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_taxonomie")
     op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_synthese")
-    op.execute("""
+    op.execute(
+        """
     CREATE MATERIALIZED VIEW gn_dashboard.vm_synthese
     TABLESPACE pg_default
     AS SELECT s.id_synthese,
@@ -55,8 +56,10 @@ def upgrade():
 
     CREATE INDEX vm_synthese_cd_ref_idx ON gn_dashboard.vm_synthese USING btree (cd_ref);
     CREATE UNIQUE INDEX vm_synthese_id_synthese_idx ON gn_dashboard.vm_synthese USING btree (id_synthese);
-    """)
-    op.execute("""
+    """
+    )
+    op.execute(
+        """
         CREATE MATERIALIZED VIEW gn_dashboard.vm_taxonomie
     TABLESPACE pg_default
     AS SELECT 'Règne'::text AS level,
@@ -100,12 +103,15 @@ def upgrade():
     GROUP BY vm_synthese.group3_inpn
     WITH DATA;
     CREATE UNIQUE INDEX vm_taxonomie_name_taxon_level_idx ON gn_dashboard.vm_taxonomie USING btree (name_taxon, level);
-""")
+"""
+    )
+
 
 def downgrade():
     op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_taxonomie")
     op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_synthese")
-    op.execute("""
+    op.execute(
+        """
         CREATE MATERIALIZED VIEW gn_dashboard.vm_synthese
         TABLESPACE pg_default
         AS SELECT s.id_synthese,
@@ -140,8 +146,10 @@ def downgrade():
 
         CREATE INDEX vm_synthese_cd_ref_idx ON gn_dashboard.vm_synthese USING btree (cd_ref);
         CREATE UNIQUE INDEX vm_synthese_id_synthese_idx ON gn_dashboard.vm_synthese USING btree (id_synthese);
-               """)
-    op.execute("""
+               """
+    )
+    op.execute(
+        """
         CREATE MATERIALIZED VIEW gn_dashboard.vm_taxonomie
     TABLESPACE pg_default
     AS SELECT 'Règne'::text AS level,
@@ -181,4 +189,5 @@ def downgrade():
     WITH DATA;
 
     CREATE UNIQUE INDEX vm_taxonomie_name_taxon_level_idx ON gn_dashboard.vm_taxonomie USING btree (name_taxon, level);
-""")
+"""
+    )
