@@ -84,6 +84,8 @@ def get_areas_stat(simplify_level, type_code):
         x = x + """AND t.group1_inpn = '""" + params["selectedGroup1INPN"] + """' """
     if ("selectedGroup2INPN") in params and (params["selectedGroup2INPN"] != ""):
         x = x + """AND t.group2_inpn = '""" + params["selectedGroup2INPN"] + """' """
+    if ("selectedGroup3INPN") in params and (params["selectedGroup3INPN"] != ""):
+        x = x + """AND t.group3_inpn = '""" + params["selectedGroup3INPN"] + """' """
     # q : Requête générale
     q = text(
         """ WITH count AS
