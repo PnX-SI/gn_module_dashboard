@@ -131,9 +131,9 @@ export class DashboardHistogramComponent implements OnInit {
     this.subscription = this.dataService.getDataSynthese().subscribe((data) => {
       // Remplissage des array des labels et des données à afficher, paramètres de l'histogramme
       data.forEach((elt) => {
-        this.barChartLabels.push(elt[0]);
-        this.barChartData[0]['data'].push(elt[1]);
-        this.barChartData[1]['data'].push(elt[2]);
+        this.barChartLabels.push(elt["year"]);
+        this.barChartData[0]['data'].push(elt["count_id_synthese"]);
+        this.barChartData[1]['data'].push(elt["count_cd_ref"]);
       });
       this.chart.chart.update();
       // Enregistrement des données "sans filtre" pour pouvoir les afficher plus rapidement par la suite
@@ -200,10 +200,10 @@ export class DashboardHistogramComponent implements OnInit {
             var i = start;
             var keepGoing = true;
             while (i < dataLength && keepGoing == true) {
-              if (year == data[i][0]) {
-                barChartDataTemp[0]['data'].push(data[i][1]);
+              if (year == data[i]["year"]) {
+                barChartDataTemp[0]['data'].push(data[i]["count_id_synthese"]);
                 if (this.filter != 'Rechercher un taxon/une espèce...') {
-                  barChartDataTemp[1]['data'].push(data[i][2]);
+                  barChartDataTemp[1]['data'].push(data[i]["count_cd_ref"]);
                 }
                 keepGoing = false;
                 start = i + 1;
