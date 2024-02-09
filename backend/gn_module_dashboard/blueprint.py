@@ -29,8 +29,8 @@ def get_synthese_stat():
     params = request.args
     q = DB.session.query(
         label("year", func.date_part("year", VSynthese.date_min)),
-        func.count(VSynthese.id_synthese),
-        func.count(distinct(VSynthese.cd_ref)),
+        func.count(VSynthese.id_synthese).label("count_id_synthese"),
+        func.count(distinct(VSynthese.cd_ref)).label("count_cd_ref"),
     ).group_by("year")
     if ("selectedRegne" in params) and (params["selectedRegne"] != ""):
         q = q.filter(VSynthese.regne == params["selectedRegne"])

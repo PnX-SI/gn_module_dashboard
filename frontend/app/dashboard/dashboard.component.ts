@@ -56,14 +56,15 @@ export class DashboardComponent implements OnInit {
     // Accès aux noms des différents règnes de la BDD GeoNature
     this.dataService.getTaxonomy("Règne").subscribe((data) => {
       data.forEach((elt) => {
-        this.regnes.push(elt[0]);
+
+        this.regnes.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Règne"] = this.regnes;
     // Accès aux noms des différents phylum de la BDD GeoNature
     this.dataService.getTaxonomy("Phylum").subscribe((data) => {
       data.forEach((elt) => {
-        this.phylum.push(elt[0]);
+        this.phylum.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Phylum"] = this.phylum;
@@ -71,7 +72,7 @@ export class DashboardComponent implements OnInit {
     // Accès aux noms des différentes classes de la BDD GeoNature
     this.dataService.getTaxonomy("Classe").subscribe((data) => {
       data.forEach((elt) => {
-        this.classes.push(elt[0]);
+        this.classes.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Classe"] = this.classes;
@@ -79,7 +80,7 @@ export class DashboardComponent implements OnInit {
     // Accès aux noms des différents ordres de la BDD GeoNature
     this.dataService.getTaxonomy("Ordre").subscribe((data) => {
       data.forEach((elt) => {
-        this.ordres.push(elt[0]);
+        this.ordres.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Ordre"] = this.ordres;
@@ -87,7 +88,7 @@ export class DashboardComponent implements OnInit {
     // Accès aux noms des différentes familles de la BDD GeoNature
     this.dataService.getTaxonomy("Famille").subscribe((data) => {
       data.forEach((elt) => {
-        this.familles.push(elt[0]);
+        this.familles.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Famille"] = this.familles;
@@ -95,13 +96,13 @@ export class DashboardComponent implements OnInit {
     // Accès aux noms des différents groupes INPN de la BDD GeoNature
     this.dataService.getTaxonomy("Groupe INPN 1").subscribe((data) => {
       data.forEach((elt) => {
-        this.group1INPN.push(elt[0]);
+        this.group1INPN.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Groupe INPN 1"] = this.group1INPN;
     this.dataService.getTaxonomy("Groupe INPN 2").subscribe((data) => {
       data.forEach((elt) => {
-        this.group2INPN.push(elt[0]);
+        this.group2INPN.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Groupe INPN 2"] = this.group2INPN;
@@ -109,7 +110,7 @@ export class DashboardComponent implements OnInit {
     const group3INPN = []
     this.dataService.getTaxonomy("Groupe INPN 3").subscribe((data) => {
       data.forEach((elt) => {
-        group3INPN.push(elt[0]);
+        group3INPN.push(elt["name_taxon"]);
       });
     });
     this.taxonomies["Groupe INPN 3"] = group3INPN;
