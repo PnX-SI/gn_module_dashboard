@@ -2,6 +2,16 @@
 CHANGELOG
 =========
 
+1.5.0 (2023-08-23)
+------------------
+
+??? Nécessite la version 2.14.0 (ou plus) de GeoNature.
+
+**🚀 Nouveautés**
+
+* Ajout du Groupe 3 INPN dans les filtres (par @mvergez)
+* Compatibilité avec GeoNature 2.14
+
 1.4.0 (2023-08-23)
 ------------------
 
