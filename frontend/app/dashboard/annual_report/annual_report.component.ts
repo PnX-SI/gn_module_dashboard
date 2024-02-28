@@ -118,6 +118,11 @@ export class AnnualReportComponent implements OnInit {
         } else {
           tempNewSpecies[element.group2_inpn] = 1;
         }
+        if (element.group3_inpn in tempNewSpecies) {
+          tempNewSpecies[element.group3_inpn] += 1;
+        } else {
+          tempNewSpecies[element.group3_inpn] = 1;
+        }
       });
       const randomColor = [];
       for (let group in tempNewSpecies) {

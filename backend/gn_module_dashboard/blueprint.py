@@ -29,8 +29,8 @@ def get_synthese_stat():
     params = request.args
     q = DB.session.query(
         label("year", func.date_part("year", VSynthese.date_min)),
-        func.count(VSynthese.id_synthese),
-        func.count(distinct(VSynthese.cd_ref)),
+        func.count(VSynthese.id_synthese).label("count_id_synthese"),
+        func.count(distinct(VSynthese.cd_ref)).label("count_cd_ref"),
     ).group_by("year")
     if ("selectedRegne" in params) and (params["selectedRegne"] != ""):
         q = q.filter(VSynthese.regne == params["selectedRegne"])
@@ -42,6 +42,8 @@ def get_synthese_stat():
         q = q.filter(VSynthese.ordre == params["selectedOrdre"])
     if "selectedFamille" in params and (params["selectedFamille"] != ""):
         q = q.filter(VSynthese.famille == params["selectedFamille"])
+    if ("selectedGroup3INPN" in params) and (params["selectedGroup3INPN"] != ""):
+        q = q.filter(VSynthese.group3_inpn == params["selectedGroup3INPN"])
     if ("selectedGroup2INPN" in params) and (params["selectedGroup2INPN"] != ""):
         q = q.filter(VSynthese.group2_inpn == params["selectedGroup2INPN"])
     if ("selectedGroup1INPN" in params) and (params["selectedGroup1INPN"] != ""):
@@ -84,6 +86,8 @@ def get_areas_stat(simplify_level, type_code):
         x = x + """AND t.group1_inpn = '""" + params["selectedGroup1INPN"] + """' """
     if ("selectedGroup2INPN") in params and (params["selectedGroup2INPN"] != ""):
         x = x + """AND t.group2_inpn = '""" + params["selectedGroup2INPN"] + """' """
+    if ("selectedGroup3INPN") in params and (params["selectedGroup3INPN"] != ""):
+        x = x + """AND t.group3_inpn = '""" + params["selectedGroup3INPN"] + """' """
     # q : Requête générale
     q = text(
         """ WITH count AS

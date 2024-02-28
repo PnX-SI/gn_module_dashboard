@@ -25,6 +25,7 @@
                                 <option> </option>
                                 <option> Groupe INPN 1 </option>
                                 <option> Groupe INPN 2 </option>
+                                <option> Groupe INPN 3 </option>
                                 <option> Règne </option>
                                 <option> Phylum </option>
                                 <option> Classe </option>
@@ -52,6 +53,17 @@
                                 <ng-container *ngFor="let group2_inpn of taxonomies['Groupe INPN 2']">
                                     <option [ngValue]="group2_inpn" *ngIf="group2_inpn != 'Not defined'">
                                         {{ group2_inpn }} </option>
+                                </ng-container>
+                            </select>
+                        </div>
+                        <div class="form-group" id="group3_inpn_filter" *ngIf="filter === 'Groupe INPN 3'">
+                            <label class="col-form-label"> Groupe INPN 3 </label>
+                            <select class="form-control form-control-sm" formControlName="selectedGroup3INPN"
+                                (change)="getCurrentTax($event)" [disableControl]="spinner">
+                                <option> </option>
+                                <ng-container *ngFor="let group3_inpn of taxonomies['Groupe INPN 3']">
+                                    <option [ngValue]="group3_inpn" *ngIf="group3_inpn != 'Not defined'">
+                                        {{ group3_inpn }} </option>
                                 </ng-container>
                             </select>
                         </div>

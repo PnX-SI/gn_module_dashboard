@@ -30,6 +30,7 @@ class VSynthese(DB.Model):
     nom_vern = DB.Column(DB.Unicode)
     group1_inpn = DB.Column(DB.Unicode)
     group2_inpn = DB.Column(DB.Unicode)
+    group3_inpn = DB.Column(DB.Unicode)
     altitude_min = DB.Column(DB.Integer)
     altitude_max = DB.Column(DB.Integer)
     lon = DB.Column(DB.Unicode)

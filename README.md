@@ -53,6 +53,7 @@ Installation
 - Relancez GeoNature 
   ```bash
   sudo systemctl restart geonature
+  sudo systemctl restart geonature-worker
   ```
 
 Il vous faut désormais attribuer des permissions aux groupes ou utilisateurs que vous souhaitez, pour qu'ils puissent accéder et utiliser le module (voir https://docs.geonature.fr/admin-manual.html#gestion-des-droits). Si besoin une commande permet d'attribuer automatiquement toutes les permissions dans tous les modules à un groupe ou utilisateur administrateur.
