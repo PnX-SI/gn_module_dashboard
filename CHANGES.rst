@@ -2,10 +2,10 @@
 CHANGELOG
 =========
 
-1.5.0 (2023-08-23)
+1.5.0 (2024-02-28)
 ------------------
 
-??? Nécessite la version 2.14.0 (ou plus) de GeoNature.
+Nécessite la version 2.14.0 (ou plus) de GeoNature.
 
 **🚀 Nouveautés**
 

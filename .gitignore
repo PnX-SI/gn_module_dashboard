@@ -7,3 +7,4 @@ config/conf_gn_module.toml
 *.egg-info
 /dist
 venv
+.vscode
