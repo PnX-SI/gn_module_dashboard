@@ -18,7 +18,10 @@ export interface YearRecap {
 }
 @Injectable()
 export class DataService {
-  constructor(private httpClient: HttpClient, public config: ConfigService) {}
+  constructor(
+    private httpClient: HttpClient,
+    public config: ConfigService
+  ) {}
 
   getDataSynthese(params?) {
     let queryString = new HttpParams();

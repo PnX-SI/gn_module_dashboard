@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewChildren } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { DataService, YearRecap } from "../services/data.services";
-import { BaseChartDirective } from "ng2-charts";
-import DatalabelsPlugin from "chartjs-plugin-datalabels";
+import { Component, OnInit, ViewChildren } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { DataService, YearRecap } from '../services/data.services';
+import { BaseChartDirective } from 'ng2-charts';
+import DatalabelsPlugin from 'chartjs-plugin-datalabels';
 
 @Component({
-  selector: "dashboard-annual-report",
-  templateUrl: "annual_report.component.html",
-  styleUrls: ["./annual_report.component.scss"],
+  selector: 'dashboard-annual-report',
+  templateUrl: 'annual_report.component.html',
+  styleUrls: ['./annual_report.component.scss'],
 })
 export class AnnualReportComponent implements OnInit {
   public data: YearRecap;
@@ -43,23 +43,21 @@ export class AnnualReportComponent implements OnInit {
     plugins: {
       legend: {
         display: true,
-        position: "left",
+        position: 'left',
       },
       datalabels: {
         labels: {
           label: {
-            color: "black",
+            color: 'black',
             font: {
-              weight: "bold",
+              weight: 'bold',
             },
           },
         },
         formatter: (value, ctx) => {
           if (ctx.chart.data.labels) {
-            const total = ctx.chart.data.datasets[0].data.reduce(
-              (acc, prev) => acc + prev
-            );
-            return Math.round((value / total) * 100) + "%";
+            const total = ctx.chart.data.datasets[0].data.reduce((acc, prev) => acc + prev);
+            return Math.round((value / total) * 100) + '%';
           }
         },
       },
@@ -87,8 +85,7 @@ export class AnnualReportComponent implements OnInit {
 
   randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
 
-  randomRGB = () =>
-    `rgb(${this.randomNum()}, ${this.randomNum()}, ${this.randomNum()})`;
+  randomRGB = () => `rgb(${this.randomNum()}, ${this.randomNum()}, ${this.randomNum()})`;
 
   loadReport(year, loadyearPlot = true) {
     this.dataLoading = true;

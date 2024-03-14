@@ -1,36 +1,28 @@
-import { Component, OnInit, ViewChild, Input } from "@angular/core";
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { BaseChartDirective } from "ng2-charts";
-import DatalabelsPlugin from "chartjs-plugin-datalabels";
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { BaseChartDirective } from 'ng2-charts';
+import DatalabelsPlugin from 'chartjs-plugin-datalabels';
 
 // Services
-import { DataService } from "../services/data.services";
+import { DataService } from '../services/data.services';
 
 @Component({
-  selector: "dashboard-recontact",
-  templateUrl: "dashboard-recontact.component.html",
-  styleUrls: ["./dashboard-recontact.component.scss"],
+  selector: 'dashboard-recontact',
+  templateUrl: 'dashboard-recontact.component.html',
+  styleUrls: ['./dashboard-recontact.component.scss'],
 })
 export class DashboardRecontactComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective;
 
   // Type de graphe
-  public pietype = "doughnut";
-  public pieChartLabels = [
-    "Taxons recontactés",
-    "Taxons non recontactés",
-    "Nouveaux taxons",
-  ];
+  public pietype = 'doughnut';
+  public pieChartLabels = ['Taxons recontactés', 'Taxons non recontactés', 'Nouveaux taxons'];
   public pieChartPlugins = [DatalabelsPlugin];
 
   public pieChartData = [
     {
       data: [],
-      backgroundColor: [
-        "rgb(119,163,53)",
-        "rgb(217,146,30)",
-        "rgb(43,132,183)",
-      ],
+      backgroundColor: ['rgb(119,163,53)', 'rgb(217,146,30)', 'rgb(43,132,183)'],
       borderWidth: 0.8,
     },
   ];
@@ -42,23 +34,21 @@ export class DashboardRecontactComponent implements OnInit {
     plugins: {
       legend: {
         display: true,
-        position: "top",
+        position: 'top',
       },
       datalabels: {
         labels: {
           label: {
-            color: "white",
+            color: 'white',
             font: {
-              weight: "bold",
+              weight: 'bold',
             },
           },
         },
         formatter: (value, ctx) => {
           if (ctx.chart.data.labels) {
-            const total = ctx.chart.data.datasets[0].data.reduce(
-              (acc, prev) => acc + prev
-            );
-            return Math.round((value / total) * 100) + "%";
+            const total = ctx.chart.data.datasets[0].data.reduce((acc, prev) => acc + prev);
+            return Math.round((value / total) * 100) + '%';
           }
         },
       },
@@ -74,7 +64,10 @@ export class DashboardRecontactComponent implements OnInit {
   // Gestion du spinner
   public spinner = true;
 
-  constructor(public dataService: DataService, public fb: FormBuilder) {
+  constructor(
+    public dataService: DataService,
+    public fb: FormBuilder
+  ) {
     // Déclaration du formulaire contenant les filtres du pie chart
     this.recontactForm = fb.group({
       selectedYear: fb.control(null),
@@ -83,9 +76,7 @@ export class DashboardRecontactComponent implements OnInit {
 
   ngOnInit() {
     // Par défaut, le pie chart s'affiche sur l'année en court
-    this.recontactForm.controls["selectedYear"].setValue(
-      new Date().getFullYear()
-    );
+    this.recontactForm.controls['selectedYear'].setValue(new Date().getFullYear());
     // Accès aux données de synthèse
     this.spinner = true;
     this.subscription = this.dataService

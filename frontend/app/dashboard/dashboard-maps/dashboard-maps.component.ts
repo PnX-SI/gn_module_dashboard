@@ -5,23 +5,21 @@ import {
   AfterViewInit,
   Input,
   ViewEncapsulation,
-} from "@angular/core";
-import { FormBuilder, FormGroup, FormControl } from "@angular/forms";
-import { MapService } from "@geonature_common/map/map.service";
+} from '@angular/core';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { MapService } from '@geonature_common/map/map.service';
 // Services
-import { DataService } from "../services/data.services";
-import { distinctUntilChanged, skip } from "@librairies/rxjs/operators";
-import { ConfigService } from "@geonature/services/config.service";
+import { DataService } from '../services/data.services';
+import { distinctUntilChanged, skip } from '@librairies/rxjs/operators';
+import { ConfigService } from '@geonature/services/config.service';
 
 @Component({
-  selector: "dashboard-maps",
-  templateUrl: "dashboard-maps.component.html",
+  selector: 'dashboard-maps',
+  templateUrl: 'dashboard-maps.component.html',
   // encapsulation: ViewEncapsulation.None,
-  styleUrls: ["./dashboard-maps.component.scss"],
+  styleUrls: ['./dashboard-maps.component.scss'],
 })
-export class DashboardMapsComponent
-  implements OnInit, OnChanges, AfterViewInit
-{
+export class DashboardMapsComponent implements OnInit, OnChanges, AfterViewInit {
   // Tableau contenant la géométrie et les données des zonages
   public myAreas: Array<any>;
   public myAreas_length: any;
@@ -31,8 +29,8 @@ export class DashboardMapsComponent
   // Degré de simplication des zonages
   public simplifyLevel = null;
   // Couleurs de bordure des zonages
-  public initialBorderColor = "rgb(255, 255, 255)";
-  public selectedBorderColor = "rgb(50, 50, 50)";
+  public initialBorderColor = 'rgb(255, 255, 255)';
+  public selectedBorderColor = 'rgb(50, 50, 50)';
   // Couleurs de remplissage des zonages pour la représentation en nombre d'observations
   public obsColors = null;
   // Couleurs de remplissage des zonages pour la représentation en nombre de taxons
@@ -44,7 +42,7 @@ export class DashboardMapsComponent
   // Légende pour la représentation en nombre de taxons
   public divLegendTax: any;
   // Chaîne de caractères permettant de gérer le contenu de la légende dynamiquement
-  public introLegend = "Placez la souris sur un zonage";
+  public introLegend = 'Placez la souris sur un zonage';
   // Stocker le type de représentation qui a été sélectionné en dernier #1 nb d'observations #2 nb de taxons
   public currentMap = 1; // par défaut, la carte affiche automatiquement le nombre d'observations
   // Stocker le nom du zonage sur lequel la souris est posée
@@ -103,8 +101,7 @@ export class DashboardMapsComponent
     this.currentTypeCode = this.config.DASHBOARD.AREA_TYPE[0];
     this.NB_CLASS_OBS = this.config.DASHBOARD.NB_CLASS_OBS;
     this.NB_CLASS_TAX = this.config.DASHBOARD.NB_CLASS_TAX;
-    this.displayNBOBSbydefault =
-      this.config.DASHBOARD.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
+    this.displayNBOBSbydefault = this.config.DASHBOARD.DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH;
 
     this.taxonApiEndPoint = `${this.config.API_ENDPOINT}/synthese/taxons_autocomplete`;
   }
@@ -139,12 +136,10 @@ export class DashboardMapsComponent
     this.loadData();
 
     // Récupération des noms de type_area qui seront contenus dans la liste déroulante du formulaire areaTypeControl
-    this.dataService
-      .getAreasTypes(this.config.DASHBOARD.AREA_TYPE)
-      .subscribe((data) => {
-        // Création de la liste déroulante
-        this.tabAreasTypes = data;
-      });
+    this.dataService.getAreasTypes(this.config.DASHBOARD.AREA_TYPE).subscribe((data) => {
+      // Création de la liste déroulante
+      this.tabAreasTypes = data;
+    });
 
     // Abonnement à la liste déroulante du formulaire areaTypeControl afin de modifier le type de zonage à chaque changement
     this.areaTypeControl.valueChanges
@@ -179,14 +174,8 @@ export class DashboardMapsComponent
       .subscribe((data) => {
         this.myAreas = data;
 
-        this.maxTaxa = Math.max(
-          ...data.features.map((o) => o.properties.nb_taxons),
-          0
-        ); // à mettre dans la fonction legend tax
-        this.maxObs = Math.max(
-          ...data.features.map((o) => o.properties.nb_obs),
-          0
-        ); // à mettre dans la fonction legend tax)
+        this.maxTaxa = Math.max(...data.features.map((o) => o.properties.nb_taxons), 0); // à mettre dans la fonction legend tax
+        this.maxObs = Math.max(...data.features.map((o) => o.properties.nb_obs), 0); // à mettre dans la fonction legend tax)
 
         if (this.NB_CLASS_TAX > this.maxTaxa) {
           this.gradesTax = new Array(this.maxTaxa);
@@ -279,8 +268,8 @@ export class DashboardMapsComponent
 
   // Légende concernant le nombre de taxons
   createlegend_TAX(nb_classes, nb_taxa_area) {
-    this.divLegendTax = this.mapService.L.DomUtil.create("div", "divLegend");
-    this.divLegendTax.innerHTML += "<b>Nombre de taxons</b><br/>";
+    this.divLegendTax = this.mapService.L.DomUtil.create('div', 'divLegend');
+    this.divLegendTax.innerHTML += '<b>Nombre de taxons</b><br/>';
     if (nb_classes > nb_taxa_area) {
       nb_classes = nb_taxa_area;
       this.gradesTax = new Array(nb_classes);
@@ -295,15 +284,13 @@ export class DashboardMapsComponent
         this.getColorTax(this.gradesTax[i]) +
         '"></i>' +
         this.gradesTax[i] +
-        (this.gradesTax[i + 1]
-          ? "&ndash;" + (this.gradesTax[i + 1] - 1) + "</div>"
-          : "+ </div>");
+        (this.gradesTax[i + 1] ? '&ndash;' + (this.gradesTax[i + 1] - 1) + '</div>' : '+ </div>');
     }
   }
 
   // Légende concernant le nombre d'Obs
   createlegend_OBS(nb_classes, nb_obs_area) {
-    this.divLegendObs = this.mapService.L.DomUtil.create("div", "divLegend");
+    this.divLegendObs = this.mapService.L.DomUtil.create('div', 'divLegend');
     this.divLegendObs.innerHTML += "<b>Nombre d'observations</b><br/>";
     if (nb_classes > nb_obs_area) {
       nb_classes = nb_obs_area;
@@ -319,16 +306,14 @@ export class DashboardMapsComponent
         this.getColorObs(this.gradesObs[i]) +
         '"></i>' +
         this.gradesObs[i] +
-        (this.gradesObs[i + 1]
-          ? "&ndash;" + (this.gradesObs[i + 1] - 1) + "</div>"
-          : "+ </div>");
+        (this.gradesObs[i + 1] ? '&ndash;' + (this.gradesObs[i + 1] - 1) + '</div>' : '+ </div>');
     }
   }
 
   // Ajout de la légende lors de l'init
   add_legend() {
     this.legend = (this.mapService.L as any).control({
-      position: "bottomright",
+      position: 'bottomright',
     });
     if (this.currentMap == 1) {
       this.legend.onAdd = (map) => {
@@ -373,17 +358,17 @@ export class DashboardMapsComponent
     // Déterminer le type de filtre taxonomique qui a été sélectionné pour afficher la liste déroulante adéquate
     this.filter = event.target.value;
     // Réinitialiser l'ancien filtre qui a été sélectionné pour empêcher les erreurs de requête
-    this.mapForm.controls["selectedGroup1INPN"].reset();
-    this.mapForm.controls["selectedGroup2INPN"].reset();
-    this.mapForm.controls["selectedGroup3INPN"].reset();
-    this.mapForm.controls["selectedRegne"].reset();
-    this.mapForm.controls["selectedPhylum"].reset();
-    this.mapForm.controls["selectedClasse"].reset();
-    this.mapForm.controls["selectedOrdre"].reset();
-    this.mapForm.controls["selectedFamille"].reset();
-    this.mapForm.controls["taxon"].reset();
+    this.mapForm.controls['selectedGroup1INPN'].reset();
+    this.mapForm.controls['selectedGroup2INPN'].reset();
+    this.mapForm.controls['selectedGroup3INPN'].reset();
+    this.mapForm.controls['selectedRegne'].reset();
+    this.mapForm.controls['selectedPhylum'].reset();
+    this.mapForm.controls['selectedClasse'].reset();
+    this.mapForm.controls['selectedOrdre'].reset();
+    this.mapForm.controls['selectedFamille'].reset();
+    this.mapForm.controls['taxon'].reset();
     // Afficher les données d'origine si la valeur vaut ""
-    if (this.filter == "") {
+    if (this.filter == '') {
       // Accès aux données de synthèse
       this.loadData();
     }
@@ -395,7 +380,7 @@ export class DashboardMapsComponent
     // Copie des éléments du formulaire pour pouvoir y ajouter cd_ref s'il s'agit d'un filtre par taxon
     this.filtersDict = Object.assign({}, this.mapForm.value);
     // S'il s'agit d'une recherche de taxon...
-    if (this.filter == "Rechercher un taxon/une espèce...") {
+    if (this.filter == 'Rechercher un taxon/une espèce...') {
       // Cas d'une nouvelle recherche de taxon
       if (event.item) {
         // Récupération du cd_ref
@@ -411,7 +396,7 @@ export class DashboardMapsComponent
         var cd_ref = this.currentCdRef;
       }
       // Ajout de cd_ref à la liste des paramètres de la requête
-      this.filtersDict["taxon"] = cd_ref;
+      this.filtersDict['taxon'] = cd_ref;
       // Impossibilité d'afficher la carte en mode "Nombre de taxons"
       this.disabledTaxButton = true;
     }
@@ -433,18 +418,16 @@ export class DashboardMapsComponent
     this.introLegend = null;
     this.currentArea = layer.feature.geometry.properties.area_name;
     if (this.currentMap == 1) {
-      this.currentNbObs =
-        "Nombre d'observations : " + layer.feature.geometry.properties.nb_obs;
+      this.currentNbObs = "Nombre d'observations : " + layer.feature.geometry.properties.nb_obs;
     } else if (this.currentMap == 2) {
-      this.currentNbTax =
-        "Nombre de taxons : " + layer.feature.geometry.properties.nb_taxons;
+      this.currentNbTax = 'Nombre de taxons : ' + layer.feature.geometry.properties.nb_taxons;
     }
   }
 
   // Réinitialiser l'aspect du zonage lorsque la souris n'est plus dessus
   resetHighlight(e) {
     const layer = e.target;
-    this.introLegend = "Placez la souris sur un zonage";
+    this.introLegend = 'Placez la souris sur un zonage';
     this.currentArea = null;
     this.currentNbObs = null;
     this.currentNbTax = null;

@@ -1,108 +1,272 @@
 <br />
 
 <div class="container-fluid">
-    <div class="panel panel-container">
-        <h1 style="text-align: center"><em class="fa fa-md fa-bar-chart" aria-hidden="true"></em> Dashboard</h1>
-    </div>
-    <hr class="my-4">
+  <div class="panel panel-container">
+    <h1 style="text-align: center">
+      <em
+        class="fa fa-md fa-bar-chart"
+        aria-hidden="true"
+      ></em>
+      Dashboard
+    </h1>
+  </div>
+  <hr class="my-4" />
 
-    <div *ngIf="displaySynthesePerYear" class="row row-md">
-        <div class="btn btn-block btn-title">
-            <div class="btn-lg " (click)="hideHistogram($event)">
-                <div class="row row-md">
-                    <div class="col-md-1" style="text-align: left">
-                        <em class="fa fa-xl fa-calendar" aria-hidden="true" *ngIf="showHistogram"></em>
-                    </div>
-                    <div class="col-md-10">
-                        <h3><b>Synthèse par année</b></h3>
-                    </div>
-                    <div class="col-md-1" style="text-align: right">
-                        <em class="fa fa-lg fa-chevron-down" aria-hidden="true" *ngIf="!showHistogram"></em>
-                        <em class="fa fa-lg fa-chevron-up" aria-hidden="true" *ngIf="showHistogram"></em>
-                    </div>
-                </div>
-                <em class="fa fa-xl fa-calendar" aria-hidden="true" *ngIf="!showHistogram"></em>
-            </div>
-            <button class="float-right" mat-raised-button color="primary" [routerLink]="['annual_report']" > Rapport annuel </button>
+  <div
+    *ngIf="displaySynthesePerYear"
+    class="row row-md"
+  >
+    <div class="btn btn-block btn-title">
+      <div
+        class="btn-lg"
+        (click)="hideHistogram($event)"
+      >
+        <div class="row row-md">
+          <div
+            class="col-md-1"
+            style="text-align: left"
+          >
+            <em
+              class="fa fa-xl fa-calendar"
+              aria-hidden="true"
+              *ngIf="showHistogram"
+            ></em>
+          </div>
+          <div class="col-md-10">
+            <h3><b>Synthèse par année</b></h3>
+          </div>
+          <div
+            class="col-md-1"
+            style="text-align: right"
+          >
+            <em
+              class="fa fa-lg fa-chevron-down"
+              aria-hidden="true"
+              *ngIf="!showHistogram"
+            ></em>
+            <em
+              class="fa fa-lg fa-chevron-up"
+              aria-hidden="true"
+              *ngIf="showHistogram"
+            ></em>
+          </div>
         </div>
+        <em
+          class="fa fa-xl fa-calendar"
+          aria-hidden="true"
+          *ngIf="!showHistogram"
+        ></em>
+      </div>
+      <button
+        class="float-right"
+        mat-raised-button
+        color="primary"
+        [routerLink]="['annual_report']"
+      >
+        Rapport annuel
+      </button>
+    </div>
+  </div>
+  <dashboard-histogram
+    [taxonomies]="taxonomies"
+    [hidden]="!showHistogram"
+  ></dashboard-histogram>
+
+  <div
+    *ngIf="displaySyntheseGeo"
+    class="row row-md"
+  >
+    <button
+      class="btn btn-block btn-lg btn-title"
+      (click)="hideMap($event)"
+    >
+      <div class="row row-md">
+        <div
+          class="col-md-1"
+          style="text-align: left"
+        >
+          <em
+            class="fa fa-xl fa-globe"
+            aria-hidden="true"
+            *ngIf="showMap"
+          ></em>
         </div>
-    <dashboard-histogram [taxonomies]="taxonomies" [hidden]="!showHistogram"></dashboard-histogram>
+        <div class="col-md-10">
+          <h3><b>Synthèse par entité géographique</b></h3>
+        </div>
+        <div
+          class="col-md-1"
+          style="text-align: right"
+        >
+          <em
+            class="fa fa-lg fa-chevron-down"
+            aria-hidden="true"
+            *ngIf="!showMap"
+          ></em>
+          <em
+            class="fa fa-lg fa-chevron-up"
+            aria-hidden="true"
+            *ngIf="showMap"
+          ></em>
+        </div>
+      </div>
+      <em
+        class="fa fa-xl fa-globe"
+        aria-hidden="true"
+        *ngIf="!showMap"
+      ></em>
+    </button>
+  </div>
+  <dashboard-maps
+    [taxonomies]="taxonomies"
+    [yearsMinMax]="yearsMinMax"
+    *ngIf="showMap"
+  ></dashboard-maps>
 
+  <div
+    *ngIf="displaySyntheseTaxoRank"
+    class="row row-md"
+  >
+    <button
+      class="btn btn-block btn-lg btn-title"
+      (click)="hidePieChart($event)"
+    >
+      <div class="row row-md">
+        <div
+          class="col-md-1"
+          style="text-align: left"
+        >
+          <em
+            class="fa fa-xl fa-sitemap"
+            aria-hidden="true"
+            *ngIf="showPieChart"
+          ></em>
+        </div>
+        <div class="col-md-10">
+          <h3><b>Synthèse par rang taxonomique</b></h3>
+        </div>
+        <div
+          class="col-md-1"
+          style="text-align: right"
+        >
+          <em
+            class="fa fa-lg fa-chevron-down"
+            aria-hidden="true"
+            *ngIf="!showPieChart"
+          ></em>
+          <em
+            class="fa fa-lg fa-chevron-up"
+            aria-hidden="true"
+            *ngIf="showPieChart"
+          ></em>
+        </div>
+      </div>
+      <em
+        class="fa fa-xl fa-sitemap"
+        aria-hidden="true"
+        *ngIf="!showPieChart"
+      ></em>
+    </button>
+  </div>
+  <dashboard-taxonomy
+    [yearsMinMax]="yearsMinMax"
+    [hidden]="!showPieChart"
+  ></dashboard-taxonomy>
 
-    <div *ngIf="displaySyntheseGeo" class="row row-md">
-        <button class="btn btn-block btn-lg btn-title" (click)="hideMap($event)">
-            <div class="row row-md">
-                <div class="col-md-1" style="text-align: left">
-                    <em class="fa fa-xl fa-globe" aria-hidden="true" *ngIf="showMap"></em>
-                </div>
-                <div class="col-md-10">
-                    <h3><b>Synthèse par entité géographique</b></h3>
-                </div>
-                <div class="col-md-1" style="text-align: right">
-                    <em class="fa fa-lg fa-chevron-down" aria-hidden="true" *ngIf="!showMap"></em>
-                    <em class="fa fa-lg fa-chevron-up" aria-hidden="true" *ngIf="showMap"></em>
-                </div>
-            </div>
-            <em class="fa fa-xl fa-globe" aria-hidden="true" *ngIf="!showMap"></em>
-        </button>
-    </div>
-    <dashboard-maps [taxonomies]="taxonomies" [yearsMinMax]="yearsMinMax" *ngIf="showMap"></dashboard-maps>
+  <div
+    *ngIf="displaySyntheseCA"
+    class="row row-md"
+  >
+    <button
+      class="btn btn-block btn-lg btn-title"
+      (click)="hideLineChart($event)"
+    >
+      <div class="row row-md">
+        <div
+          class="col-md-1"
+          style="text-align: left"
+        >
+          <em
+            class="fa fa-xl fa-cubes"
+            aria-hidden="true"
+            *ngIf="showLineChart"
+          ></em>
+        </div>
+        <div class="col-md-10">
+          <h3><b>Synthèse par cadre d'acquisition</b></h3>
+        </div>
+        <div
+          class="col-md-1"
+          style="text-align: right"
+        >
+          <em
+            class="fa fa-lg fa-chevron-down"
+            aria-hidden="true"
+            *ngIf="!showLineChart"
+          ></em>
+          <em
+            class="fa fa-lg fa-chevron-up"
+            aria-hidden="true"
+            *ngIf="showLineChart"
+          ></em>
+        </div>
+      </div>
+      <em
+        class="fa fa-xl fa-cubes"
+        aria-hidden="true"
+        *ngIf="!showLineChart"
+      ></em>
+    </button>
+  </div>
+  <dashboard-frameworks [hidden]="!showLineChart"></dashboard-frameworks>
 
-    <div *ngIf="displaySyntheseTaxoRank" class="row row-md">
-        <button class="btn btn-block btn-lg btn-title" (click)="hidePieChart($event)">
-            <div class="row row-md">
-                <div class="col-md-1" style="text-align: left">
-                    <em class="fa fa-xl fa-sitemap" aria-hidden="true" *ngIf="showPieChart"></em>
-                </div>
-                <div class="col-md-10">
-                    <h3><b>Synthèse par rang taxonomique</b></h3>
-                </div>
-                <div class="col-md-1" style="text-align: right">
-                    <em class="fa fa-lg fa-chevron-down" aria-hidden="true" *ngIf="!showPieChart"></em>
-                    <em class="fa fa-lg fa-chevron-up" aria-hidden="true" *ngIf="showPieChart"></em>
-                </div>
-            </div>
-            <em class="fa fa-xl fa-sitemap" aria-hidden="true" *ngIf="!showPieChart"></em>
-        </button>
-    </div>
-    <dashboard-taxonomy [yearsMinMax]="yearsMinMax" [hidden]="!showPieChart">
-    </dashboard-taxonomy>
-
-    <div *ngIf="displaySyntheseCA" class="row row-md">
-        <button class="btn btn-block btn-lg btn-title" (click)="hideLineChart($event)">
-            <div class="row row-md">
-                <div class="col-md-1" style="text-align: left">
-                    <em class="fa fa-xl fa-cubes" aria-hidden="true" *ngIf="showLineChart"></em>
-                </div>
-                <div class="col-md-10">
-                    <h3><b>Synthèse par cadre d'acquisition</b></h3>
-                </div>
-                <div class="col-md-1" style="text-align: right">
-                    <em class="fa fa-lg fa-chevron-down" aria-hidden="true" *ngIf="!showLineChart"></em>
-                    <em class="fa fa-lg fa-chevron-up" aria-hidden="true" *ngIf="showLineChart"></em>
-                </div>
-            </div>
-            <em class="fa fa-xl fa-cubes" aria-hidden="true" *ngIf="!showLineChart"></em>
-        </button>
-    </div>
-    <dashboard-frameworks [hidden]="!showLineChart"></dashboard-frameworks>
-
-    <div *ngIf="displaySyntheseTaxoContact" class="row row-md">
-        <button class="btn btn-block btn-lg btn-title" (click)="hideSpecies($event)">
-            <div class="row row-md">
-                <div class="col-md-1" style="text-align: left">
-                    <em class="fa fa-xl fa-paw" aria-hidden="true" *ngIf="showSpecies"></em>
-                </div>
-                <div class="col-md-10">
-                    <h3><b>Taxons recontactés, non recontactés et nouveaux par année</b></h3>
-                </div>
-                <div class="col-md-1" style="text-align: right">
-                    <em class="fa fa-lg fa-chevron-down" aria-hidden="true" *ngIf="!showSpecies"></em>
-                    <em class="fa fa-lg fa-chevron-up" aria-hidden="true" *ngIf="showSpecies"></em>
-                </div>
-            </div>
-            <em class="fa fa-xl fa-paw" aria-hidden="true" *ngIf="!showSpecies"></em>
-        </button>
-    </div>
-    <dashboard-recontact [distinctYears]="distinctYears" [hidden]="!showSpecies"></dashboard-recontact>
+  <div
+    *ngIf="displaySyntheseTaxoContact"
+    class="row row-md"
+  >
+    <button
+      class="btn btn-block btn-lg btn-title"
+      (click)="hideSpecies($event)"
+    >
+      <div class="row row-md">
+        <div
+          class="col-md-1"
+          style="text-align: left"
+        >
+          <em
+            class="fa fa-xl fa-paw"
+            aria-hidden="true"
+            *ngIf="showSpecies"
+          ></em>
+        </div>
+        <div class="col-md-10">
+          <h3><b>Taxons recontactés, non recontactés et nouveaux par année</b></h3>
+        </div>
+        <div
+          class="col-md-1"
+          style="text-align: right"
+        >
+          <em
+            class="fa fa-lg fa-chevron-down"
+            aria-hidden="true"
+            *ngIf="!showSpecies"
+          ></em>
+          <em
+            class="fa fa-lg fa-chevron-up"
+            aria-hidden="true"
+            *ngIf="showSpecies"
+          ></em>
+        </div>
+      </div>
+      <em
+        class="fa fa-xl fa-paw"
+        aria-hidden="true"
+        *ngIf="!showSpecies"
+      ></em>
+    </button>
+  </div>
+  <dashboard-recontact
+    [distinctYears]="distinctYears"
+    [hidden]="!showSpecies"
+  ></dashboard-recontact>
 </div>
