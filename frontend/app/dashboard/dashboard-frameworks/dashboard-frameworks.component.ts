@@ -1,14 +1,14 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { ChartConfiguration, ChartOptions } from "chart.js";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { ChartConfiguration, ChartOptions } from 'chart.js';
 
 // Services
-import { DataService } from "../services/data.services";
+import { DataService } from '../services/data.services';
 
 @Component({
-  selector: "dashboard-frameworks",
-  templateUrl: "dashboard-frameworks.component.html",
-  styleUrls: ["./dashboard-frameworks.component.scss"],
+  selector: 'dashboard-frameworks',
+  templateUrl: 'dashboard-frameworks.component.html',
+  styleUrls: ['./dashboard-frameworks.component.scss'],
 })
 export class DashboardFrameworksComponent implements OnInit {
   chart;
@@ -22,13 +22,13 @@ export class DashboardFrameworksComponent implements OnInit {
       x: {
         title: {
           display: true,
-          text: "Années",
+          text: 'Années',
         },
       },
       y: {
         title: {
           display: true,
-          text: "Nb Obs.",
+          text: 'Nb Obs.',
         },
       },
     },
@@ -53,7 +53,7 @@ export class DashboardFrameworksComponent implements OnInit {
     var r = Math.floor(Math.random() * 255);
     var g = Math.floor(Math.random() * 255);
     var b = Math.floor(Math.random() * 255);
-    return "rgb(" + r + "," + g + "," + b + ")";
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
   }
 
   searchAF() {

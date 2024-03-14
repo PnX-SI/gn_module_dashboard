@@ -1,181 +1,343 @@
 <div class="row row-sm">
+  <div class="col-md-2 padding-sm">
+    <div
+      class="card"
+      style="height: 100%"
+    >
+      <h3
+        class="card-header"
+        style="text-align: center; color: white"
+      >
+        <div class="row row-md">
+          <div
+            class="col-md-1"
+            style="text-align: left"
+          >
+            <em
+              class="fa fa-lg fa-filter"
+              aria-hidden="true"
+              style="text-shadow: 0 0 15px rgba(0, 0, 0, 0.4)"
+            ></em>
+          </div>
+          <div
+            class="col-md-10"
+            style="text-shadow: 0 0 15px rgba(0, 0, 0, 0.8)"
+          >
+            Filtrer
+          </div>
+        </div>
+      </h3>
 
-    <div class="col-md-2 padding-sm">
-
-        <div class="card" style="height:100%">
-            <h3 class="card-header" style="text-align:center; color:white">
-                <div class="row row-md">
-                    <div class="col-md-1" style="text-align: left">
-                        <em class="fa fa-lg fa-filter" aria-hidden="true"
-                            style="text-shadow: 0 0 15px rgba(0, 0, 0, 0.4)"></em>
-                    </div>
-                    <div class="col-md-10" style="text-shadow: 0 0 15px rgba(0, 0, 0, 0.8)">
-                        Filtrer
-                    </div>
-                </div>
-            </h3>
-
-            <div class="card-body">
-                <div id="filters">
-                    <form [formGroup]="histForm">
-                        <div class="form-group">
-                            <label class="col-form-label"><b> Rang taxonomique </b></label>
-                            <select class="form-control form-control-sm" formControlName="selectedFilter"
-                                (change)="onTaxFilterChange($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <option> Groupe INPN 1 </option>
-                                <option> Groupe INPN 2 </option>
-                                <option> Groupe INPN 3 </option>
-                                <option> Règne </option>
-                                <option> Phylum </option>
-                                <option> Classe </option>
-                                <option> Ordre </option>
-                                <option> Famille </option>
-                                <option> Rechercher un taxon/une espèce... </option>
-                            </select>
-                        </div>
-                        <div class="form-group" id="group1_inpn_filter" *ngIf="filter === 'Groupe INPN 1'">
-                            <label class="col-form-label"> Groupe INPN 1 </label>
-                            <select class="form-control form-control-sm" formControlName="selectedGroup1INPN"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let group1_inpn of taxonomies['Groupe INPN 1']">
-                                    <option [ngValue]="group1_inpn" *ngIf="group1_inpn != 'Not defined'">
-                                        {{ group1_inpn }} </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div class="form-group" id="group2_inpn_filter" *ngIf="filter === 'Groupe INPN 2'">
-                            <label class="col-form-label"> Groupe INPN 2 </label>
-                            <select class="form-control form-control-sm" formControlName="selectedGroup2INPN"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let group2_inpn of taxonomies['Groupe INPN 2']">
-                                    <option [ngValue]="group2_inpn" *ngIf="group2_inpn != 'Not defined'">
-                                        {{ group2_inpn }} </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div class="form-group" id="group3_inpn_filter" *ngIf="filter === 'Groupe INPN 3'">
-                            <label class="col-form-label"> Groupe INPN 3 </label>
-                            <select class="form-control form-control-sm" formControlName="selectedGroup3INPN"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let group3_inpn of taxonomies['Groupe INPN 3']">
-                                    <option [ngValue]="group3_inpn" *ngIf="group3_inpn != 'Not defined'">
-                                        {{ group3_inpn }} </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div class="form-group" id="regne_filter" *ngIf="filter === 'Règne'">
-                            <label class="col-form-label"> Règne </label>
-                            <select class="form-control form-control-sm" formControlName="selectedRegne"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let regne of taxonomies['Règne']">
-                                    <option [ngValue]="regne" *ngIf="regne != 'Not defined'"> {{ regne }} </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div class="form-group" id="phylum_filter" *ngIf="filter === 'Phylum'">
-                            <label class="col-form-label"> Phylum </label>
-                            <select class="form-control form-control-sm" formControlName="selectedPhylum"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let phylum of taxonomies['Phylum']">
-                                    <option [ngValue]="phylum" *ngIf="phylum != 'Not defined'"> {{ phylum }}
-                                    </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div class="form-group" id="classe_filter" *ngIf="filter === 'Classe'">
-                            <label class="col-form-label"> Classe </label>
-                            <select class="form-control form-control-sm" formControlName="selectedClasse"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let classe of taxonomies['Classe']">
-                                    <option [ngValue]="classe" *ngIf="classe != 'Not defined'"> {{ classe }}
-                                    </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div class="form-group" id="ordre_filter" *ngIf="filter === 'Ordre'">
-                            <label class="col-form-label"> Ordre </label>
-                            <select class="form-control form-control-sm" formControlName="selectedOrdre"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let ordre of taxonomies['Ordre']">
-                                    <option [ngValue]="ordre" *ngIf="ordre != 'Not defined'"> {{ ordre }} </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div class="form-group" id="ordre_filter" *ngIf="filter === 'Famille'">
-                            <label class="col-form-label"> Famille </label>
-                            <select class="form-control form-control-sm" formControlName="selectedFamille"
-                                (change)="getCurrentTax($event)" [disableControl]="spinner">
-                                <option> </option>
-                                <ng-container *ngFor="let famille of taxonomies['Famille']">
-                                    <option [ngValue]="famille" *ngIf="famille != 'Not defined'"> {{ famille }}
-                                    </option>
-                                </ng-container>
-                            </select>
-                        </div>
-                        <div id="taxon_filter" *ngIf="filter === 'Rechercher un taxon/une espèce...'">
-                            <label class="col-form-label"> Taxon/espèce </label>
-                            <pnx-taxonomy label="" [parentFormControl]="histForm.controls.taxon"
-                                [charNumber]="3" [listLength]="30" [apiEndPoint]="taxonApiEndPoint"
-                                (onChange)="getCurrentTax($event)">
-                            </pnx-taxonomy>
-                            <div class="card-absolute-taxon">
-                                <em class="fa fa-md fa-question-circle" aria-hidden="true"></em>
-                                <small>Recherche : tapez au moins 3 lettres</small>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div style="text-align: center">
-                    <div class="spinner-border text-secondary m-5" role="status" *ngIf="spinner"></div>
-                </div>
+      <div class="card-body">
+        <div id="filters">
+          <form [formGroup]="histForm">
+            <div class="form-group">
+              <label class="col-form-label"><b>Rang taxonomique</b></label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedFilter"
+                (change)="onTaxFilterChange($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <option>Groupe INPN 1</option>
+                <option>Groupe INPN 2</option>
+                <option>Groupe INPN 3</option>
+                <option>Règne</option>
+                <option>Phylum</option>
+                <option>Classe</option>
+                <option>Ordre</option>
+                <option>Famille</option>
+                <option>Rechercher un taxon/une espèce...</option>
+              </select>
             </div>
+            <div
+              class="form-group"
+              id="group1_inpn_filter"
+              *ngIf="filter === 'Groupe INPN 1'"
+            >
+              <label class="col-form-label">Groupe INPN 1</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedGroup1INPN"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let group1_inpn of taxonomies['Groupe INPN 1']">
+                  <option
+                    [ngValue]="group1_inpn"
+                    *ngIf="group1_inpn != 'Not defined'"
+                  >
+                    {{ group1_inpn }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              class="form-group"
+              id="group2_inpn_filter"
+              *ngIf="filter === 'Groupe INPN 2'"
+            >
+              <label class="col-form-label">Groupe INPN 2</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedGroup2INPN"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let group2_inpn of taxonomies['Groupe INPN 2']">
+                  <option
+                    [ngValue]="group2_inpn"
+                    *ngIf="group2_inpn != 'Not defined'"
+                  >
+                    {{ group2_inpn }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              class="form-group"
+              id="group3_inpn_filter"
+              *ngIf="filter === 'Groupe INPN 3'"
+            >
+              <label class="col-form-label">Groupe INPN 3</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedGroup3INPN"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let group3_inpn of taxonomies['Groupe INPN 3']">
+                  <option
+                    [ngValue]="group3_inpn"
+                    *ngIf="group3_inpn != 'Not defined'"
+                  >
+                    {{ group3_inpn }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              class="form-group"
+              id="regne_filter"
+              *ngIf="filter === 'Règne'"
+            >
+              <label class="col-form-label">Règne</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedRegne"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let regne of taxonomies['Règne']">
+                  <option
+                    [ngValue]="regne"
+                    *ngIf="regne != 'Not defined'"
+                  >
+                    {{ regne }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              class="form-group"
+              id="phylum_filter"
+              *ngIf="filter === 'Phylum'"
+            >
+              <label class="col-form-label">Phylum</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedPhylum"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let phylum of taxonomies['Phylum']">
+                  <option
+                    [ngValue]="phylum"
+                    *ngIf="phylum != 'Not defined'"
+                  >
+                    {{ phylum }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              class="form-group"
+              id="classe_filter"
+              *ngIf="filter === 'Classe'"
+            >
+              <label class="col-form-label">Classe</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedClasse"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let classe of taxonomies['Classe']">
+                  <option
+                    [ngValue]="classe"
+                    *ngIf="classe != 'Not defined'"
+                  >
+                    {{ classe }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              class="form-group"
+              id="ordre_filter"
+              *ngIf="filter === 'Ordre'"
+            >
+              <label class="col-form-label">Ordre</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedOrdre"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let ordre of taxonomies['Ordre']">
+                  <option
+                    [ngValue]="ordre"
+                    *ngIf="ordre != 'Not defined'"
+                  >
+                    {{ ordre }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              class="form-group"
+              id="ordre_filter"
+              *ngIf="filter === 'Famille'"
+            >
+              <label class="col-form-label">Famille</label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedFamille"
+                (change)="getCurrentTax($event)"
+                [disableControl]="spinner"
+              >
+                <option></option>
+                <ng-container *ngFor="let famille of taxonomies['Famille']">
+                  <option
+                    [ngValue]="famille"
+                    *ngIf="famille != 'Not defined'"
+                  >
+                    {{ famille }}
+                  </option>
+                </ng-container>
+              </select>
+            </div>
+            <div
+              id="taxon_filter"
+              *ngIf="filter === 'Rechercher un taxon/une espèce...'"
+            >
+              <label class="col-form-label">Taxon/espèce</label>
+              <pnx-taxonomy
+                label=""
+                [parentFormControl]="histForm.controls.taxon"
+                [charNumber]="3"
+                [listLength]="30"
+                [apiEndPoint]="taxonApiEndPoint"
+                (onChange)="getCurrentTax($event)"
+              ></pnx-taxonomy>
+              <div class="card-absolute-taxon">
+                <em
+                  class="fa fa-md fa-question-circle"
+                  aria-hidden="true"
+                ></em>
+                <small>Recherche : tapez au moins 3 lettres</small>
+              </div>
+            </div>
+          </form>
         </div>
 
+        <div style="text-align: center">
+          <div
+            class="spinner-border text-secondary m-5"
+            role="status"
+            *ngIf="spinner"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-10 padding-sm">
+    <div class="row row-md">
+      <div class="card-absolute">
+        <em
+          class="fa fa-lg fa-info-circle"
+          style="padding-right: 0.2rem"
+          aria-hidden="true"
+        ></em>
+        <small>
+          Un
+          <b>taxon</b>
+          est une unité quelconque (il peut s'agir d'un règne, d'une classe, d'une famille, d'une
+          espèce, etc.) issue de la hiérarchie taxonomique. Généralement, le terme est employé pour
+          désigner l'
+          <b>espèce</b>
+          ou la sous-espèce.
+        </small>
+        <br />
+        <em
+          class="fa fa-md fa-paw"
+          style="padding-left: 1.4rem; padding-right: 0.1rem"
+          aria-hidden="true"
+        ></em>
+        <small>
+          Exemple : le règne
+          <i>Animalia</i>
+          , au même titre que l'espèce
+          <i>Gypaète barbu</i>
+          , est un taxon.
+        </small>
+      </div>
     </div>
 
-    <div class="col-md-10 padding-sm">
-
-        <div class="row row-md">
-            <div class="card-absolute">
-                <em class="fa fa-lg fa-info-circle" style="padding-right: 0.2rem" aria-hidden="true"></em>
-                <small>Un <b>taxon</b> est une unité quelconque (il peut s'agir d'un règne, d'une classe, d'une famille,
-                    d'une espèce, etc.) issue de la hiérarchie taxonomique. Généralement, le terme est employé pour
-                    désigner l'<b>espèce</b> ou la sous-espèce.</small><br />
-                <em class="fa fa-md fa-paw" style="padding-left: 1.4rem; padding-right: 0.1rem;"
-                    aria-hidden="true"></em>
-                <small>Exemple : le règne <i>Animalia</i>, au même titre que l'espèce <i>Gypaète barbu</i>, est un
-                    taxon.</small>
-            </div>
-        </div>
-
-        <div class="row row-md">
-            <div class="col-md-12" *ngIf="currentTaxon===''">
-                <h5 style="color: #757575; padding-left: 0.6rem; text-shadow: 0 0 15px rgba(50, 50, 50, 0.2);">
-                    <b>Nombres totaux d'observations et de taxons</b></h5>
-            </div>
-            <div class="col-md-12" *ngIf="currentTaxon!=''">
-                <h5 style="color: #757575; padding-left: 0.6rem; text-shadow: 0 0 15px rgba(50, 50, 50, 0.2);">
-                    <b>Nombres d'observations et de taxons pour <i>{{ currentTaxon }}</i></b></h5>
-            </div>
-        </div>
-
-        <div style="display: block">
-            <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
-             [type]="bartype">
-            </canvas>
-        </div>
-
-
+    <div class="row row-md">
+      <div
+        class="col-md-12"
+        *ngIf="currentTaxon === ''"
+      >
+        <h5
+          style="color: #757575; padding-left: 0.6rem; text-shadow: 0 0 15px rgba(50, 50, 50, 0.2)"
+        >
+          <b>Nombres totaux d'observations et de taxons</b>
+        </h5>
+      </div>
+      <div
+        class="col-md-12"
+        *ngIf="currentTaxon != ''"
+      >
+        <h5
+          style="color: #757575; padding-left: 0.6rem; text-shadow: 0 0 15px rgba(50, 50, 50, 0.2)"
+        >
+          <b>
+            Nombres d'observations et de taxons pour
+            <i>{{ currentTaxon }}</i>
+          </b>
+        </h5>
+      </div>
     </div>
 
+    <div style="display: block">
+      <canvas
+        baseChart
+        [datasets]="barChartData"
+        [labels]="barChartLabels"
+        [options]="barChartOptions"
+        [type]="bartype"
+      ></canvas>
+    </div>
+  </div>
 </div>
 <br />

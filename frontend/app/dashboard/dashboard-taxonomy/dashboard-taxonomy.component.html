@@ -1,80 +1,111 @@
 <div class="row row-sm">
+  <div class="col-md-2 padding-sm">
+    <div
+      class="card"
+      style="height: 100%"
+    >
+      <div class="card-header">
+        <h3>
+          <mat-icon>filter_alt</mat-icon>
+          Filtrer
+        </h3>
+      </div>
 
-    <div class="col-md-2 padding-sm">
-
-        <div class="card" style="height:100%">
-            <div class="card-header">
-                <h3>
-                    <mat-icon>filter_alt</mat-icon>
-                    Filtrer
-                </h3>
-            </div>
-
-            <div class="card-body">
-                <div id="filters">
-                    <form [formGroup]="pieChartForm">
-                        <div class="form-group" *ngIf="yearsMinMax && yearsMinMax[0]!=yearsMinMax[yearsMinMax?.length -1]" >
-                            <label class="col-form-label"><b> Période : {{pieChartForm.controls.yearStart.value}} - {{pieChartForm.controls.yearEnd.value}} </b></label>
-                            <div class="row justify-content-md-center">
-                                <div class="col-md-11">
-                                    <mat-slider
-                                        class="full-width"
-                                        [min]="yearsMinMax ? yearsMinMax[0]: null"
-                                        [max]="yearsMinMax ? yearsMinMax[yearsMinMax.length - 1]: null"
-                                        [disabled]="spinner"
-                                        [step]="1"
-                                        [discrete]="true"
-                                        [showTickMarks]="true"
-                                        (change)="getCurrentParameters($event)"
-                                        >
-                                      <input matSliderStartThumb [formControl]="pieChartForm.controls.yearStart" >
-                                      <input matSliderEndThumb  [formControl]="pieChartForm.controls.yearEnd">
-                                    </mat-slider>
-                                </div>
-                            </div>
-                        </div><br />
-                        <div class="form-group">
-                            <label class="col-form-label"><b> Rang taxonomique </b></label>
-                            <select class="form-control form-control-sm" formControlName="selectedFilter"
-                                (change)="getCurrentParameters($event)" [disableControl]="spinner">
-                                <option value="group1_inpn"> Groupe INPN 1 </option>
-                                <option value="group2_inpn"> Groupe INPN 2 </option>
-                                <option value="group3_inpn"> Groupe INPN 3 </option>
-                                <option value="regne"> Règne </option>
-                                <option value="phylum"> Phylum </option>
-                                <option value="classe"> Classe </option>
-                                <option value="ordre"> Ordre </option>
-                            </select>
-                        </div>
-                    </form>
-                </div><br />
-
-                <div style="text-align: center">
-                    <div class="spinner-border text-secondary m-5" role="status" *ngIf="spinner"></div>
+      <div class="card-body">
+        <div id="filters">
+          <form [formGroup]="pieChartForm">
+            <div
+              class="form-group"
+              *ngIf="yearsMinMax && yearsMinMax[0] != yearsMinMax[yearsMinMax?.length - 1]"
+            >
+              <label class="col-form-label">
+                <b>
+                  Période : {{ pieChartForm.controls.yearStart.value }} -
+                  {{ pieChartForm.controls.yearEnd.value }}
+                </b>
+              </label>
+              <div class="row justify-content-md-center">
+                <div class="col-md-11">
+                  <mat-slider
+                    class="full-width"
+                    [min]="yearsMinMax ? yearsMinMax[0] : null"
+                    [max]="yearsMinMax ? yearsMinMax[yearsMinMax.length - 1] : null"
+                    [disabled]="spinner"
+                    [step]="1"
+                    [discrete]="true"
+                    [showTickMarks]="true"
+                    (change)="getCurrentParameters($event)"
+                  >
+                    <input
+                      matSliderStartThumb
+                      [formControl]="pieChartForm.controls.yearStart"
+                    />
+                    <input
+                      matSliderEndThumb
+                      [formControl]="pieChartForm.controls.yearEnd"
+                    />
+                  </mat-slider>
                 </div>
+              </div>
             </div>
+            <br />
+            <div class="form-group">
+              <label class="col-form-label"><b>Rang taxonomique</b></label>
+              <select
+                class="form-control form-control-sm"
+                formControlName="selectedFilter"
+                (change)="getCurrentParameters($event)"
+                [disableControl]="spinner"
+              >
+                <option value="group1_inpn">Groupe INPN 1</option>
+                <option value="group2_inpn">Groupe INPN 2</option>
+                <option value="group3_inpn">Groupe INPN 3</option>
+                <option value="regne">Règne</option>
+                <option value="phylum">Phylum</option>
+                <option value="classe">Classe</option>
+                <option value="ordre">Ordre</option>
+              </select>
+            </div>
+          </form>
         </div>
+        <br />
 
+        <div style="text-align: center">
+          <div
+            class="spinner-border text-secondary m-5"
+            role="status"
+            *ngIf="spinner"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-10 padding-sm">
+    <div class="row row-md">
+      <div class="custom-card">
+        <em
+          class="fa fa-lg fa-question-circle"
+          style="padding-right: 0.2rem"
+          aria-hidden="true"
+        ></em>
+        <small>
+          Cliquez sur les éléments de légende pour les faire disparaître/réapparaître et actualiser
+          le graphe.
+        </small>
+      </div>
     </div>
 
-    <div class="col-md-10 padding-sm">
-
-        <div class="row row-md">
-            <div class="custom-card">
-                <em class="fa fa-lg fa-question-circle" style="padding-right: 0.2rem" aria-hidden="true"></em>
-                <small>Cliquez sur
-                    les éléments de légende
-                    pour les faire
-                    disparaître/réapparaître et actualiser le graphe.</small>
-            </div>
-        </div>
-
-        <div style="display: block">
-            <canvas baseChart [datasets]="pieChartData" [labels]="pieChartLabels" [type]="pietype"
-                [options]="pieChartOptions" [plugins]="pieChartPlugins">
-            </canvas>
-        </div>
+    <div style="display: block">
+      <canvas
+        baseChart
+        [datasets]="pieChartData"
+        [labels]="pieChartLabels"
+        [type]="pietype"
+        [options]="pieChartOptions"
+        [plugins]="pieChartPlugins"
+      ></canvas>
     </div>
-
+  </div>
 </div>
 <br />

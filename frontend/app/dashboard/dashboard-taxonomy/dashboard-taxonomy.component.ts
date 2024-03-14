@@ -1,21 +1,21 @@
-import { Component, OnInit, ViewChild, Input } from "@angular/core";
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { BaseChartDirective } from "ng2-charts";
-import DatalabelsPlugin from "chartjs-plugin-datalabels";
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { BaseChartDirective } from 'ng2-charts';
+import DatalabelsPlugin from 'chartjs-plugin-datalabels';
 
 // Services
-import { DataService } from "../services/data.services";
+import { DataService } from '../services/data.services';
 
 @Component({
-  selector: "dashboard-taxonomy",
-  templateUrl: "dashboard-taxonomy.component.html",
-  styleUrls: ["./dashboard-taxonomy.component.scss"],
+  selector: 'dashboard-taxonomy',
+  templateUrl: 'dashboard-taxonomy.component.html',
+  styleUrls: ['./dashboard-taxonomy.component.scss'],
 })
 export class DashboardTaxonomyComponent implements OnInit {
   @ViewChild(BaseChartDirective) chart: BaseChartDirective;
 
   // Type de graphe
-  public pietype = "doughnut";
+  public pietype = 'doughnut';
   public pieChartPlugins = [DatalabelsPlugin];
 
   // Tableau contenant les labels du graphe
@@ -34,24 +34,22 @@ export class DashboardTaxonomyComponent implements OnInit {
     plugins: {
       legend: {
         display: true,
-        position: "top",
+        position: 'top',
       },
       datalabels: {
         labels: {
           label: {
-            color: "white",
+            color: 'white',
             font: {
-              weight: "bold",
+              weight: 'bold',
             },
           },
         },
         formatter: (value, ctx) => {
           if (ctx.chart.data.labels) {
-            const total = ctx.chart.data.datasets[0].data.reduce(
-              (acc, prev) => acc + prev
-            );
+            const total = ctx.chart.data.datasets[0].data.reduce((acc, prev) => acc + prev);
             const percentage = Math.round((value / total) * 100);
-            return percentage < 5 ? null : percentage + "%";
+            return percentage < 5 ? null : percentage + '%';
           }
         },
       },
@@ -68,7 +66,10 @@ export class DashboardTaxonomyComponent implements OnInit {
   public spinner = true;
   public colors = [];
 
-  constructor(public dataService: DataService, public fb: FormBuilder) {
+  constructor(
+    public dataService: DataService,
+    public fb: FormBuilder
+  ) {
     // Déclaration du formulaire contenant les filtres du pie chart
   }
 
@@ -83,21 +84,19 @@ export class DashboardTaxonomyComponent implements OnInit {
       this.colors.push(this.dynamicColors());
     });
     // Par défaut, le pie chart s'affiche au niveau du règne
-    this.pieChartForm.controls["selectedFilter"].setValue("regne");
+    this.pieChartForm.controls['selectedFilter'].setValue('regne');
     // Initialisation de l'array des labels, paramètre du pie chart
     // this.pieChartLabels = this.taxonomies[this.currentTaxLevel];
     // Accès aux données de la VM vm_synthese
-    this.subscription = this.dataService
-      .getDataSynthesePerTaxLevel("regne")
-      .subscribe((data) => {
-        data.forEach((elt, index) => {
-          this.pieChartData[0].data.push(elt.nb_obs);
-          this.pieChartData[0].backgroundColor.push(this.colors[index]);
-          this.pieChartLabels.push(elt.taxon);
-        });
-        this.chart.chart.update();
-        this.spinner = false;
+    this.subscription = this.dataService.getDataSynthesePerTaxLevel('regne').subscribe((data) => {
+      data.forEach((elt, index) => {
+        this.pieChartData[0].data.push(elt.nb_obs);
+        this.pieChartData[0].backgroundColor.push(this.colors[index]);
+        this.pieChartLabels.push(elt.taxon);
       });
+      this.chart.chart.update();
+      this.spinner = false;
+    });
   }
 
   ngOnChanges(change) {
@@ -105,10 +104,7 @@ export class DashboardTaxonomyComponent implements OnInit {
     if (change.yearsMinMax && change.yearsMinMax.currentValue != undefined) {
       this.pieChartForm.patchValue({
         yearStart: change.yearsMinMax.currentValue[0],
-        yearEnd:
-          change.yearsMinMax.currentValue[
-            change.yearsMinMax.currentValue.length - 1
-          ],
+        yearEnd: change.yearsMinMax.currentValue[change.yearsMinMax.currentValue.length - 1],
       });
     }
   }
@@ -116,7 +112,7 @@ export class DashboardTaxonomyComponent implements OnInit {
     var r = Math.floor(Math.random() * 255);
     var g = Math.floor(Math.random() * 255);
     var b = Math.floor(Math.random() * 255);
-    return "rgb(" + r + "," + g + "," + b + ")";
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
   }
 
   // Rafraichissement des données en fonction des filtres renseignés par l'utilisateur
@@ -127,7 +123,7 @@ export class DashboardTaxonomyComponent implements OnInit {
     this.pieChartLabels = [];
     this.subscription = this.dataService
       .getDataSynthesePerTaxLevel(
-        this.pieChartForm.get("selectedFilter").value,
+        this.pieChartForm.get('selectedFilter').value,
         this.pieChartForm.value
       )
       .subscribe((data) => {
