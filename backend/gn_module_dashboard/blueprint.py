@@ -1,6 +1,7 @@
 import json
 from flask import Blueprint, request, jsonify
 from sqlalchemy.sql import func, text, select
+import sqlalchemy as sa
 
 from geojson import FeatureCollection, Feature
 
@@ -8,11 +9,11 @@ from sqlalchemy.sql.expression import label, distinct, case
 from werkzeug.exceptions import BadRequest
 
 from utils_flask_sqla.response import json_resp
-from geonature.utils.env import DB
+from geonature.utils.env import DB, db
 
 from .models import VSynthese, VTaxonomie, VFrameworks
 from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese
-from ref_geo.models import BibAreasTypes
+from ref_geo.models import BibAreasTypes, LAreas
 
 # # import des fonctions utiles depuis le sous-module d'authentification
 # from geonature.core.gn_permissions import decorators as permissions
@@ -27,30 +28,28 @@ blueprint = Blueprint("dashboard", __name__, cli_group="dashboard")
 @json_resp
 def get_synthese_stat():
     params = request.args
-    q = DB.session.query(
-        label("year", func.date_part("year", VSynthese.date_min)),
+    query = sa.select(
+        func.date_part("year", VSynthese.date_min).label("year"),
         func.count(VSynthese.id_synthese).label("count_id_synthese"),
         func.count(distinct(VSynthese.cd_ref)).label("count_cd_ref"),
     ).group_by("year")
-    if ("selectedRegne" in params) and (params["selectedRegne"] != ""):
-        q = q.filter(VSynthese.regne == params["selectedRegne"])
-    if ("selectedPhylum" in params) and (params["selectedPhylum"] != ""):
-        q = q.filter(VSynthese.phylum == params["selectedPhylum"])
-    if "selectedClasse" in params and (params["selectedClasse"] != ""):
-        q = q.filter(VSynthese.classe == params["selectedClasse"])
-    if "selectedOrdre" in params and (params["selectedOrdre"] != ""):
-        q = q.filter(VSynthese.ordre == params["selectedOrdre"])
-    if "selectedFamille" in params and (params["selectedFamille"] != ""):
-        q = q.filter(VSynthese.famille == params["selectedFamille"])
-    if ("selectedGroup3INPN" in params) and (params["selectedGroup3INPN"] != ""):
-        q = q.filter(VSynthese.group3_inpn == params["selectedGroup3INPN"])
-    if ("selectedGroup2INPN" in params) and (params["selectedGroup2INPN"] != ""):
-        q = q.filter(VSynthese.group2_inpn == params["selectedGroup2INPN"])
-    if ("selectedGroup1INPN" in params) and (params["selectedGroup1INPN"] != ""):
-        q = q.filter(VSynthese.group1_inpn == params["selectedGroup1INPN"])
-    if ("taxon" in params) and (params["taxon"] != ""):
-        q = q.filter(VSynthese.cd_ref == params["taxon"])
-    return q.all()
+
+    filters = {
+        "selectedRegne": VSynthese.regne,
+        "selectedPhylum": VSynthese.phylum,
+        "selectedClasse": VSynthese.classe,
+        "selectedOrdre": VSynthese.ordre,
+        "selectedFamille": VSynthese.famille,
+        "selectedGroup3INPN": VSynthese.group3_inpn,
+        "selectedGroup2INPN": VSynthese.group2_inpn,
+        "selectedGroup1INPN": VSynthese.group1_inpn,
+        "taxon": VSynthese.cd_ref,
+    }
+
+    for param, column in filters.items():
+        if param in params and params[param] != "":
+            query = query.filter(column == params[param])
+    return db.session.execute(query).all()
 
 
 # Obtenir le nombre d'observations et le nombre de taxons pour chaque zonage avec une échelle donnée (type_code)
@@ -61,52 +60,61 @@ def get_areas_stat(simplify_level, type_code):
     # x : Variable contenant les conditions WHERE à ajouter à la requête générale
     year_start = request.args.get("yearStart", None)
     year_end = request.args.get("yearEnd", None)
-    x = """ """
-    if year_start or year_end:
-        x = (
-            x
-            + """ AND date_part('year', s.date_min) >= """
-            + year_start
-            + """ AND date_part('year', s.date_max) <= """
-            + year_end
+
+    where_clause = []
+    if year_start:
+        where_clause.append(sa.func.date_part("year", VSynthese.date_min) >= year_start)
+
+    if year_end:
+        where_clause.append(sa.func.date_part("year", VSynthese.date_max) <= year_end)
+    filters = {
+        "selectedRegne": VSynthese.regne,
+        "selectedPhylum": VSynthese.phylum,
+        "selectedClasse": VSynthese.classe,
+        "selectedOrdre": VSynthese.ordre,
+        "selectedFamille": VSynthese.famille,
+        "taxon": VSynthese.cd_ref,
+        "selectedGroup1INPN": VSynthese.group1_inpn,
+        "selectedGroup2INPN": VSynthese.group2_inpn,
+        "selectedGroup3INPN": VSynthese.group3_inpn,
+    }
+
+    for param, column in filters.items():
+        if param in params and params[param] != "":
+            where_clause.append(column == params[param])
+
+    count_cte = (
+        sa.select(
+            CorAreaSynthese.id_area,
+            func.count(VSynthese.id_synthese).label("nb_obs"),
+            func.count(func.distinct(VSynthese.cd_ref)).label("nb_tax"),
         )
-    if ("selectedRegne" in params) and (params["selectedRegne"] != ""):
-        x = x + """AND t.regne = '""" + params["selectedRegne"] + """' """
-    if ("selectedPhylum" in params) and (params["selectedPhylum"] != ""):
-        x = x + """AND t.phylum = '""" + params["selectedPhylum"] + """' """
-    if ("selectedClasse") in params and (params["selectedClasse"] != ""):
-        x = x + """AND t.classe = '""" + params["selectedClasse"] + """' """
-    if ("selectedOrdre") in params and (params["selectedOrdre"] != ""):
-        x = x + """AND t.ordre = '""" + params["selectedOrdre"] + """' """
-    if ("selectedFamille") in params and (params["selectedFamille"] != ""):
-        x = x + """AND t.famille = '""" + params["selectedFamille"] + """' """
-    if ("taxon") in params and (params["taxon"] != ""):
-        x = x + """AND t.cd_ref = """ + params["taxon"] + """ """
-    if ("selectedGroup1INPN") in params and (params["selectedGroup1INPN"] != ""):
-        x = x + """AND t.group1_inpn = '""" + params["selectedGroup1INPN"] + """' """
-    if ("selectedGroup2INPN") in params and (params["selectedGroup2INPN"] != ""):
-        x = x + """AND t.group2_inpn = '""" + params["selectedGroup2INPN"] + """' """
-    if ("selectedGroup3INPN") in params and (params["selectedGroup3INPN"] != ""):
-        x = x + """AND t.group3_inpn = '""" + params["selectedGroup3INPN"] + """' """
-    # q : Requête générale
-    q = text(
-        """ WITH count AS
-            (SELECT cor.id_area, count(distinct cor.id_synthese) as nb_obs, count(distinct t.cd_ref) as nb_tax
-            FROM gn_synthese.cor_area_synthese cor
-            JOIN gn_synthese.synthese s ON s.id_synthese=cor.id_synthese
-            JOIN taxonomie.taxref t ON s.cd_nom=t.cd_nom
-            JOIN ref_geo.l_areas l ON cor.id_area = l.id_area
-            JOIN ref_geo.bib_areas_types lt ON l.id_type = lt.id_type
-            WHERE lt.type_code = :code AND l.enable = true
-        """
-        + x
-        + """ GROUP BY cor.id_area)
-        SELECT a.area_name, st_asgeojson(st_transform(st_simplifyPreserveTopology(a.geom, :level), 4326)), c.nb_obs, c.nb_tax
-        FROM ref_geo.l_areas a
-        JOIN count c ON a.id_area = c.id_area
-        """
+        .join(
+            CorAreaSynthese,
+            CorAreaSynthese.id_synthese == VSynthese.id_synthese,
+        )
+        .join(LAreas, LAreas.id_area == CorAreaSynthese.id_area)
+        .join(BibAreasTypes, BibAreasTypes.id_type == LAreas.id_type)
+        .where(
+            BibAreasTypes.type_code == type_code,
+            LAreas.enable == True,
+            *where_clause,
+        )
+        .group_by(CorAreaSynthese.id_area)
+        .cte()
     )
-    data = DB.engine.execute(q, level=simplify_level, code=type_code)
+
+    query = select(
+        LAreas.area_name,
+        func.st_asgeojson(
+            func.st_transform(func.st_simplifyPreserveTopology(LAreas.geom, simplify_level), 4326)
+        ),
+        count_cte.c.nb_obs,
+        count_cte.c.nb_tax,
+    ).join(count_cte, count_cte.c.id_area == LAreas.id_area)
+    # q : Requête générale
+
+    data = db.session.execute(query)
 
     geojson_features = []
     for elt in data:
