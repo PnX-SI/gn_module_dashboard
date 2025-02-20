@@ -1,5 +1,5 @@
 import json
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import func, text, select
 import sqlalchemy as sa
 
@@ -11,8 +11,11 @@ from werkzeug.exceptions import BadRequest
 from utils_flask_sqla.response import json_resp
 from geonature.utils.env import db
 
-from .models import VSynthese, VTaxonomie, VFrameworks
-from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese
+from .models import VTaxonomie, VFrameworks
+from .utils import get_blurring_cte
+from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese, VSyntheseForWebApp
+from geonature.core.gn_synthese.utils.query_select_sqla import SyntheseQuery
+from geonature.core.gn_permissions.decorators import permissions_required
 from ref_geo.models import BibAreasTypes, LAreas
 from ref_geo.schemas import AreaTypeSchema
 from apptax.taxonomie.models import Taxref
@@ -60,21 +63,21 @@ def get_synthese_stat():
     """
     params = request.args
     query = select(
-        func.date_part("year", VSynthese.date_min).label("year"),
-        func.count(VSynthese.id_synthese).label("count_id_synthese"),
-        func.count(distinct(VSynthese.cd_ref)).label("count_cd_ref"),
+        func.date_part("year", VSyntheseForWebApp.date_min).label("year"),
+        func.count(VSyntheseForWebApp.id_synthese).label("count_id_synthese"),
+        func.count(distinct(VSyntheseForWebApp.cd_ref)).label("count_cd_ref"),
     ).group_by("year")
 
     filters = {
-        "selectedRegne": VSynthese.regne,
-        "selectedPhylum": VSynthese.phylum,
-        "selectedClasse": VSynthese.classe,
-        "selectedOrdre": VSynthese.ordre,
-        "selectedFamille": VSynthese.famille,
-        "selectedGroup3INPN": VSynthese.group3_inpn,
-        "selectedGroup2INPN": VSynthese.group2_inpn,
-        "selectedGroup1INPN": VSynthese.group1_inpn,
-        "taxon": VSynthese.cd_ref,
+        "selectedRegne": VSyntheseForWebApp.regne,
+        "selectedPhylum": VSyntheseForWebApp.phylum,
+        "selectedClasse": VSyntheseForWebApp.classe,
+        "selectedOrdre": VSyntheseForWebApp.ordre,
+        "selectedFamille": VSyntheseForWebApp.famille,
+        "selectedGroup3INPN": VSyntheseForWebApp.group3_inpn,
+        "selectedGroup2INPN": VSyntheseForWebApp.group2_inpn,
+        "selectedGroup1INPN": VSyntheseForWebApp.group1_inpn,
+        "taxon": VSyntheseForWebApp.cd_ref,
     }
 
     for param, column in filters.items():
@@ -86,7 +89,8 @@ def get_synthese_stat():
 # Obtenir le nombre d'observations et le nombre de taxons pour chaque zonage avec une échelle donnée (type_code)
 @blueprint.route("/areas/<simplify_level>/<type_code>", methods=["GET"])
 @json_resp
-def get_areas_stat(simplify_level, type_code):
+@permissions_required("R", module_code="SYNTHESE")
+def get_areas_stat(simplify_level, type_code, permissions):
     """
     Retourne le nombre d'observations et le nombre de taxons pour chaque zone
     avec une échelle donnée (type_code) et un niveau de simplification donnée
@@ -112,40 +116,43 @@ def get_areas_stat(simplify_level, type_code):
 
     where_clause = []
     if year_start:
-        where_clause.append(func.date_part("year", VSynthese.date_min) >= year_start)
+        where_clause.append(func.date_part("year", VSyntheseForWebApp.date_min) >= year_start)
 
     if year_end:
-        where_clause.append(func.date_part("year", VSynthese.date_max) <= year_end)
+        where_clause.append(func.date_part("year", VSyntheseForWebApp.date_max) <= year_end)
     filters = {
-        "selectedRegne": VSynthese.regne,
-        "selectedPhylum": VSynthese.phylum,
-        "selectedClasse": VSynthese.classe,
-        "selectedOrdre": VSynthese.ordre,
-        "selectedFamille": VSynthese.famille,
-        "taxon": VSynthese.cd_ref,
-        "selectedGroup1INPN": VSynthese.group1_inpn,
-        "selectedGroup2INPN": VSynthese.group2_inpn,
-        "selectedGroup3INPN": VSynthese.group3_inpn,
+        "selectedRegne": VSyntheseForWebApp.regne,
+        "selectedPhylum": VSyntheseForWebApp.phylum,
+        "selectedClasse": VSyntheseForWebApp.classe,
+        "selectedOrdre": VSyntheseForWebApp.ordre,
+        "selectedFamille": VSyntheseForWebApp.famille,
+        "taxon": VSyntheseForWebApp.cd_ref,
+        "selectedGroup1INPN": VSyntheseForWebApp.group1_inpn,
+        "selectedGroup2INPN": VSyntheseForWebApp.group2_inpn,
+        "selectedGroup3INPN": VSyntheseForWebApp.group3_inpn,
     }
 
     for param, column in filters.items():
         if param in params and params[param] != "":
             where_clause.append(column == params[param])
 
+    obs_query = get_blurring_cte(permissions, filters)
     count_cte = (
         select(
             CorAreaSynthese.id_area,
-            func.count(VSynthese.id_synthese).label("nb_obs"),
-            func.count(func.distinct(VSynthese.cd_ref)).label("nb_tax"),
+            func.count(VSyntheseForWebApp.id_synthese).label("nb_obs"),
+            func.count(func.distinct(VSyntheseForWebApp.cd_ref)).label("nb_tax"),
         )
         .join(
             CorAreaSynthese,
-            CorAreaSynthese.id_synthese == VSynthese.id_synthese,
+            CorAreaSynthese.id_synthese == VSyntheseForWebApp.id_synthese,
         )
         .join(LAreas, LAreas.id_area == CorAreaSynthese.id_area)
         .join(BibAreasTypes, BibAreasTypes.id_type == LAreas.id_type)
+        .join(obs_query, obs_query.c.id_synthese == VSyntheseForWebApp.id_synthese)
         .where(
             BibAreasTypes.type_code == type_code,
+            BibAreasTypes.size_hierarchy >= obs_query.c.size_hierarchy,
             LAreas.enable == True,
             *where_clause,
         )
@@ -197,20 +204,24 @@ def get_synthese_per_tax_level_stat(taxLevel):
     """
     params = request.args
     try:
-        column_taxlevel = getattr(VSynthese, taxLevel)
+        column_taxlevel = getattr(VSyntheseForWebApp, taxLevel)
     except AttributeError:
-        raise BadRequest(f"No attribute {taxLevel} in VSynthese VM")
+        raise BadRequest(f"No attribute {taxLevel} in VSyntheseForWebApp VM")
     query = (
         select(
             column_taxlevel,
-            func.count(VSynthese.id_synthese),
+            func.count(VSyntheseForWebApp.id_synthese),
         )
         .group_by(column_taxlevel)
         .order_by(column_taxlevel)
     )
     if "yearStart" in params and "yearEnd" in params:
-        query = query.where(func.date_part("year", VSynthese.date_min) >= params["yearStart"])
-        query = query.where(func.date_part("year", VSynthese.date_max) <= params["yearEnd"])
+        query = query.where(
+            func.date_part("year", VSyntheseForWebApp.date_min) >= params["yearStart"]
+        )
+        query = query.where(
+            func.date_part("year", VSyntheseForWebApp.date_max) <= params["yearEnd"]
+        )
     return [
         {"taxon": taxon, "nb_obs": nb_obs}
         for (taxon, nb_obs) in db.session.execute(query).all()  # TODO rename taxon to taxonLevel?
@@ -370,7 +381,7 @@ def get_years():
     -------
     list[int]
         Une liste triée des années uniques extraites du champ 'date_min'
-        de la vue VSynthese.
+        de la vue VSyntheseForWebApp.
     """
 
     query = select(
@@ -378,7 +389,7 @@ def get_years():
             cast(
                 func.date_part(
                     "year",
-                    VSynthese.date_min,
+                    VSyntheseForWebApp.date_min,
                 ),
                 sa.Integer,
             ),
@@ -427,23 +438,23 @@ def yearly_recap(year):
     # Nombre d'observations pour cette année
     nb_obs_year = db.session.scalar(
         select(func.count())
-        .select_from(VSynthese)
-        .where(func.date_part("year", VSynthese.date_min) == year)
+        .select_from(VSyntheseForWebApp)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
     )
     # Nombre total d'observations avant cette année
     nb_obs_total = db.session.scalar(
         select(func.count())
-        .select_from(VSynthese)
-        .where(func.date_part("year", VSynthese.date_min) <= year)
+        .select_from(VSyntheseForWebApp)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) <= year)
     )
     # Nouvelles espèces observées cette année
     new_species_query = sa.except_(
-        select(VSynthese.cd_ref)
-        .join(Taxref, Taxref.cd_nom == VSynthese.cd_nom)
-        .where(func.date_part("year", VSynthese.date_min) == year),
-        select(VSynthese.cd_ref)
-        .join(Taxref, Taxref.cd_nom == VSynthese.cd_nom)
-        .where(func.date_part("year", VSynthese.date_min) < year),
+        select(VSyntheseForWebApp.cd_ref)
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year),
+        select(VSyntheseForWebApp.cd_ref)
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) < year),
     )
     new_species_cte = new_species_query.cte()
 
@@ -464,12 +475,12 @@ def yearly_recap(year):
             Taxref.nom_complet,
             Taxref.nom_vern,
             Taxref.group2_inpn,
-            func.count(VSynthese.id_synthese),
+            func.count(VSyntheseForWebApp.id_synthese),
         )
         .select_from(new_species_cte)
-        .join(VSynthese, VSynthese.cd_ref == new_species_cte.c.cd_ref)
+        .join(VSyntheseForWebApp, VSyntheseForWebApp.cd_ref == new_species_cte.c.cd_ref)
         .join(Taxref, Taxref.cd_ref == new_species_cte.c.cd_ref)
-        .where(func.date_part("year", VSynthese.date_min) == year)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn)
         .order_by(
             Taxref.nom_complet,
@@ -482,8 +493,8 @@ def yearly_recap(year):
         select(
             Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn, func.count().label("count")
         )
-        .join(VSynthese, Taxref.cd_nom == VSynthese.cd_nom)
-        .where(func.date_part("year", VSynthese.date_min) == year)
+        .join(VSyntheseForWebApp, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn)
         .order_by(sa.desc("count"))
         .limit(10)
@@ -493,26 +504,26 @@ def yearly_recap(year):
     # nombre d'observations par jeu de données
     data_by_datasets = db.session.execute(
         select(TDatasets.dataset_name, func.count())
-        .join(VSynthese, VSynthese.id_dataset == TDatasets.id_dataset)
-        .where(func.date_part("year", VSynthese.date_min) == year)
+        .join(VSyntheseForWebApp, VSyntheseForWebApp.id_dataset == TDatasets.id_dataset)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(TDatasets.dataset_name)
         .order_by(sa.desc(func.count()))
     ).all()
 
     # nombre de taxons observés cette année
     nb_taxon_year = db.session.execute(
-        select(func.count(sa.distinct(VSynthese.cd_ref)))
-        .join(Taxref, Taxref.cd_nom == VSynthese.cd_nom)
-        .where(func.date_part("year", VSynthese.date_min) == year)
+        select(func.count(sa.distinct(VSyntheseForWebApp.cd_ref)))
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
     ).scalar()
 
     # nombre d'observations par année
     observations_by_year = db.session.execute(
         select(
-            func.count(VSynthese.id_synthese),
-            cast(func.date_part("year", VSynthese.date_min), sa.Integer).label("year_"),
+            func.count(VSyntheseForWebApp.id_synthese),
+            cast(func.date_part("year", VSyntheseForWebApp.date_min), sa.Integer).label("year_"),
         )
-        .where(func.date_part("year", VSynthese.date_min) >= 1990)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) >= 1990)
         .group_by("year_")
         .order_by(sa.asc("year_"))  # TODO add asc ordering
     ).fetchall()
@@ -520,9 +531,9 @@ def yearly_recap(year):
     # années associées à au moins une observation
     yearsWithObs = db.session.execute(
         select(
-            func.distinct(cast(func.date_part("year", VSynthese.date_min), sa.Integer)).label(
-                "year"
-            )
+            func.distinct(
+                cast(func.date_part("year", VSyntheseForWebApp.date_min), sa.Integer)
+            ).label("year")
         ).order_by(sa.desc(text("year")))
     ).fetchall()
 
@@ -532,9 +543,9 @@ def yearly_recap(year):
             func.count(),
             Taxref.group2_inpn,
         )
-        .select_from(VSynthese)
-        .join(Taxref, Taxref.cd_nom == VSynthese.cd_nom)
-        .where(func.date_part("year", VSynthese.date_min) == year)
+        .select_from(VSyntheseForWebApp)
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(Taxref.group2_inpn)
     )
     response_data = {
