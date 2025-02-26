@@ -36,13 +36,13 @@ def get_blurring_cte(permissions, filters):
         precise_permissions=precise_permissions,
         blurred_geom_query=blurred_geom_query,
         precise_geom_query=precise_geom_query,
-        limit=10000,
+        limit=None,
     )
 
     obs_query = build_synthese_obs_query(
         observations=observations,
         allowed_geom_cte=allowed_geom_cte,
-        limit=10000,
+        limit=None,
     )
     obs_query = obs_query.add_columns(VSyntheseForWebApp.id_synthese)
     obs_query = obs_query.add_columns(allowed_geom_cte.c.size_hierarchy.label("size_hierarchy"))

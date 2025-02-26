@@ -14,7 +14,7 @@ from geonature.utils.env import db
 from .models import VTaxonomie, VFrameworks
 from .utils import get_blurring_cte
 from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese, VSyntheseForWebApp
-from geonature.core.gn_synthese.utils.query_select_sqla import SyntheseQuery
+from geonature.core.gn_synthese.utils.blurring import split_blurring_precise_permissions
 from geonature.core.gn_permissions.decorators import permissions_required
 from ref_geo.models import BibAreasTypes, LAreas
 from ref_geo.schemas import AreaTypeSchema
@@ -136,8 +136,9 @@ def get_areas_stat(simplify_level, type_code, permissions):
         if param in params and params[param] != "":
             where_clause.append(column == params[param])
 
+    blurring_permissions, _ = split_blurring_precise_permissions(permissions)
     obs_query = get_blurring_cte(permissions, filters)
-    count_cte = (
+    count_query = (
         select(
             CorAreaSynthese.id_area,
             func.count(VSyntheseForWebApp.id_synthese).label("nb_obs"),
@@ -149,17 +150,21 @@ def get_areas_stat(simplify_level, type_code, permissions):
         )
         .join(LAreas, LAreas.id_area == CorAreaSynthese.id_area)
         .join(BibAreasTypes, BibAreasTypes.id_type == LAreas.id_type)
-        .join(obs_query, obs_query.c.id_synthese == VSyntheseForWebApp.id_synthese)
         .where(
             BibAreasTypes.type_code == type_code,
-            BibAreasTypes.size_hierarchy >= obs_query.c.size_hierarchy,
             LAreas.enable == True,
             *where_clause,
         )
         .group_by(CorAreaSynthese.id_area)
-        .cte()
     )
+    if blurring_permissions:
+        count_query = count_query.join(
+            obs_query, obs_query.c.id_synthese == VSyntheseForWebApp.id_synthese
+        ).where(
+            BibAreasTypes.size_hierarchy >= obs_query.c.size_hierarchy,
+        )
 
+    count_cte = count_query.cte()
     query = select(
         LAreas.area_name,
         func.st_asgeojson(
