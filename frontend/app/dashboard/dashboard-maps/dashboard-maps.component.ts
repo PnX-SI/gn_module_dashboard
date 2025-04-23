@@ -94,7 +94,7 @@ export class DashboardMapsComponent implements OnInit, OnChanges, AfterViewInit 
     public mapService: MapService,
     public config: ConfigService
   ) {
-    this.simplifyLevel = this.config.DASHBOARD.SIMPLIFY_LEVEL;
+    this.simplifyLevel = this.config.DASHBOARD.SIMPLIFY_LEVEL_4326;
     this.obsColors = this.config.DASHBOARD.OBSCOLORS;
     this.taxColors = this.config.DASHBOARD.TAXCOLORS;
     this.areaTypeControl = new FormControl(this.config.DASHBOARD.AREA_TYPE[0]);
