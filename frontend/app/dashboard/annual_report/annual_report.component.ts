@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewChildren } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { DataService, YearRecap } from '../services/data.services';
-import { BaseChartDirective } from 'ng2-charts';
-import DatalabelsPlugin from 'chartjs-plugin-datalabels';
+import { Component, OnInit, ViewChildren } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { DataService, YearRecap } from "../services/data.services";
+import { BaseChartDirective } from "ng2-charts";
+import DatalabelsPlugin from "chartjs-plugin-datalabels";
 
 @Component({
-  selector: 'dashboard-annual-report',
-  templateUrl: 'annual_report.component.html',
-  styleUrls: ['./annual_report.component.scss'],
+  selector: "dashboard-annual-report",
+  templateUrl: "annual_report.component.html",
+  styleUrls: ["./annual_report.component.scss"],
 })
 export class AnnualReportComponent implements OnInit {
   public data: YearRecap;
@@ -43,21 +43,23 @@ export class AnnualReportComponent implements OnInit {
     plugins: {
       legend: {
         display: true,
-        position: 'left',
+        position: "left",
       },
       datalabels: {
         labels: {
           label: {
-            color: 'black',
+            color: "black",
             font: {
-              weight: 'bold',
+              weight: "bold",
             },
           },
         },
         formatter: (value, ctx) => {
           if (ctx.chart.data.labels) {
-            const total = ctx.chart.data.datasets[0].data.reduce((acc, prev) => acc + prev);
-            return Math.round((value / total) * 100) + '%';
+            const total = ctx.chart.data.datasets[0].data.reduce(
+              (acc, prev) => acc + prev
+            );
+            return Math.round((value / total) * 100) + "%";
           }
         },
       },
@@ -85,7 +87,8 @@ export class AnnualReportComponent implements OnInit {
 
   randomNum = () => Math.floor(Math.random() * (235 - 52 + 1) + 52);
 
-  randomRGB = () => `rgb(${this.randomNum()}, ${this.randomNum()}, ${this.randomNum()})`;
+  randomRGB = () =>
+    `rgb(${this.randomNum()}, ${this.randomNum()}, ${this.randomNum()})`;
 
   loadReport(year, loadyearPlot = true) {
     this.dataLoading = true;
@@ -103,10 +106,12 @@ export class AnnualReportComponent implements OnInit {
         this.yearObsData = [{ data: temp, label: "Nombre d'observations" }];
       }
       this.data.observations_by_group.forEach((element) => {
+        console.log(element);
         this.obsByGroupLabel.push(element.group2_inpn);
         this.obsByGroupData[0].data.push(element.count);
         // this.obsByGroupColor[0]["backgroundColor"].push(this.randomRGB());
       });
+      console.log(this.obsByGroupLabel);
 
       const tempNewSpecies = {};
       this.data.new_species.forEach((element) => {
@@ -115,14 +120,9 @@ export class AnnualReportComponent implements OnInit {
         } else {
           tempNewSpecies[element.group2_inpn] = 1;
         }
-        if (element.group3_inpn in tempNewSpecies) {
-          tempNewSpecies[element.group3_inpn] += 1;
-        } else {
-          tempNewSpecies[element.group3_inpn] = 1;
-        }
       });
       const randomColor = [];
-      for (let group in tempNewSpecies) {
+      for (const group in tempNewSpecies) {
         this.newSpeciesLabel.push(group);
         this.newSpeciesData[0].data.push(tempNewSpecies[group]);
         randomColor.push(this.randomRGB());
