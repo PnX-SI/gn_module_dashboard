@@ -71,9 +71,12 @@ la [rubrique dédiée de la documentation de GeoNature](https://docs.geonature.f
 Détail des paramètres modifiables :
 
 -   Paramétrage du niveau de simplification des zonages sur la carte
-    "Synthèse par entité géographique" : `SIMPLIFY_LEVEL_4326`. Passer un
-    nombre de degrés d'approximation. Pour référence, par défaut ce paramètre 
-    vaut 0.0005°.  Ce paramètre est nécessaire pour alléger le temps
+    "Synthèse par entité géographique" : `SIMPLIFY_LEVEL`. Passer un
+    nombre réel : plus il est grand et plus la simplification
+    est importante. 
+    Attention, si votre instance est en degré (SRID 4326 par exemple), 
+    il faut indiquer un nombre de degré (par exemple 0.0005).
+    Ce paramètre est nécessaire pour alléger le temps
     d'affichage des zonages.
 -   Paramétrage des zonages affichables sur la carte "Synthèse par
     entité géographique" : `AREA_TYPE`. Passer un tableau de
