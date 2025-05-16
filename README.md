@@ -72,8 +72,11 @@ Détail des paramètres modifiables :
 
 -   Paramétrage du niveau de simplification des zonages sur la carte
     "Synthèse par entité géographique" : `SIMPLIFY_LEVEL`. Passer un
-    nombre entier : plus cet entier est grand et plus la simplification
-    est importante. Ce paramètre est nécessaire pour alléger le temps
+    nombre réel : plus il est grand et plus la simplification
+    est importante. 
+    Attention, si votre instance est en degré (SRID 4326 par exemple), 
+    il faut indiquer un nombre de degré (par exemple 0.0005).
+    Ce paramètre est nécessaire pour alléger le temps
     d'affichage des zonages.
 -   Paramétrage des zonages affichables sur la carte "Synthèse par
     entité géographique" : `AREA_TYPE`. Passer un tableau de
