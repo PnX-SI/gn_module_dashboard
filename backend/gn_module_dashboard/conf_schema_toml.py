@@ -1,7 +1,7 @@
 """
-   Spécification du schéma toml des paramètres de configurations
-   Fichier spécifiant les types des paramètres et leurs valeurs par défaut
-   Fichier à ne pas modifier. Paramètres surcouchables dans config/config_gn_module.tml
+Spécification du schéma toml des paramètres de configurations
+Fichier spécifiant les types des paramètres et leurs valeurs par défaut
+Fichier à ne pas modifier. Paramètres surcouchables dans config/config_gn_module.tml
 """
 
 from marshmallow import Schema, fields, validates_schema, ValidationError
@@ -13,7 +13,7 @@ class GnModuleSchemaConf(Schema):
     AREA_TYPE = fields.List(fields.String(), load_default=["COM", "M1", "M5", "M10"])
     NB_CLASS_OBS = fields.Integer(load_default=5, validate=Range(min=1, max=10))
     NB_CLASS_TAX = fields.Integer(load_default=5, validate=Range(min=1, max=10))
-    SIMPLIFY_LEVEL = fields.Integer(load_default=50)
+    SIMPLIFY_LEVEL = fields.Float(load_default=50)
     DISPLAY_PER_YEAR_GRAPH = fields.Boolean(load_default=True)
     DISPLAY_PER_GEO_GRAPH = fields.Boolean(load_default=True)
     DISPLAY_PER_TAXONOMIC_RANK_GRAPH = fields.Boolean(load_default=True)
