@@ -1,157 +1,264 @@
 import json
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from sqlalchemy.sql import func, text, select
+import sqlalchemy as sa
 
-from geojson import FeatureCollection, Feature
+from geojson import FeatureCollection
 
-from sqlalchemy.sql.expression import label, distinct, case
+from sqlalchemy.sql.expression import distinct, case, cast
 from werkzeug.exceptions import BadRequest
 
 from utils_flask_sqla.response import json_resp
-from geonature.utils.env import DB
+from geonature.utils.env import db
 
-from .models import VSynthese, VTaxonomie, VFrameworks
-from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese
-from ref_geo.models import BibAreasTypes
+from .models import VTaxonomie, VFrameworks
+from .utils import get_blurring_cte
+from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese, VSyntheseForWebApp
+from geonature.core.gn_synthese.utils.blurring import split_blurring_precise_permissions
+from geonature.core.gn_permissions.decorators import permissions_required
+from ref_geo.models import BibAreasTypes, LAreas
+from ref_geo.schemas import AreaTypeSchema
+from apptax.taxonomie.models import Taxref
+from geonature.core.gn_meta.models import TDatasets
 
-# # import des fonctions utiles depuis le sous-module d'authentification
-# from geonature.core.gn_permissions import decorators as permissions
-# from geonature.core.gn_permissions.tools import get_or_fetch_user_cruved
 
 blueprint = Blueprint("dashboard", __name__, cli_group="dashboard")
 
 
-# Obtenir le nombre d'observations et le nombre de taxons pour chaque année
-# vm_synthese
 @blueprint.route("/synthese", methods=["GET"])
 @json_resp
 def get_synthese_stat():
+    """
+    Retourne le nombre d'observations et le nombre de taxons pour chaque année.
+
+    Parameters
+    ----------
+    selectedRegne : string
+        Règne
+    selectedPhylum : string
+        Phylum
+    selectedClasse : string
+        Classe
+    selectedOrdre : string
+        Ordre
+    selectedFamille : string
+        Famille
+    selectedGroup1INPN : string
+        Groupe 1 INPN
+    selectedGroup2INPN : string
+        Groupe 2 INPN
+    selectedGroup3INPN : string
+        Groupe 3 INPN
+    taxon : string
+        cd_ref du taxon
+
+    Returns
+    -------
+    year : int
+        Année
+    count_id_synthese : integer
+        Nombre d'observations
+    count_cd_ref : int
+        Nombre de taxons
+    """
     params = request.args
-    q = DB.session.query(
-        label("year", func.date_part("year", VSynthese.date_min)),
-        func.count(VSynthese.id_synthese).label("count_id_synthese"),
-        func.count(distinct(VSynthese.cd_ref)).label("count_cd_ref"),
+    query = select(
+        func.date_part("year", VSyntheseForWebApp.date_min).label("year"),
+        func.count(VSyntheseForWebApp.id_synthese).label("count_id_synthese"),
+        func.count(distinct(VSyntheseForWebApp.cd_ref)).label("count_cd_ref"),
     ).group_by("year")
-    if ("selectedRegne" in params) and (params["selectedRegne"] != ""):
-        q = q.filter(VSynthese.regne == params["selectedRegne"])
-    if ("selectedPhylum" in params) and (params["selectedPhylum"] != ""):
-        q = q.filter(VSynthese.phylum == params["selectedPhylum"])
-    if "selectedClasse" in params and (params["selectedClasse"] != ""):
-        q = q.filter(VSynthese.classe == params["selectedClasse"])
-    if "selectedOrdre" in params and (params["selectedOrdre"] != ""):
-        q = q.filter(VSynthese.ordre == params["selectedOrdre"])
-    if "selectedFamille" in params and (params["selectedFamille"] != ""):
-        q = q.filter(VSynthese.famille == params["selectedFamille"])
-    if ("selectedGroup3INPN" in params) and (params["selectedGroup3INPN"] != ""):
-        q = q.filter(VSynthese.group3_inpn == params["selectedGroup3INPN"])
-    if ("selectedGroup2INPN" in params) and (params["selectedGroup2INPN"] != ""):
-        q = q.filter(VSynthese.group2_inpn == params["selectedGroup2INPN"])
-    if ("selectedGroup1INPN" in params) and (params["selectedGroup1INPN"] != ""):
-        q = q.filter(VSynthese.group1_inpn == params["selectedGroup1INPN"])
-    if ("taxon" in params) and (params["taxon"] != ""):
-        q = q.filter(VSynthese.cd_ref == params["taxon"])
-    return q.all()
+
+    filters = {
+        "selectedRegne": VSyntheseForWebApp.regne,
+        "selectedPhylum": VSyntheseForWebApp.phylum,
+        "selectedClasse": VSyntheseForWebApp.classe,
+        "selectedOrdre": VSyntheseForWebApp.ordre,
+        "selectedFamille": VSyntheseForWebApp.famille,
+        "selectedGroup3INPN": VSyntheseForWebApp.group3_inpn,
+        "selectedGroup2INPN": VSyntheseForWebApp.group2_inpn,
+        "selectedGroup1INPN": VSyntheseForWebApp.group1_inpn,
+        "taxon": VSyntheseForWebApp.cd_ref,
+    }
+
+    for param, column in filters.items():
+        if param in params and params[param] != "":
+            query = query.where(column == params[param])
+    return db.session.execute(query).all()
 
 
 # Obtenir le nombre d'observations et le nombre de taxons pour chaque zonage avec une échelle donnée (type_code)
 @blueprint.route("/areas/<simplify_level>/<type_code>", methods=["GET"])
 @json_resp
-def get_areas_stat(simplify_level, type_code):
+@permissions_required("R", module_code="SYNTHESE")
+def get_areas_stat(simplify_level, type_code, permissions):
+    """
+    Retourne le nombre d'observations et le nombre de taxons pour chaque zone
+    avec une échelle donnée (type_code) et un niveau de simplification donnée
+    (simplify_level).
+
+    Parameters
+    ----------
+    simplify_level : int
+        Niveau de simplification de la géométrie des zones.
+    type_code : string
+        Code de l'échelle souhaitée.
+
+    Returns
+    -------
+    geojson : FeatureCollection
+        Une collection de Feature au format geojson contenant le nombre
+        d'observations et le nombre de taxons pour chaque zone.
+    """
     params = request.args
-    # x : Variable contenant les conditions WHERE à ajouter à la requête générale
-    year_start = request.args.get("yearStart", None)
-    year_end = request.args.get("yearEnd", None)
-    x = """ """
-    if year_start or year_end:
-        x = (
-            x
-            + """ AND date_part('year', s.date_min) >= """
-            + year_start
-            + """ AND date_part('year', s.date_max) <= """
-            + year_end
+
+    year_start = params.get("yearStart", None)
+    year_end = params.get("yearEnd", None)
+
+    where_clause = []
+    if year_start:
+        where_clause.append(func.date_part("year", VSyntheseForWebApp.date_min) >= year_start)
+
+    if year_end:
+        where_clause.append(func.date_part("year", VSyntheseForWebApp.date_max) <= year_end)
+    filters = {
+        "selectedRegne": VSyntheseForWebApp.regne,
+        "selectedPhylum": VSyntheseForWebApp.phylum,
+        "selectedClasse": VSyntheseForWebApp.classe,
+        "selectedOrdre": VSyntheseForWebApp.ordre,
+        "selectedFamille": VSyntheseForWebApp.famille,
+        "taxon": VSyntheseForWebApp.cd_ref,
+        "selectedGroup1INPN": VSyntheseForWebApp.group1_inpn,
+        "selectedGroup2INPN": VSyntheseForWebApp.group2_inpn,
+        "selectedGroup3INPN": VSyntheseForWebApp.group3_inpn,
+    }
+
+    for param, column in filters.items():
+        if param in params and params[param] != "":
+            where_clause.append(column == params[param])
+
+    count_query = (
+        select(
+            CorAreaSynthese.id_area,
+            func.count(VSyntheseForWebApp.id_synthese).label("nb_obs"),
+            func.count(func.distinct(VSyntheseForWebApp.cd_ref)).label("nb_tax"),
         )
-    if ("selectedRegne" in params) and (params["selectedRegne"] != ""):
-        x = x + """AND t.regne = '""" + params["selectedRegne"] + """' """
-    if ("selectedPhylum" in params) and (params["selectedPhylum"] != ""):
-        x = x + """AND t.phylum = '""" + params["selectedPhylum"] + """' """
-    if ("selectedClasse") in params and (params["selectedClasse"] != ""):
-        x = x + """AND t.classe = '""" + params["selectedClasse"] + """' """
-    if ("selectedOrdre") in params and (params["selectedOrdre"] != ""):
-        x = x + """AND t.ordre = '""" + params["selectedOrdre"] + """' """
-    if ("selectedFamille") in params and (params["selectedFamille"] != ""):
-        x = x + """AND t.famille = '""" + params["selectedFamille"] + """' """
-    if ("taxon") in params and (params["taxon"] != ""):
-        x = x + """AND t.cd_ref = """ + params["taxon"] + """ """
-    if ("selectedGroup1INPN") in params and (params["selectedGroup1INPN"] != ""):
-        x = x + """AND t.group1_inpn = '""" + params["selectedGroup1INPN"] + """' """
-    if ("selectedGroup2INPN") in params and (params["selectedGroup2INPN"] != ""):
-        x = x + """AND t.group2_inpn = '""" + params["selectedGroup2INPN"] + """' """
-    if ("selectedGroup3INPN") in params and (params["selectedGroup3INPN"] != ""):
-        x = x + """AND t.group3_inpn = '""" + params["selectedGroup3INPN"] + """' """
-    # q : Requête générale
-    q = text(
-        """ WITH count AS
-            (SELECT cor.id_area, count(distinct cor.id_synthese) as nb_obs, count(distinct t.cd_ref) as nb_tax
-            FROM gn_synthese.cor_area_synthese cor
-            JOIN gn_synthese.synthese s ON s.id_synthese=cor.id_synthese
-            JOIN taxonomie.taxref t ON s.cd_nom=t.cd_nom
-            JOIN ref_geo.l_areas l ON cor.id_area = l.id_area
-            JOIN ref_geo.bib_areas_types lt ON l.id_type = lt.id_type
-            WHERE lt.type_code = :code AND l.enable = true
-        """
-        + x
-        + """ GROUP BY cor.id_area)
-        SELECT a.area_name, st_asgeojson(st_transform(st_simplifyPreserveTopology(a.geom, :level), 4326)), c.nb_obs, c.nb_tax
-        FROM ref_geo.l_areas a
-        JOIN count c ON a.id_area = c.id_area
-        """
+        .join(
+            CorAreaSynthese,
+            CorAreaSynthese.id_synthese == VSyntheseForWebApp.id_synthese,
+        )
+        .join(LAreas, LAreas.id_area == CorAreaSynthese.id_area)
+        .join(BibAreasTypes, BibAreasTypes.id_type == LAreas.id_type)
+        .where(
+            BibAreasTypes.type_code == type_code,
+            LAreas.enable == True,
+            *where_clause,
+        )
+        .group_by(CorAreaSynthese.id_area)
     )
-    data = DB.engine.execute(q, level=simplify_level, code=type_code)
+    # TODO: Check that only geom are blurred
+    #  obs_query = get_blurring_cte(permissions, filters)
+    # blurring_permissions, _ = split_blurring_precise_permissions(permissions)
+    # if blurring_permissions:
+    #     count_query = count_query.join(
+    #         obs_query, obs_query.c.id_synthese == VSyntheseForWebApp.id_synthese
+    #     ).where(
+    #         BibAreasTypes.size_hierarchy >= obs_query.c.size_hierarchy,
+    #     )
+
+    count_cte = count_query.cte()
+    query = select(
+        LAreas.area_name,
+        func.st_asgeojson(
+            func.st_transform(func.st_simplifyPreserveTopology(LAreas.geom, simplify_level), 4326)
+        ),
+        count_cte.c.nb_obs,
+        count_cte.c.nb_tax,
+    ).join(count_cte, count_cte.c.id_area == LAreas.id_area)
+
+    response = db.session.execute(query)
 
     geojson_features = []
-    for elt in data:
-        geojson = json.loads(elt[1])
-        properties = {
-            "area_name": elt[0],
-            "nb_obs": int(elt[2]),
-            "nb_taxons": int(elt[3]),
+    for area_name, geojson_, nb_obs, nb_tax in response:
+        geojson = json.loads(geojson_)
+        geojson["properties"] = {
+            "area_name": area_name,
+            "nb_obs": int(nb_obs),
+            "nb_taxons": int(nb_tax),
         }
-        geojson["properties"] = properties
         geojson_features.append(geojson)
     return FeatureCollection(geojson_features)
 
 
-# Obtenir le nombre d'observations pour chaque taxon avec un rang taxonomique donné
-# vm_synthese
 @blueprint.route("/synthese_per_tax_level/<taxLevel>", methods=["GET"])
 @json_resp
 def get_synthese_per_tax_level_stat(taxLevel):
+    """
+    Obtenir le nombre d'observations pour chaque taxon avec un rang taxonomique donné
+
+    Parameters
+    ----------
+    taxLevel : str
+        rang taxonomique
+
+    Returns
+    -------
+    List of dictionaries
+        taxon_name : str
+            nom du taxon
+        nb_obs : int
+            nombre d'observations
+    """
     params = request.args
     try:
-        column_taxlevel = getattr(VSynthese, taxLevel)
+        column_taxlevel = getattr(VSyntheseForWebApp, taxLevel)
     except AttributeError:
-        raise BadRequest(f"No attribute {taxLevel} in VSynthese VM")
-    q = (
-        DB.session.query(
+        raise BadRequest(f"No attribute {taxLevel} in VSyntheseForWebApp VM")
+    query = (
+        select(
             column_taxlevel,
-            func.count(VSynthese.id_synthese),
+            func.count(VSyntheseForWebApp.id_synthese),
         )
         .group_by(column_taxlevel)
         .order_by(column_taxlevel)
     )
     if "yearStart" in params and "yearEnd" in params:
-        q = q.filter(func.date_part("year", VSynthese.date_min) >= params["yearStart"])
-        q = q.filter(func.date_part("year", VSynthese.date_max) <= params["yearEnd"])
-    return [{"taxon": d[0], "nb_obs": d[1]} for d in q.all()]
+        query = query.where(
+            func.date_part("year", VSyntheseForWebApp.date_min) >= params["yearStart"]
+        )
+        query = query.where(
+            func.date_part("year", VSyntheseForWebApp.date_max) <= params["yearEnd"]
+        )
+    return [
+        {"taxon": taxon, "nb_obs": nb_obs}
+        for (taxon, nb_obs) in db.session.execute(query).all()  # TODO rename taxon to taxonLevel?
+    ]
 
 
-# Obtenir le nombre d'observations par cadre d'acquisition par année
-# vm_synthese_frameworks
 @blueprint.route("/frameworks", methods=["GET"])
 @json_resp
 def get_frameworks_stat():
+    """
+    Obtenir le nombre d'observations par cadre d'acquisition par année
+    vm_synthese_frameworks
+
+    Parameters
+    ----------
+    id_acquisition_framework : list of int
+        liste des id des cadres d'acquisitions à filtre
+
+    Returns
+    -------
+    list[dict]
+        acquisition_framework_name : str
+            nom du cadre d'acquisition
+        data : list of dictionaries
+            year : int
+                année
+            nb_obs : int
+                nombre d'observations
+    """
     afs = request.args.getlist("id_acquisition_framework")
-    q = DB.session.query(
+    query = select(
         func.json_build_object(
             "acquisition_framework_name",
             VFrameworks.acquisition_framework_name,
@@ -162,199 +269,291 @@ def get_frameworks_stat():
         )
     ).group_by(VFrameworks.acquisition_framework_name)
     if afs:
-        q = q.filter(VFrameworks.id_acquisition_framework.in_(afs))
-    q = q.order_by(VFrameworks.acquisition_framework_name)
-    return [d[0] for d in q.all()]
+        query = query.where(VFrameworks.id_acquisition_framework.in_(afs))
+    query = query.order_by(VFrameworks.acquisition_framework_name)
+    return [d[0] for d in db.session.execute(query).all()]
 
 
-# Obtenir le nombre de taxons recontactés, non recontactés et nouveaux pour une année donnée
 @blueprint.route("/recontact/<year>", methods=["GET"])
 @json_resp
 def get_recontact_stat(year):
-    q = text(
-        """ WITH recontactees AS
-                (SELECT DISTINCT cd_ref FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom WHERE date_part('year', date_min) < :selectedYear
-                INTERSECT
-                SELECT DISTINCT cd_ref FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom WHERE date_part('year', date_min) = :selectedYear),
-            non_recontactees AS
-                (SELECT DISTINCT cd_ref FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom WHERE date_part('year', date_min) < :selectedYear
-                EXCEPT
-                SELECT DISTINCT cd_ref FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom WHERE date_part('year', date_min) = :selectedYear),
-            nouvelles AS
-                (SELECT DISTINCT cd_ref FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom WHERE date_part('year', date_min) = :selectedYear
-                EXCEPT
-                SELECT DISTINCT cd_ref FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom WHERE date_part('year', date_min) < :selectedYear)
+    """
+    Obtenir le nombre de taxons recontactés, non recontactés et nouveaux pour une année donnée.
 
-            SELECT count(cd_ref) FROM recontactees
-            UNION ALL
-            SELECT count(cd_ref) FROM non_recontactees
-            UNION ALL
-            SELECT count(cd_ref) FROM nouvelles """
+    Parameters
+    ----------
+    year : int
+        Année pour laquelle les statistiques de recontact doivent être calculées.
+
+    Returns
+    -------
+    List[int]
+        Une liste contenant trois entiers :
+        - Le nombre de taxons recontactés (observés à la fois l'année spécifiée et les années précédentes).
+        - Le nombre de taxons non recontactés (observés uniquement les années précédentes).
+        - Le nombre de nouveaux taxons (observés uniquement l'année spécifiée).
+    """
+
+    cd_ref_actual_year = (
+        select(func.distinct(Taxref.cd_ref))
+        .select_from(Synthese)
+        .join(Taxref, Taxref.cd_nom == Synthese.cd_nom)
+        .where(func.date_part("year", Synthese.date_min) == year)
     )
-    data = DB.engine.execute(q, selectedYear=year)
+    cd_ref_year_before = (
+        select(func.distinct(Taxref.cd_ref))
+        .select_from(Synthese)
+        .join(Taxref, Taxref.cd_nom == Synthese.cd_nom)
+        .where(func.date_part("year", Synthese.date_min) < year)
+    )
+
+    recontactees_query = sa.intersect(cd_ref_year_before, cd_ref_actual_year)
+    non_recontactees_query = sa.except_(cd_ref_year_before, cd_ref_actual_year)
+    nouvelles_query = sa.except_(cd_ref_actual_year, cd_ref_year_before)
+
+    query = sa.union_all(
+        select(func.count()).select_from(recontactees_query.subquery()),
+        select(func.count()).select_from(non_recontactees_query.subquery()),
+        select(func.count()).select_from(nouvelles_query.subquery()),
+    )
+
+    data = db.session.execute(query).all()
     return [elt[0] for elt in data]
 
 
-# Obtenir la liste des taxons observés pour un rang taxonomique donné
-# vm_taxonomie
 @blueprint.route("/taxonomy/<taxLevel>", methods=["GET"])
-@json_resp
 def get_taxonomy(taxLevel):
-    q = (
-        DB.session.query(VTaxonomie.name_taxon)
+    """
+    Retourne la liste des taxons observés pour une catégorie donnée.
+
+    Parameters
+    ----------
+    taxLevel : string
+        La catégorie souhaitée (par exemple, rank, family, etc.).
+
+    Returns
+    -------
+    list
+        Une liste de noms de taxons.
+    """
+    query = (
+        select(VTaxonomie.name_taxon)
         .order_by(
             case([(VTaxonomie.name_taxon == "Not defined", 1)], else_=0),
             VTaxonomie.name_taxon,
         )
-        .filter(VTaxonomie.level == taxLevel)
+        .where(VTaxonomie.level == taxLevel)
     ).order_by(VTaxonomie.name_taxon)
-    return q.all()
+    return jsonify(db.session.execute(query).all())
 
 
-# Obtenir la liste des type_name des areas_types
 @blueprint.route("/areas_types", methods=["GET"])
 @json_resp
 def get_areas_types():
-    params = request.args
-    q = DB.session.query(BibAreasTypes)
-    if "type_code" in params:
-        tab_types_codes = params.getlist("type_code")
-        q = q.filter(BibAreasTypes.type_code.in_(tab_types_codes))
-    data = q.all()
-    return [elt.as_dict() for elt in data]
+    """
+    Retourne la liste des types de zonages.
+
+    Parameters
+    ----------
+    type_code : string (optional)
+        Si fourni, filtre les résultats pour ne garder que les types de zonages
+        portant ce code.
+
+    Returns
+    -------
+    list
+        Une liste de dictionnaires, chaque dictionnaire contenant les clés
+        `type_code` et `type_name` pour chaque type de zonage.
+    """
+    query = select(BibAreasTypes)
+    if "type_code" in request.args:
+        tab_types_codes = request.args.getlist("type_code")
+        query = query.where(BibAreasTypes.type_code.in_(tab_types_codes))
+
+    return AreaTypeSchema(many=True).dump(
+        db.session.scalars(query).unique().all(),
+    )
 
 
-# Obtenir la liste des années au cours desquelles des observations ont été faîtes
-# OU obtenir l'année min et l'année max de cette liste
-# vm_synthese
 @blueprint.route("/years", methods=["GET"])
 @json_resp
 def get_years():
-    q = DB.session.query(
-        label("year", distinct(func.date_part("year", VSynthese.date_min)))
-    ).order_by("year")
-    return [d[0] for d in q.all()]
+    """
+    Renvoie la liste d'années dans lesquelles des observations
+    ont été faites.
+
+    Returns
+    -------
+    list[int]
+        Une liste triée des années uniques extraites du champ 'date_min'
+        de la vue VSyntheseForWebApp.
+    """
+
+    query = select(
+        func.distinct(
+            cast(
+                func.date_part(
+                    "year",
+                    VSyntheseForWebApp.date_min,
+                ),
+                sa.Integer,
+            ),
+        ).label("year")
+    ).order_by(text("year"))
+    return db.session.scalars(query).all()
 
 
 @blueprint.route("/report/<year>", methods=["GET"])
 def yearly_recap(year):
-    nb_obs_year = DB.session.execute(
-        """
-        SELECT count(*) 
-        FROM gn_synthese.synthese
-        WHERE date_part('year', date_min) = :year
-        """,
-        {"year": year},
+    """
+    Parameters
+    ----------
+    year : int
+        L'année pour laquelle on souhaite les informations
+
+    Returns
+    -------
+    dict
+        Un dictionnaire contenant les informations suivantes :
+        - yearsWithObs : list[int]
+            Une liste des années pour lesquelles des observations
+            ont été faites
+        - year : int
+            L'année demandée
+        - nb_obs_year : int
+            Le nombre d'observations pour l'année demandée
+        - nb_obs_total : int
+            Le nombre total d'observations
+        - nb_new_species : int
+            Le nombre de nouvelles espèces observées
+        - new_datasets : int
+            Le nombre de nouveaux jeux de données
+        - new_species : list[dict]
+            Une liste des nouvelles espèces observées
+        - most_viewed_species : list[dict]
+            Une liste des 10 espèces les plus vues
+        - observations_by_group : list[dict]
+            Une liste du nombre d'observations par groupe
+        - data_by_datasets : list[dict]
+            Une liste du nombre d'observations par jeu de données
+        - observations_by_year : list[dict]
+            Une liste du nombre d'observations par année
+    """
+
+    # Nombre d'observations pour cette année
+    nb_obs_year = db.session.scalar(
+        select(func.count())
+        .select_from(VSyntheseForWebApp)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
+    )
+    # Nombre total d'observations avant cette année
+    nb_obs_total = db.session.scalar(
+        select(func.count())
+        .select_from(VSyntheseForWebApp)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) <= year)
+    )
+    # Nouvelles espèces observées cette année
+    new_species_query = sa.except_(
+        select(VSyntheseForWebApp.cd_ref)
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year),
+        select(VSyntheseForWebApp.cd_ref)
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) < year),
+    )
+    new_species_cte = new_species_query.cte()
+
+    # Nombre de nouvelles espèces observées
+    nb_new_species = db.session.scalar(
+        select(func.count()).select_from(new_species_query.subquery())
+    )
+
+    # Nombre de jeux de données créés cette année
+    new_datasets = db.session.scalar(
+        select(func.count()).where(
+            func.date_part("year", TDatasets.meta_create_date) == year,
+        )
+    )
+    # Nouvelles espèces observées
+    new_species = (
+        select(
+            Taxref.nom_complet,
+            Taxref.nom_vern,
+            Taxref.group2_inpn,
+            func.count(VSyntheseForWebApp.id_synthese),
+        )
+        .select_from(new_species_cte)
+        .join(VSyntheseForWebApp, VSyntheseForWebApp.cd_ref == new_species_cte.c.cd_ref)
+        .join(Taxref, Taxref.cd_ref == new_species_cte.c.cd_ref)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
+        .group_by(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn)
+        .order_by(
+            Taxref.nom_complet,
+        )
+    )
+    new_species = db.session.execute(new_species).all()
+
+    # 10 espèces les plus observées
+    most_viewed_species_query = (
+        select(
+            Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn, func.count().label("count")
+        )
+        .join(VSyntheseForWebApp, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
+        .group_by(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn)
+        .order_by(sa.desc("count"))
+        .limit(10)
+    )
+    most_viewed_species = db.session.execute(most_viewed_species_query).fetchall()
+
+    # nombre d'observations par jeu de données
+    data_by_datasets = db.session.execute(
+        select(TDatasets.dataset_name, func.count())
+        .join(VSyntheseForWebApp, VSyntheseForWebApp.id_dataset == TDatasets.id_dataset)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
+        .group_by(TDatasets.dataset_name)
+        .order_by(sa.desc(func.count()))
+    ).all()
+
+    # nombre de taxons observés cette année
+    nb_taxon_year = db.session.execute(
+        select(func.count(sa.distinct(VSyntheseForWebApp.cd_ref)))
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
     ).scalar()
-    nb_obs_total = DB.session.execute(
-        """
-        SELECT count(*) 
-        FROM gn_synthese.synthese
-        WHERE date_part('year', date_min) <= :year
-        """,
-        {"year": year},
-    ).scalar()
-    nb_new_species = DB.session.execute(
-        """
-        SELECT COUNT(*) FROM (
-            SELECT DISTINCT t.cd_ref 
-            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
-            WHERE date_part('year', date_min) = :year
-            EXCEPT
-            SELECT DISTINCT t.cd_ref 
-            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
-            WHERE date_part('year', date_min) < :year 
-        ) sub
-        """,
-        {"year": year},
-    ).scalar()
-    new_datasets = DB.session.execute(
-        """
-        SELECT count(*)
-        FROM gn_meta.t_datasets td 
-        WHERE date_part('year', td.meta_create_date) = :year
-        """,
-        {"year": year},
-    ).scalar()
-    new_species = DB.session.execute(
-        """
-        SELECT t.nom_complet, t.nom_vern, t.group2_inpn, count(s.*) FROM (
-            SELECT DISTINCT t.cd_ref 
-            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
-            WHERE date_part('year', date_min) = :year
-            EXCEPT
-            SELECT DISTINCT t.cd_ref 
-            FROM gn_synthese.synthese s JOIN taxonomie.taxref t ON t.cd_nom=s.cd_nom 
-            WHERE date_part('year', date_min) < :year 
-            ) sub
-            JOIN gn_synthese.synthese s  ON sub.cd_ref = taxonomie.find_cdref(s.cd_nom)
-            JOIN taxonomie.taxref t on t.cd_nom = sub.cd_ref
-            WHERE date_part('year', date_min) = :year
-            GROUP BY t.nom_vern, t.nom_complet, t.group2_inpn
-            ORDER BY t.nom_complet ASC
-        """,
-        {"year": year},
-    ).fetchall()
-    most_viewed_species = DB.session.execute(
-        """
-        SELECT t.nom_complet, t.nom_vern,  t.group2_inpn, count(*)
-        FROM gn_synthese.synthese s 
-        JOIN taxonomie.taxref t on t.cd_nom = s.cd_nom 
-        WHERE date_part('year', date_min) = :year 
-        GROUP BY t.nom_complet , t.nom_vern, t.group2_inpn 
-        ORDER BY count(*) desc 
-        LIMIT 10
-        """,
-        {"year": year},
+
+    # nombre d'observations par année
+    observations_by_year = db.session.execute(
+        select(
+            func.count(VSyntheseForWebApp.id_synthese),
+            cast(func.date_part("year", VSyntheseForWebApp.date_min), sa.Integer).label("year_"),
+        )
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) >= 1990)
+        .group_by("year_")
+        .order_by(sa.asc("year_"))  # TODO add asc ordering
     ).fetchall()
 
-    data_by_datasets = DB.session.execute(
-        """
-        SELECT  td.dataset_name, count(*)
-        FROM gn_synthese.synthese s 
-        JOIN gn_meta.t_datasets td on s.id_dataset = td.id_dataset 
-        WHERE date_part('year', s.date_min) = :year
-        GROUP BY td.dataset_name 
-        ORDER BY count(*) desc
-        """,
-        {"year": year},
+    # années associées à au moins une observation
+    yearsWithObs = db.session.execute(
+        select(
+            func.distinct(
+                cast(func.date_part("year", VSyntheseForWebApp.date_min), sa.Integer)
+            ).label("year")
+        ).order_by(sa.desc(text("year")))
     ).fetchall()
-    nb_taxon_year = DB.session.execute(
-        """
-        SELECT count(distinct cd_ref)
-        FROM gn_synthese.synthese s 
-        JOIN taxonomie.taxref t on s.cd_nom = t.cd_nom
-        WHERE date_part('year', s.date_min) = :year
-        """,
-        {"year": year},
-    ).scalar()
-    observations_by_year = DB.session.execute(
-        """
-        select count(id_synthese), date_part('year', s.date_min) as year_
-        from gn_synthese.synthese s
-        WHERE date_part('year', s.date_min) >= 1990
-        group by year_
-        order by year_ ASC
-        """
-    ).fetchall()
-    yearsWithObs = DB.session.execute(
-        """
-        SELECT distinct date_part('year', s.date_min) as year
-        FROM gn_synthese.synthese s
-        ORDER BY year DESC
-        """
-    ).fetchall()
-    observations_by_group = DB.session.execute(
-        """
-        SELECT count(*), t.group2_inpn
-        FROM gn_synthese.synthese s
-        JOIN taxonomie.taxref t ON t.cd_nom = s.cd_nom
-        WHERE date_part('year', s.date_min) = :year
-        GROUP BY t.group2_inpn
-        """,
-        {"year": year},
+
+    # nombre d'observations par groupe
+    observations_by_group = db.session.execute(
+        select(
+            func.count(),
+            Taxref.group2_inpn,
+        )
+        .select_from(VSyntheseForWebApp)
+        .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
+        .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
+        .group_by(Taxref.group2_inpn)
     )
-    t = {
+    response_data = {
         "yearsWithObs": [dict(row) for row in yearsWithObs],
         "year": year,
         "nb_obs_year": nb_obs_year,
@@ -369,7 +568,7 @@ def yearly_recap(year):
         "observations_by_year": [dict(row) for row in observations_by_year],
     }
 
-    return jsonify(t)
+    return jsonify(response_data)
 
 
 @blueprint.cli.command()
@@ -377,5 +576,5 @@ def refresh_vm():
     """
     Rafraîchissement des VM du dashboard
     """
-    DB.session.execute(func.gn_dashboard.refresh_materialized_view_data())
-    DB.session.commit()
+    db.session.execute(func.gn_dashboard.refresh_materialized_view_data())
+    db.session.commit()
