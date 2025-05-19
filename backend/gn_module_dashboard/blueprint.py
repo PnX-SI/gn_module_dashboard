@@ -136,8 +136,6 @@ def get_areas_stat(simplify_level, type_code, permissions):
         if param in params and params[param] != "":
             where_clause.append(column == params[param])
 
-    blurring_permissions, _ = split_blurring_precise_permissions(permissions)
-    obs_query = get_blurring_cte(permissions, filters)
     count_query = (
         select(
             CorAreaSynthese.id_area,
@@ -157,12 +155,15 @@ def get_areas_stat(simplify_level, type_code, permissions):
         )
         .group_by(CorAreaSynthese.id_area)
     )
-    if blurring_permissions:
-        count_query = count_query.join(
-            obs_query, obs_query.c.id_synthese == VSyntheseForWebApp.id_synthese
-        ).where(
-            BibAreasTypes.size_hierarchy >= obs_query.c.size_hierarchy,
-        )
+    # TODO: Check that only geom are blurred
+    #  obs_query = get_blurring_cte(permissions, filters)
+    # blurring_permissions, _ = split_blurring_precise_permissions(permissions)
+    # if blurring_permissions:
+    #     count_query = count_query.join(
+    #         obs_query, obs_query.c.id_synthese == VSyntheseForWebApp.id_synthese
+    #     ).where(
+    #         BibAreasTypes.size_hierarchy >= obs_query.c.size_hierarchy,
+    #     )
 
     count_cte = count_query.cte()
     query = select(
@@ -321,7 +322,6 @@ def get_recontact_stat(year):
 
 
 @blueprint.route("/taxonomy/<taxLevel>", methods=["GET"])
-@json_resp
 def get_taxonomy(taxLevel):
     """
     Retourne la liste des taxons observés pour une catégorie donnée.
@@ -344,7 +344,7 @@ def get_taxonomy(taxLevel):
         )
         .where(VTaxonomie.level == taxLevel)
     ).order_by(VTaxonomie.name_taxon)
-    return db.session.execute(query).all()
+    return jsonify(db.session.execute(query).all())
 
 
 @blueprint.route("/areas_types", methods=["GET"])
