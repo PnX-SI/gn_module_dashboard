@@ -103,12 +103,10 @@ export class AnnualReportComponent implements OnInit {
         this.yearObsData = [{ data: temp, label: "Nombre d'observations" }];
       }
       this.data.observations_by_group.forEach((element) => {
-        console.log(element);
         this.obsByGroupLabel.push(element.group2_inpn);
         this.obsByGroupData[0].data.push(element.count);
         // this.obsByGroupColor[0]["backgroundColor"].push(this.randomRGB());
       });
-      console.log(this.obsByGroupLabel);
 
       const tempNewSpecies = {};
       this.data.new_species.forEach((element) => {
