@@ -10,11 +10,13 @@ from werkzeug.exceptions import BadRequest
 
 from utils_flask_sqla.response import json_resp
 from geonature.utils.env import db
+from geonature.utils.config import config
 
 from .models import VTaxonomie, VFrameworks
 from .utils import get_blurring_cte
 from geonature.core.gn_synthese.models import Synthese, CorAreaSynthese, VSyntheseForWebApp
 from geonature.core.gn_synthese.utils.blurring import split_blurring_precise_permissions
+from geonature.core.sensitivity.models import cor_sensitivity_area_type
 from geonature.core.gn_permissions.decorators import permissions_required
 from ref_geo.models import BibAreasTypes, LAreas
 from ref_geo.schemas import AreaTypeSchema
@@ -155,8 +157,8 @@ def get_areas_stat(simplify_level, type_code, permissions):
         )
         .group_by(CorAreaSynthese.id_area)
     )
-    # TODO: Check that only geom are blurred
-    #  obs_query = get_blurring_cte(permissions, filters)
+    # TODO: Uncomment when permissions are applied globaly
+    # obs_query = get_blurring_cte(permissions, filters)
     # blurring_permissions, _ = split_blurring_precise_permissions(permissions)
     # if blurring_permissions:
     #     count_query = count_query.join(
@@ -164,6 +166,31 @@ def get_areas_stat(simplify_level, type_code, permissions):
     #     ).where(
     #         BibAreasTypes.size_hierarchy >= obs_query.c.size_hierarchy,
     #     )
+
+    if config["DASHBOARD"]["BLUR_DASHBOARD"]:
+        sensi_cte = (
+            select(VSyntheseForWebApp.id_synthese, BibAreasTypes.size_hierarchy)
+            .join(
+                cor_sensitivity_area_type,
+                cor_sensitivity_area_type.c.id_nomenclature_sensitivity
+                == VSyntheseForWebApp.id_nomenclature_sensitivity,
+                isouter=True,
+            )
+            .join(
+                BibAreasTypes,
+                BibAreasTypes.id_type == cor_sensitivity_area_type.c.id_area_type,
+                isouter=True,
+            )
+        ).cte("sensi_cte")
+
+        count_query = count_query.join(
+            sensi_cte, sensi_cte.c.id_synthese == VSyntheseForWebApp.id_synthese
+        ).where(
+            sa.or_(
+                BibAreasTypes.size_hierarchy >= sensi_cte.c.size_hierarchy,
+                sensi_cte.c.size_hierarchy == None,
+            ),
+        )
 
     count_cte = count_query.cte()
     query = select(
