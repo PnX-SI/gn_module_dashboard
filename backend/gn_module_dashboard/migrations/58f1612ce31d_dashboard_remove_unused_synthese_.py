@@ -18,8 +18,8 @@ depends_on = ("d73f74e7b662",)
 
 
 def upgrade():
-    op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_taxonomie")
-    op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_synthese")
+    op.execute("DROP MATERIALIZED VIEW IF EXISTS gn_dashboard.vm_taxonomie")
+    op.execute("DROP MATERIALIZED VIEW IF EXISTS gn_dashboard.vm_synthese")
     op.execute(
         """
         CREATE MATERIALIZED VIEW gn_dashboard.vm_taxonomie
@@ -70,43 +70,45 @@ def upgrade():
 
 
 def downgrade():
+    op.execute("DROP MATERIALIZED VIEW IF EXISTS gn_dashboard.vm_taxonomie")
+    op.execute("DROP MATERIALIZED VIEW IF EXISTS  gn_dashboard.vm_synthese")
     op.execute(
         """
-        CREATE MATERIALIZED VIEW gn_dashboard.gn_synthese.v_synthese_for_web_app
-            TABLESPACE pg_default
-            AS SELECT s.id_synthese,
-            s.id_source,
-            s.id_dataset,
-            s.id_nomenclature_obj_count,
-            s.count_min,
-            s.count_max,
-            s.cd_nom,
-            t.cd_ref,
-            s.nom_cite,
-            t.id_statut,
-            t.id_rang,
-            t.regne,
-            t.phylum,
-            t.classe,
-            t.ordre,
-            t.famille,
-            t.sous_famille,
-            t.group1_inpn,
-            t.group2_inpn,
-            t.group3_inpn,
-            t.lb_nom,
-            t.nom_vern,
-            t.url,
-            s.altitude_min,
-            s.altitude_max,
-            s.date_min,
-            s.date_max
-            FROM gn_synthese.synthese s
-                JOIN taxonomie.taxref t ON s.cd_nom = t.cd_nom
-            WITH DATA;
+        CREATE MATERIALIZED VIEW gn_dashboard.vm_synthese
+    TABLESPACE pg_default
+    AS SELECT s.id_synthese,
+    s.id_source,
+    s.id_dataset,
+    s.id_nomenclature_obj_count,
+    s.count_min,
+    s.count_max,
+    s.cd_nom,
+    t.cd_ref,
+    s.nom_cite,
+    t.id_statut,
+    t.id_rang,
+    t.regne,
+    t.phylum,
+    t.classe,
+    t.ordre,
+    t.famille,
+    t.sous_famille,
+    t.group1_inpn,
+    t.group2_inpn,
+    t.group3_inpn,
+    t.lb_nom,
+    t.nom_vern,
+    t.url,
+    s.altitude_min,
+    s.altitude_max,
+    s.date_min,
+    s.date_max
+    FROM gn_synthese.synthese s
+        JOIN taxonomie.taxref t ON s.cd_nom = t.cd_nom
+    WITH DATA;
 
-            CREATE INDEX gn_synthese.v_synthese_for_web_app_cd_ref_idx ON gn_dashboard.gn_synthese.v_synthese_for_web_app USING btree (cd_ref);
-            CREATE UNIQUE INDEX gn_synthese.v_synthese_for_web_app_id_synthese_idx ON gn_dashboard.gn_synthese.v_synthese_for_web_app USING btree (id_synthese);
+    CREATE INDEX vm_synthese_cd_ref_idx ON gn_dashboard.vm_synthese USING btree (cd_ref);
+    CREATE UNIQUE INDEX vm_synthese_id_synthese_idx ON gn_dashboard.vm_synthese USING btree (id_synthese);
 """
     )
 
