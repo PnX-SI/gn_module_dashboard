@@ -109,8 +109,8 @@ def upgrade():
 
 
 def downgrade():
-    op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_taxonomie")
-    op.execute("DROP MATERIALIZED VIEW gn_dashboard.vm_synthese")
+    op.execute("DROP MATERIALIZED VIEW IF EXISTS gn_dashboard.vm_taxonomie")
+    op.execute("DROP MATERIALIZED VIEW IF EXISTS gn_dashboard.vm_synthese")
     op.execute(
         """
         CREATE MATERIALIZED VIEW gn_dashboard.vm_synthese
