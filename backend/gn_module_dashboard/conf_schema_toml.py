@@ -20,6 +20,7 @@ class GnModuleSchemaConf(Schema):
     DISPLAY_PER_CA_GRAPH = fields.Boolean(load_default=True)
     DISPLAY_TAXONOMIC_CONTACTS_GRAPH = fields.Boolean(load_default=True)
     DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH = fields.Boolean(load_default=True)
+    BLUR_DASHBOARD = fields.Boolean(load_default=False)
     OBSCOLORS = fields.Dict(
         missing={
             "1": ["#BE8096"],
