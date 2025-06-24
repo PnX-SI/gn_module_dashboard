@@ -2,16 +2,18 @@
 
 ## 1.6.0 (2025-06-24)
 
-Nécessite la version 2.16.0 de GeoNature.
+Nécessite la version 2.16.0 de GeoNature minimum.
 
 **🚀 Nouveautés**
 
-- Refactorisation des requêtes SQLAlchemy (#74 par @jacquesfize et @Pierre-Narcisi)
+- Refactorisation des requêtes SQLAlchemy (#74, #78 par @jacquesfize et @Pierre-Narcisi)
+- Révision de `gn_dashboard.vm_taxonomie` et suppression de `gn_dashboard.vm_synthese`
 
 **🐛 Corrections**
 
 - Correction d'un problème d'affichage sur le graphique de répartition des nouvelles espèces (#75 par @jacquesfize)
-- Le paramètre SIMPLIFY_LEVEL accepte des valeurs flottantes (#79 par @Christophe-Ramet)
+- Le paramètre `SIMPLIFY_LEVEL` accepte désormais des valeurs décimales (#77, #79 par @Christophe-Ramet)
+- Correction du graphique des nouvelles espèces dans le rapport annuel (#75 par @jacquesfize)
 
 
 ## 1.5.0 (2024-02-28)
@@ -57,7 +59,7 @@ lisible (#16)
 **⚠️ Notes de version**
 
 - Si vous aviez mis en place un cron système pour rafraîchir les vues
-matérialisées (dans [/etc/cron/geonature]{.title-ref} ou autre),
+matérialisées (dans `/etc/cron/geonature` ou autre),
 vous pouvez le supprimer car elles sont désormais rafraîchies
 automatiquement avec Celery Beat.
 
@@ -149,9 +151,10 @@ mettre à jour. Ouvrez le fichier crontab (`crontab -e`) et copiez la
 ligne suivante en adaptant le chemin et éventuellement la fréquence
 d'exécution (tous les dimanches à minuit dans cet exemple) :
 
-<!-- -->
 
-0 0 * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
+    ```
+    0 0 * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
+    ```
 
 ## 0.2.0 (2020-02-20)
 
