@@ -1,20 +1,17 @@
 # CHANGELOG
 
-## 1.6.0 (2025-06-24)
+## 1.6.0 (2025-07-XX)
 
-Nécessite la version 2.16.0 de GeoNature minimum.
+Nécessite la version 2.16.0 de GeoNature.
 
 **🚀 Nouveautés**
 
-- Refactorisation des requêtes SQLAlchemy (#74, #78 par @jacquesfize et @Pierre-Narcisi)
-- Révision de `gn_dashboard.vm_taxonomie` et suppression de `gn_dashboard.vm_synthese`
+- Refactorisation des requêtes SQLAlchemy (#74 par @jacquesfize et @Pierre-Narcisi)
 
 **🐛 Corrections**
 
 - Correction d'un problème d'affichage sur le graphique de répartition des nouvelles espèces (#75 par @jacquesfize)
-- Le paramètre `SIMPLIFY_LEVEL` accepte désormais des valeurs décimales (#77, #79 par @Christophe-Ramet)
-- Correction du graphique des nouvelles espèces dans le rapport annuel (#75 par @jacquesfize)
-
+- Le paramètre SIMPLIFY_LEVEL accepte des valeurs flottantes (#79 par @Christophe-Ramet)
 
 ## 1.5.0 (2024-02-28)
 
@@ -32,12 +29,12 @@ Nécessite la version 2.13.0 (ou plus) de GeoNature.
 **🚀 Nouveautés**
 
 - Compatibilité avec GeoNature 2.13.0 et la refonte des permissions,
-en définissant les permissions disponibles du module (#63)
+  en définissant les permissions disponibles du module (#63)
 
 **🐛 Corrections**
 
 - Correction du changement d'année sur le rapport annuel (#61, par
-@hypsug0)
+  @hypsug0)
 
 ## 1.3.0 (2023-03-27)
 
@@ -46,12 +43,12 @@ Nécessite GeoNature version 2.12.0 (ou plus)
 **🚀 Nouveautés**
 
 - Compatibilité avec GeoNature 2.12 (Angular 15, configuration
-dynamique, configuration centralisée)
+  dynamique, configuration centralisée)
 - Rafraîchissement automatique des vues matérialisées via Celery Beat
-tous les jours à 2h. La fréquence est modifiable avec le paramètre
-`CRONTAB` de la configuration du module.
+  tous les jours à 2h. La fréquence est modifiable avec le paramètre
+  `CRONTAB` de la configuration du module.
 - Refonte du graphique des cadres d'acquisition pour le rendre plus
-lisible (#16)
+  lisible (#16)
 - Mise à jour de Chart.js version 2 à 4
 - Remplacement de noUiSlider par Material slider
 - Factorisation et nettoyage général du code du module
@@ -59,9 +56,9 @@ lisible (#16)
 **⚠️ Notes de version**
 
 - Si vous aviez mis en place un cron système pour rafraîchir les vues
-matérialisées (dans `/etc/cron/geonature` ou autre),
-vous pouvez le supprimer car elles sont désormais rafraîchies
-automatiquement avec Celery Beat.
+  matérialisées (dans [/etc/cron/geonature]{.title-ref} ou autre),
+  vous pouvez le supprimer car elles sont désormais rafraîchies
+  automatiquement avec Celery Beat.
 
 ## 1.2.1 (2022-12-21)
 
@@ -72,7 +69,7 @@ Compatible avec GeoNature 2.10, 2.11 et plus.
 - Suppression d'un import inutile supprimé dans GeoNature 2.11
 - Correction et mise à jour de la documentation du module
 - Ajout d'indexes potentiellement manquants sur les vieilles
-installations du module
+  installations du module
 
 ## 1.2.0 (2022-11-02)
 
@@ -81,26 +78,26 @@ Nécessite la version 2.10.0 (ou plus) de GeoNature.
 **🚀 Nouveautés**
 
 - Compatibilité avec Angular version 12, mis à jour dans la version
-2.10.0 de GeoNature (#38)
+  2.10.0 de GeoNature (#38)
 - Packaging du module
 
 **🐛 Corrections**
 
 - Correction de la commande de mise à jour des vues matérialisées du
-module (#46)
+  module (#46)
 
 **⚠️ Notes de version**
 
 - Suivez la procédure classique de mise à jour du module
 - Exécuter la commande suivante afin d'indiquer à Alembic l'état de
-votre base de données :
+  votre base de données :
 
-    ```shell
-    cd
-    source geonature/backend/venv/bin/activate
-    geonature db stamp 2628978e1016
-    geonature db autoupgrade
-    ```
+      ```shell
+      cd
+      source geonature/backend/venv/bin/activate
+      geonature db stamp 2628978e1016
+      geonature db autoupgrade
+      ```
 
 ## 1.1.0 (2022-01-03)
 
@@ -124,14 +121,14 @@ Nécessite la version 2.8.0 (ou plus) de GeoNature
 
 - Création d'une commande GeoNature de rafraîchissement des VM (#24)
 - Automatisation du rafraîchissement des VM via un cron et la nouvelle
-commande dédiée (#24)
+  commande dédiée (#24)
 - Préchargement des graphiques (#17)
 - Possibilité d'afficher/masquer certains graphiques (#5)
 - Paramètre pour configurer le type d'entité géographique par défaut
-(#19)
+  (#19)
 - Implémentation des classes dynamiques (#10)
 - Possibilité de configurer le graphique par défaut de \"synthèse par
-entité géographique\" (taxons ou observations) (#23)
+  entité géographique\" (taxons ou observations) (#23)
 
 **🐛 Corrections**
 
@@ -143,18 +140,17 @@ entité géographique\" (taxons ou observations) (#23)
 Si vous faites une mise à jour du module :
 
 - Dans le fichier `config/conf_gn_module.toml`, remplacez les
-paramètres `BORNE_TAXON` et `BORNE_OBS` par `NB_CLASS_OBS` et
-`NB_CLASS_TAX` comme dans l'exemple
-(<https://github.com/PnX-SI/gn_module_dashboard/blob/master/config/conf_gn_module.toml.example>)
+  paramètres `BORNE_TAXON` et `BORNE_OBS` par `NB_CLASS_OBS` et
+  `NB_CLASS_TAX` comme dans l'exemple
+  (<https://github.com/PnX-SI/gn_module_dashboard/blob/master/config/conf_gn_module.toml.example>)
 - Vous pouvez mettre en place le cron de rafraîchissement des VM ou le
-mettre à jour. Ouvrez le fichier crontab (`crontab -e`) et copiez la
-ligne suivante en adaptant le chemin et éventuellement la fréquence
-d'exécution (tous les dimanches à minuit dans cet exemple) :
+  mettre à jour. Ouvrez le fichier crontab (`crontab -e`) et copiez la
+  ligne suivante en adaptant le chemin et éventuellement la fréquence
+  d'exécution (tous les dimanches à minuit dans cet exemple) :
 
+<!-- -->
 
-    ```
-    0 0 * * SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
-    ```
+0 0 \* \* SUN /home/myuser/geonature/backend/venv/bin/geonature gn_dashboard_refresh_vm # gn_dashboard cron job
 
 ## 0.2.0 (2020-02-20)
 
@@ -176,14 +172,14 @@ Démo vidéo :
 **Fonctionnalités**
 
 - Création d'un schéma dédié `gn_dashboard` avec les vues et vues
-matérialisées nécessaires aux graphiques et cartes de synthèse du
-module (#1)
+  matérialisées nécessaires aux graphiques et cartes de synthèse du
+  module (#1)
 - Histogramme du nombre d'observations/nombre de taxons par année
 - Carte du nombre d'observations/nombre de taxons par commune ou
-autre types de zonage (définis en paramètre)
+  autre types de zonage (définis en paramètre)
 - Répartition des observations par rang taxonomique ou groupe INPN
 - Histogramme du nombre d'observations par cadre d'acquisition et
-par année
+  par année
 - Répartition du nombre d'espèces recontactés, non recontactés ou
-nouvelles par année
+  nouvelles par année
 - Filtres par rang taxonomique, groupe ou taxon et par période
