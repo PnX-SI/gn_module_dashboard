@@ -2,7 +2,7 @@
 
 ## 1.6.0 (2025-07-08)
 
-Nécessite la version 2.16.0 de GeoNature.
+Nécessite la version 2.16.0 (ou plus) de GeoNature.
 
 **🚀 Nouveautés**
 
@@ -11,7 +11,7 @@ Nécessite la version 2.16.0 de GeoNature.
 **🐛 Corrections**
 
 - Correction d'un problème d'affichage sur le graphique de répartition des nouvelles espèces (#75 par @jacquesfize)
-- Le paramètre SIMPLIFY_LEVEL accepte des valeurs flottantes (#79 par @Christophe-Ramet)
+- Le paramètre `SIMPLIFY_LEVEL` accepte des valeurs flottantes (#79 par @Christophe-Ramet)
 
 ## 1.5.0 (2024-02-28)
 
