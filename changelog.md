@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 1.6.0 (2025-07-XX)
+## 1.6.0 (2025-07-08)
 
 Nécessite la version 2.16.0 de GeoNature.
 
