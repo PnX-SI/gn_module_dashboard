@@ -9,7 +9,6 @@ Create Date: 2023-02-23 16:48:42.267746
 from alembic import op
 import sqlalchemy as sa
 
-
 # revision identifiers, used by Alembic.
 revision = "488a2eeee4be"
 down_revision = "3bd3234cab96"
@@ -18,8 +17,7 @@ depends_on = None
 
 
 def upgrade():
-    op.execute(
-        """
+    op.execute("""
         DROP MATERIALIZED VIEW gn_dashboard.vm_synthese_frameworks;
         CREATE MATERIALIZED VIEW gn_dashboard.vm_synthese_frameworks
         TABLESPACE pg_default
@@ -34,13 +32,11 @@ def upgrade():
         WITH DATA;
         CREATE unique index IF NOT EXISTS vm_synthese_frameworks_acquisition_framework_name_year_idx on gn_dashboard.vm_synthese_frameworks (id_acquisition_framework,year);
 
-        """
-    )
+        """)
 
 
 def downgrade():
-    op.execute(
-        """
+    op.execute("""
         DROP MATERIALIZED VIEW gn_dashboard.vm_synthese_frameworks;
         
         CREATE MATERIALIZED VIEW gn_dashboard.vm_synthese_frameworks
@@ -55,5 +51,4 @@ def downgrade():
         WITH DATA;
         CREATE unique index IF NOT EXISTS vm_synthese_frameworks_acquisition_framework_name_year_idx on gn_dashboard.vm_synthese_frameworks (acquisition_framework_name,year);
 
-        """
-    )
+        """)
