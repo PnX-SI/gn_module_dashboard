@@ -21,7 +21,7 @@ class GnModuleSchemaConf(Schema):
     DISPLAY_TAXONOMIC_CONTACTS_GRAPH = fields.Boolean(load_default=True)
     DISPLAY_NBOBS_LEGEND_BY_DEFAULT_IN_GEO_GRAPH = fields.Boolean(load_default=True)
     OBSCOLORS = fields.Dict(
-        missing={
+        load_default={
             "1": ["#BE8096"],
             "2": ["#BE8096", "#64112E"],
             "3": ["#D4AAB9", "#89173F", "#320917"],
@@ -65,7 +65,7 @@ class GnModuleSchemaConf(Schema):
         }
     )
     TAXCOLORS = fields.Dict(
-        missing={
+        load_default={
             "1": ["#8AB2B2"],
             "2": ["#8AB2B2", "#1E5454"],
             "3": ["#B1CCCC", "#297373", "#0F2A2A"],
