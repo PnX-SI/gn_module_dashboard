@@ -21,7 +21,6 @@ from ref_geo.schemas import AreaTypeSchema
 from apptax.taxonomie.models import Taxref
 from geonature.core.gn_meta.models import TDatasets
 
-
 blueprint = Blueprint("dashboard", __name__, cli_group="dashboard")
 
 

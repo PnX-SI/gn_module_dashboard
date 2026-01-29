@@ -9,7 +9,6 @@ Create Date: 2025-06-23 14:41:28.872196
 from alembic import op
 import sqlalchemy as sa
 
-
 # revision identifiers, used by Alembic.
 revision = "f64d0e652465"
 down_revision = "58f1612ce31d"
@@ -18,8 +17,7 @@ depends_on = None
 
 
 def upgrade():
-    op.execute(
-        """
+    op.execute("""
 CREATE OR REPLACE FUNCTION gn_dashboard.refresh_materialized_view_data()
  RETURNS void
  LANGUAGE plpgsql
@@ -30,13 +28,11 @@ BEGIN
 END
 $function$
 ;
-"""
-    )
+""")
 
 
 def downgrade():
-    op.execute(
-        """
+    op.execute("""
 CREATE OR REPLACE FUNCTION gn_dashboard.refresh_materialized_view_data()
  RETURNS void
  LANGUAGE plpgsql
@@ -49,5 +45,4 @@ END
 $function$
 ;
 
-"""
-    )
+""")
