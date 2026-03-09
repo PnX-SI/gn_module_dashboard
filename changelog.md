@@ -1,12 +1,11 @@
 # CHANGELOG
 
-## 1.6.1 (unreleased)
+## 1.6.1 (2026-03-09)
 
 ### 🚀 Nouveautés
 
 - Compatibilité avec GeoNature 2.17.0 (#85 par @jacquesfize)
 - Compatibilité avec debian 13 (#88 par @christophe-ramet)
-
 
 ## 1.6.0 (2025-07-08)
 
