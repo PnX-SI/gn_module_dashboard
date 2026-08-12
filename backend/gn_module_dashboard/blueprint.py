@@ -338,7 +338,7 @@ def get_taxonomy(taxLevel):
     query = (
         select(VTaxonomie.name_taxon)
         .order_by(
-            case([(VTaxonomie.name_taxon == "Not defined", 1)], else_=0),
+            case((VTaxonomie.name_taxon == "Not defined", 1), else_=0),
             VTaxonomie.name_taxon,
         )
         .where(VTaxonomie.level == taxLevel)
