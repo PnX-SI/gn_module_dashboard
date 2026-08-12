@@ -494,7 +494,9 @@ def yearly_recap(year):
 
     # 10 espèces les plus observées
     most_viewed_species_query = (
-        select(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn, func.count().label("count"))
+        select(
+            Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn, func.count().label("count")
+        )
         .join(VSyntheseForWebApp, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
         .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn)
