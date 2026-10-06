@@ -1,0 +1,30 @@
+name: pytest
+
+on:
+  push:
+    paths:
+      - "backend/**"
+    branches:
+      - main
+      - develop
+      - sqla2
+  pull_request:
+    paths:
+      - "backend/**"
+    branches:
+      - main
+      - develop
+      - sqla2
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        geonature_ref: ["develop"]
+    uses: pnx-si/geonature/.github/workflows/gn-module-pytest.yml@develop
+    with:
+      geonature_ref: ${{ matrix.geonature_ref }}
+      upload_coverage: true
+    secrets:
+      codecov_token: ${{ secrets.CODECOV_TOKEN }}
