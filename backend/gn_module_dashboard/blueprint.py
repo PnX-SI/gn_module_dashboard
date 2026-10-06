@@ -494,9 +494,7 @@ def yearly_recap(year):
 
     # 10 espèces les plus observées
     most_viewed_species_query = (
-        select(
-            Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn, func.count().label("count")
-        )
+        select(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn, func.count().label("count"))
         .join(VSyntheseForWebApp, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
         .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(Taxref.nom_complet, Taxref.nom_vern, Taxref.group2_inpn)
@@ -551,20 +549,20 @@ def yearly_recap(year):
         .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
         .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(Taxref.group2_inpn)
-    )
+    ).all()
     response_data = {
-        "yearsWithObs": [dict(row) for row in yearsWithObs],
+        "yearsWithObs": [dict(row._mapping) for row in yearsWithObs],
         "year": year,
         "nb_obs_year": nb_obs_year,
         "nb_obs_total": nb_obs_total,
         "nb_new_species": nb_new_species,
         "nb_taxon_year": nb_taxon_year,
         "new_datasets": new_datasets,
-        "new_species": [dict(row) for row in new_species],
-        "most_viewed_species": [dict(row) for row in most_viewed_species],
-        "observations_by_group": [dict(row) for row in observations_by_group],
-        "data_by_datasets": [dict(row) for row in data_by_datasets],
-        "observations_by_year": [dict(row) for row in observations_by_year],
+        "new_species": [dict(row._mapping) for row in new_species],
+        "most_viewed_species": [dict(row._mapping) for row in most_viewed_species],
+        "observations_by_group": [dict(row._mapping) for row in observations_by_group],
+        "data_by_datasets": [dict(row._mapping) for row in data_by_datasets],
+        "observations_by_year": [dict(row._mapping) for row in observations_by_year],
     }
 
     return jsonify(response_data)
