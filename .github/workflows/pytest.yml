@@ -7,14 +7,12 @@ on:
     branches:
       - main
       - develop
-      - sqla2
   pull_request:
     paths:
       - "backend/**"
     branches:
       - main
       - develop
-      - sqla2
 
 jobs:
   build:
