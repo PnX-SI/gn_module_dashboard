@@ -1,6 +1,7 @@
 """
 Tests for dashboard blueprint endpoints
 """
+
 import pytest
 import json
 from flask import url_for
@@ -64,9 +65,7 @@ class TestDashboardEndpoints:
     def test_get_synthese_per_tax_level_invalid_attribute(self, synthese_data):
         """Test /synthese_per_tax_level with invalid taxLevel"""
         response = self.client.get(
-            url_for(
-                "dashboard.get_synthese_per_tax_level_stat", taxLevel="invalid_level"
-            )
+            url_for("dashboard.get_synthese_per_tax_level_stat", taxLevel="invalid_level")
         )
         assert response.status_code == 400
 
@@ -102,9 +101,7 @@ class TestDashboardEndpoints:
     def test_get_recontact_stat_various_years(self, synthese_data):
         """Test /recontact for different years"""
         for year in [2020, 2022, 2025]:
-            response = self.client.get(
-                url_for("dashboard.get_recontact_stat", year=year)
-            )
+            response = self.client.get(url_for("dashboard.get_recontact_stat", year=year))
             assert response.status_code == 200
             data = response.get_json()
             assert isinstance(data, list)
@@ -112,9 +109,7 @@ class TestDashboardEndpoints:
 
     def test_get_taxonomy(self, synthese_data):
         """Test /taxonomy/<taxLevel> endpoint"""
-        response = self.client.get(
-            url_for("dashboard.get_taxonomy", taxLevel="classe")
-        )
+        response = self.client.get(url_for("dashboard.get_taxonomy", taxLevel="classe"))
         assert response.status_code == 200
         data = response.get_json()
         assert isinstance(data, list)
