@@ -145,7 +145,7 @@ Mise à jour du module
 Licence
 -------
 
--   OpenSource - GPL-3.0
+-   OpenSource - AGPL-3.0
 -   Copyleft 2019-2023 - Parc National des Écrins
 
 [![image](https://geonature.fr/img/logo-pne.jpg)](http://www.ecrins-parcnational.fr)
