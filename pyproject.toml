@@ -1,10 +1,65 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gn_module_dashboard"
+dynamic = ["version"]
+dependencies = [
+    "utils-flask-sqlalchemy>=0.5.0",
+    "geonature>=2.18.0",
+]
+description = "GeoNature"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "AGPL-3.0-only"
+license-files = ["LICENSE"]
+maintainers = [
+    { name = "Parcs nationaux des Écrins et des Cévennes", email = "geonature@ecrins-parcnational.fr" },
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+tests = ["jsonschema"]
+
+[project.urls]
+Homepage = "https://github.com/PnX-SI/gn_module_dashboard"
+
+[project.entry-points.gn_module]
+code = "gn_module_dashboard:MODULE_CODE"
+picto = "gn_module_dashboard:MODULE_PICTO"
+blueprint = "gn_module_dashboard.blueprint:blueprint"
+config_schema = "gn_module_dashboard.conf_schema_toml:GnModuleSchemaConf"
+migrations = "gn_module_dashboard:migrations"
+tasks = "gn_module_dashboard.tasks"
+
+[tool.setuptools]
+package-dir = { "" = "backend" }
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+
+[tool.setuptools.package-data]
+"gn_module_dashboard.migrations" = ["data/*.sql"]
+
+[tool.setuptools.dynamic]
+version = { file = "VERSION" }
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["backend"]
 
 [tool.coverage.run]
 source = ["backend/gn_module_dashboard"]
-omit = ["*/tests/*", "*/migrations/*", "setup.py", "conftest.py"]
+omit = ["*/tests/*", "*/migrations/*", "conftest.py"]
 
 [tool.black]
 line-length = 99
