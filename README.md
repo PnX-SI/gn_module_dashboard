@@ -146,6 +146,6 @@ Licence
 -------
 
 -   OpenSource - AGPL-3.0
--   Copyleft 2019-2023 - Parc National des Écrins
+-   Copyleft 2019-2026
 
 [![image](https://geonature.fr/img/logo-pne.jpg)](http://www.ecrins-parcnational.fr)
