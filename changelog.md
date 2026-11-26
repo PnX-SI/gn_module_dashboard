@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 1.7.0 (2026-11-25)
+
+**⚠️ Notes de version**
+
+Compatible uniquement avec les versions de GeoNature >= 2.18.0
+
+### 🚀 Nouveautés
+
+- Compatibilité avec SQLAlchemy 2 (#91 par @jacquesfize)
+
+### 💻 Développement
+
+- Remplacement de `setup.py` et `requirements.in` par `pyproject.toml` (par @jacquesfize)
+- [Tests] Ajout de tests backend (#91 par @jacquesfize)
+
 ## 1.6.1 (2026-03-09)
 
 ### 🚀 Nouveautés

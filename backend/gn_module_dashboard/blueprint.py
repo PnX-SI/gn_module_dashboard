@@ -338,7 +338,7 @@ def get_taxonomy(taxLevel):
     query = (
         select(VTaxonomie.name_taxon)
         .order_by(
-            case([(VTaxonomie.name_taxon == "Not defined", 1)], else_=0),
+            case((VTaxonomie.name_taxon == "Not defined", 1), else_=0),
             VTaxonomie.name_taxon,
         )
         .where(VTaxonomie.level == taxLevel)
@@ -551,20 +551,20 @@ def yearly_recap(year):
         .join(Taxref, Taxref.cd_nom == VSyntheseForWebApp.cd_nom)
         .where(func.date_part("year", VSyntheseForWebApp.date_min) == year)
         .group_by(Taxref.group2_inpn)
-    )
+    ).all()
     response_data = {
-        "yearsWithObs": [dict(row) for row in yearsWithObs],
+        "yearsWithObs": [dict(row._mapping) for row in yearsWithObs],
         "year": year,
         "nb_obs_year": nb_obs_year,
         "nb_obs_total": nb_obs_total,
         "nb_new_species": nb_new_species,
         "nb_taxon_year": nb_taxon_year,
         "new_datasets": new_datasets,
-        "new_species": [dict(row) for row in new_species],
-        "most_viewed_species": [dict(row) for row in most_viewed_species],
-        "observations_by_group": [dict(row) for row in observations_by_group],
-        "data_by_datasets": [dict(row) for row in data_by_datasets],
-        "observations_by_year": [dict(row) for row in observations_by_year],
+        "new_species": [dict(row._mapping) for row in new_species],
+        "most_viewed_species": [dict(row._mapping) for row in most_viewed_species],
+        "observations_by_group": [dict(row._mapping) for row in observations_by_group],
+        "data_by_datasets": [dict(row._mapping) for row in data_by_datasets],
+        "observations_by_year": [dict(row._mapping) for row in observations_by_year],
     }
 
     return jsonify(response_data)

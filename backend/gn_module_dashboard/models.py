@@ -1,4 +1,7 @@
-from sqlalchemy import ForeignKey
+from typing import Optional
+
+from sqlalchemy import ForeignKey, Integer, Unicode
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import select
 
 from utils_flask_sqla.serializers import serializable
@@ -10,8 +13,8 @@ from geonature.utils.env import DB
 class VTaxonomie(DB.Model):
     __tablename__ = "vm_taxonomie"
     __table_args__ = {"schema": "gn_dashboard"}
-    level = DB.Column(DB.Unicode)
-    name_taxon = DB.Column(DB.Unicode, primary_key=True)
+    level: Mapped[Optional[str]] = mapped_column(Unicode)
+    name_taxon: Mapped[str] = mapped_column(Unicode, primary_key=True)
 
 
 # vm_synthese_frameworks
@@ -19,7 +22,7 @@ class VTaxonomie(DB.Model):
 class VFrameworks(DB.Model):
     __tablename__ = "vm_synthese_frameworks"
     __table_args__ = {"schema": "gn_dashboard"}
-    id_acquisition_framework = DB.Column(DB.Integer, primary_key=True)
-    acquisition_framework_name = DB.Column(DB.Unicode)
-    year = DB.Column(DB.Integer)
-    nb_obs = DB.Column(DB.Integer)
+    id_acquisition_framework: Mapped[int] = mapped_column(Integer, primary_key=True)
+    acquisition_framework_name: Mapped[Optional[str]] = mapped_column(Unicode)
+    year: Mapped[Optional[int]] = mapped_column(Integer)
+    nb_obs: Mapped[Optional[int]] = mapped_column(Integer)
